@@ -14,10 +14,11 @@ window.appState = {
   user: JSON.parse(localStorage.getItem('currentUser') || 'null')
 };
 
+// ডিফল্ট এপিআই ইউআরএল হিসেবে আপনার Render ব্যাকএন্ড যুক্ত করা হয়েছে
 window.API_BASE = (function () {
   const meta = document.querySelector('meta[name="api-base"]');
   if (meta && meta.getAttribute('content')) return meta.getAttribute('content');
-  return '/api/v1';
+  return 'https://backend-fow0.onrender.com/api/v1';
 })();
 
 const authHeaders = () => {
