@@ -14,11 +14,10 @@ window.appState = {
   user: JSON.parse(localStorage.getItem('currentUser') || 'null')
 };
 
-// ডিফল্ট এপিআই ইউআরএল হিসেবে আপনার Render ব্যাকএন্ড যুক্ত করা হয়েছে
 window.API_BASE = (function () {
   const meta = document.querySelector('meta[name="api-base"]');
   if (meta && meta.getAttribute('content')) return meta.getAttribute('content');
-  return 'https://backend-fow0.onrender.com/api/v1';
+  return '/api/v1';
 })();
 
 const authHeaders = () => {
@@ -295,8 +294,26 @@ const routerConfig = {
     description: 'অ্যাডমিন ড্যাশবোর্ড।',
     render: () => {
       if (!window.appState.token) { window.location.hash = '#/admin/login'; return ''; }
-      setTimeout(() => window.appAdmin.loadOverview(), 30);
-      return UIComponents.AdminDashboardShell('home', `<div id="dashboard-content-area">${UIComponents.Loading()}</div>`);
+      
+      const hash = window.location.hash || '';
+      const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+      const tab = params.get('tab') || 'home';
+
+      setTimeout(() => {
+        if (tab === 'home') {
+          window.appAdmin.loadOverview();
+        } else if (tab === 'members') {
+          window.appAdmin.loadAddMemberForm();
+        } else if (tab === 'notices') {
+          window.appAdmin.loadAddNoticeForm();
+        } else {
+          const target = document.getElementById('dashboard-content-area');
+          if (target) target.innerHTML = UIComponents.EmptyState(`দুঃখিত, '${tab}' ট্যাবটির কনটেন্ট বা ড্যাশবোর্ড তালিকা নির্মাণাধীন রয়েছে।`, 'wrench');
+          refreshLucide();
+        }
+      }, 30);
+
+      return UIComponents.AdminDashboardShell(tab, `<div id="dashboard-content-area">${UIComponents.Loading()}</div>`);
     }
   }
 };
@@ -392,7 +409,7 @@ window.appPublic = {
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-end justify-between gap-4 mb-8">
           <div><span class="eyebrow">Latest Notices</span><h2 class="h-section text-2xl sm:text-3xl mt-1.5">সাম্প্রতিক নোটিশ</h2></div>
-          <a href="#/notice" class="btn-outline text-xs"><i data-lucide="arrow-right" class="w-4 h-4"></i>সবগুলো দেখুন</a>
+          <a href="#/notice" class="btn-outline text-xs"><i data-nav-arrow data-lucide="arrow-right" class="w-4 h-4"></i>সবগুলো দেখুন</a>
         </div>
         <div id="home-notice-list" class="grid md:grid-cols-2 gap-5">
           ${Array.from({ length: 2 }).map(() => UIComponents.SkeletonCard()).join('')}
@@ -476,6 +493,22 @@ window.appAdmin = {
         if (target) target.innerHTML = UIComponents.EmptyState('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'wifi-off');
         refreshLucide();
       });
+  },
+
+  loadAddMemberForm: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (target) {
+      target.innerHTML = UIComponents.AdminMemberForm();
+      refreshLucide();
+    }
+  },
+
+  loadAddNoticeForm: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (target) {
+      target.innerHTML = UIComponents.AdminNoticeForm();
+      refreshLucide();
+    }
   }
 };
 
@@ -559,12 +592,69 @@ function initChrome() {
   onScroll();
 }
 
-document.addEventListener('submit', (e) => {
-  if (e.target && e.target.id === 'admin-local-login') {
+document.addEventListener('submit', async (e) => {
+  if (!e.target) return;
+
+  // ১. অ্যাডমিন লগইন
+  if (e.target.id === 'admin-local-login') {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     window.appAuth.login(email, password);
+  }
+
+  // ২. নতুন সদস্য এড করার ফর্ম সাবমিট
+  if (e.target.id === 'add-member-form') {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    if (data.experience) {
+      data.experience = Number(data.experience);
+    }
+
+    try {
+      const res = await fetch(`${window.API_BASE}/members`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+      });
+      const resData = await res.json();
+      if (resData.success) {
+        window.showToast('সদস্য সফলভাবে নিবন্ধিত হয়েছে।', 'success');
+        window.location.hash = '#/admin/dashboard?tab=home';
+      } else {
+        window.showToast(resData.message || 'সদস্য নিবন্ধন ব্যর্থ হয়েছে।', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      window.showToast('সার্ভারে সংযোগ স্থাপন করা যায়নি।', 'error');
+    }
+  }
+
+  // ৩. নতুন নোটিশ প্রকাশ করার ফর্ম সাবমিট
+  if (e.target.id === 'add-notice-form') {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch(`${window.API_BASE}/notices`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+      });
+      const resData = await res.json();
+      if (resData.success) {
+        window.showToast('নোটিশ সফলভাবে প্রকাশিত হয়েছে।', 'success');
+        window.location.hash = '#/admin/dashboard?tab=home';
+      } else {
+        window.showToast(resData.message || 'নোটিশ প্রকাশ ব্যর্থ হয়েছে।', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      window.showToast('সার্ভারে সংযোগ স্থাপন করা যায়নি।', 'error');
+    }
   }
 });
 
