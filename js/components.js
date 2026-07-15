@@ -119,7 +119,7 @@ const UIComponents = {
               <br class="hidden sm:block"/> চিকিৎসকদের অফিসিয়াল প্ল্যাটফর্ম
             </h1>
             <p class="text-base sm:text-lg text-ink-200/90 max-w-2xl leading-relaxed">
-              রেজিস্টার্ড সদস্য, প্রকাশিত নোটিশ ও ইভেন্টসহ ভোলা জেলার সকল ভেরিফাইড দন্ত চিকিৎসকদের একটি নিরাপদ, স্বচ্ছ ও পেশাদার ডিজিটাল রেজিস্ট্রি।
+              রেজিস্টার্ড সদস্য, প্রকাশিত নোটিশ ও ইভেন্টসহ ভোলা জেলার সকল ভেরিভাইড দন্ত চিকিৎসকদের একটি নিরাপদ, স্বচ্ছ ও পেশাদার ডিজিটাল রেজিস্ট্রি।
             </p>
             <div class="flex flex-wrap items-center gap-3 pt-2">
               <a href="#/members" class="btn-primary btn-lg" style="background:linear-gradient(135deg,#0891b2,#10b981);">${_icon('users', 'w-4 h-4')}<span>সদস্য তালিকা দেখুন</span></a>
@@ -188,7 +188,7 @@ const UIComponents = {
         <div class="lg:col-span-7 grid sm:grid-cols-2 gap-5">
           ${[
             ['target',   'আমাদের মিশন',   'ভোলার সাধারণ মানুষের কাছে আধুনিক ও নিরাপদ দন্ত চিকিৎসা পৌঁছে দেওয়া এবং প্রতিটি চিকিৎসকের পেশাদার মান বজায় রাখা।'],
-            ['eye',      'আমাদের ভিশন',   'ভোলার প্রতিটি দন্ত চিকিৎসকের মান উন্নয়ন এবং জেলার জনগণের জন্য একটি স্বচ্ছ, ভেরিফাইড রেজিস্ট্রি প্রতিষ্ঠা।'],
+            ['eye',      'আমাদের ভিশন',   'ভোলার প্রতিটি দন্ত চিকিৎসকের মান উন্নয়ন এবং জেলার জনগণের জন্য একটি স্বচ্ছ, ভেরিভাইড রেজিস্ট্রি প্রতিষ্ঠা।'],
             ['heart-handshake', 'পেশাগত অঙ্গীকার', 'নৈতিকতা, স্বচ্ছতা ও রোগীর অধিকারকে সর্বোচ্চ অগ্রাধিকার দিয়ে সেবা প্রদান।'],
             ['graduation-cap',  'ধারাবাহিক শিক্ষা', 'সেমিনার, ওয়ার্কশপ ও ট্রেনিং-এর মাধ্যমে সদস্যদের ধারাবাহিক পেশাগত উন্নয়ন।']
           ].map(([ic, t, d]) => `
@@ -285,7 +285,7 @@ const UIComponents = {
         ${m.roleType === 'Executive Committee' ? `<span class="absolute top-3 right-3 chip chip-gold">${_icon('star','w-3 h-3')}Executive</span>` : ''}
       </div>
       <div class="px-6 pb-6 -mt-10">
-        <div class="w-20 h-20 rounded-2xl bg-white p-1 shadow-card ring-1 ring-ink-100">
+        <div class="w-20 h-20 rounded-2xl bg-white p-1 shadow-card ring-1 ring-ink-100 mx-auto sm:mx-0">
           ${m.profilePhoto
             ? `<img class="w-full h-full object-cover rounded-xl" src="${_esc(m.profilePhoto)}" alt="${_esc(m.nameEn || '')}" loading="lazy"/>`
             : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-lg">${_initials(m.nameEn || m.nameBn)}</div>`}
@@ -432,7 +432,7 @@ const UIComponents = {
           ${m.biography ? `
             <div class="card p-7 sm:p-8">
               <span class="eyebrow">Biography</span>
-              <h2 class="h-section text-xl mt-2 mb-4">সংক্ষিপ্ত পরিচিতি</h2>
+              <h2 class="h-section text-xl mt-2 mb-4">সংक्षिप्त পরিচিতি</h2>
               <div class="prose-bn">${_esc(m.biography).split('\n').map(p => `<p>${p}</p>`).join('')}</div>
             </div>` : ''}
         </div>
@@ -524,13 +524,8 @@ const UIComponents = {
   AdminDashboardShell: (active = 'home', content = '') => {
     const nav = [
       ['home',       'home',     'ওভারভিউ'],
-      ['users',      'members',  'সদস্য'],
-      ['megaphone',  'notices',  'নোটিশ'],
-      ['newspaper',  'news',     'সংবাদ'],
-      ['calendar',   'events',   'ইভেন্টস'],
-      ['image',      'gallery',  'গ্যালারি'],
-      ['mail',       'messages', 'বার্তা'],
-      ['settings-2', 'settings', 'সেটিংস']
+      ['users',      'members',  'সদস্য ফর্ম'],
+      ['megaphone',  'notices',  'নোটিশ ফর্ম'],
     ];
     const user = window.appState?.user || {};
     return `
@@ -563,7 +558,7 @@ const UIComponents = {
             </div>
             <div class="flex items-center gap-2">
               <a href="#/" class="btn-outline">${_icon('external-link','w-4 h-4')}<span class="hidden sm:inline">সাইট দেখুন</span></a>
-              <button class="btn-primary">${_icon('plus','w-4 h-4')}<span>নতুন এন্ট্রি</span></button>
+              <button onclick="window.appAdmin.loadAddMemberForm()" class="btn-primary">${_icon('plus','w-4 h-4')}<span>নতুন সদস্য</span></button>
             </div>
           </header>
           ${content}
@@ -600,21 +595,139 @@ const UIComponents = {
         </div>
         <div class="card p-6">
           <div class="flex items-center justify-between mb-4">
-            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুত কাজ</h3></div>
+            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুট কাজ</h3></div>
           </div>
           <div class="space-y-2.5">
             ${[
-              ['user-plus', 'নতুন সদস্য যোগ করুন'],
-              ['megaphone', 'নোটিশ প্রকাশ করুন'],
-              ['calendar-plus', 'ইভেন্ট তৈরি করুন'],
-              ['mail-plus', 'ব্রডকাস্ট ইমেইল'],
-            ].map(([ic, t]) => `
-              <button class="w-full text-left drawer-link">${_icon(ic,'w-4 h-4 text-teal-600')}<span>${t}</span>${_icon('chevron-right','w-4 h-4 ml-auto text-ink-300')}</button>
+              ['user-plus', 'নতুন সদস্য যোগ করুন', 'window.appAdmin.loadAddMemberForm()'],
+              ['megaphone', 'নোটিশ প্রকাশ করুন', 'window.appAdmin.loadAddNoticeForm()'],
+              ['calendar-plus', 'ইভেন্ট তৈরি করুন', ''],
+              ['mail-plus', 'ব্রডকাস্ট ইমেইল', ''],
+            ].map(([ic, t, clickAction]) => `
+              <button onclick="${_esc(clickAction)}" class="w-full text-left drawer-link">
+                ${_icon(ic,'w-4 h-4 text-teal-600')}<span>${t}</span>
+                ${_icon('chevron-right','w-4 h-4 ml-auto text-ink-300')}
+              </button>
             `).join('')}
           </div>
         </div>
       </div>`;
   },
+
+  /* ================= NEW FORMS ================= */
+  AdminMemberForm: () => `
+    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
+      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
+        <h2 class="h-section text-xl">নতুন সদস্য নিবন্ধন করুন</h2>
+        <button onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline text-xs">
+          ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
+        </button>
+      </div>
+      <form id="add-member-form" class="space-y-6">
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="label" for="m-nameBn">নাম (বাংলা)</label>
+            <input id="m-nameBn" name="nameBn" required class="input" placeholder="ডাঃ মোঃ আবদুর রহমান">
+          </div>
+          <div>
+            <label class="label" for="m-nameEn">Name (English)</label>
+            <input id="m-nameEn" name="nameEn" required class="input" placeholder="Dr. Md. Abdur Rahman">
+          </div>
+          <div>
+            <label class="label" for="m-qualification">যোগ্যতা/ডিগ্রি</label>
+            <input id="m-qualification" name="qualification" required class="input" placeholder="BDS, PGT">
+          </div>
+          <div>
+            <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর</label>
+            <input id="m-bmdcReg" name="bmdcReg" class="input" placeholder="D-1234">
+          </div>
+          <div>
+            <label class="label" for="m-chamberName">চেম্বারের নাম</label>
+            <input id="m-chamberName" name="chamberName" class="input" placeholder="রহমান ডেন্টাল কেয়ার">
+          </div>
+          <div>
+            <label class="label" for="m-upazila">উপজেলা</label>
+            <select id="m-upazila" name="upazila" class="select">
+              <option value="Bhola Sadar">ভোলা সদর</option>
+              <option value="Borhanuddin">বোরহানউদ্দিন</option>
+              <option value="Char Fasson">চরফ্যাশন</option>
+              <option value="Daulatkhan">দৌলতখান</option>
+              <option value="Lalmohan">লালমোহন</option>
+              <option value="Manpura">মনপুরা</option>
+              <option value="Tazumuddin">তজুমদ্দিন</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="m-phone">মোবাইল নম্বর</label>
+            <input id="m-phone" name="phone" required class="input" placeholder="017XXXXXXXX">
+          </div>
+          <div>
+            <label class="label" for="m-email">ইমেল অ্যাড্রেস</label>
+            <input id="m-email" name="email" type="email" class="input" placeholder="member@email.com">
+          </div>
+          <div>
+            <label class="label" for="m-profilePhoto">প্রোফাইল ছবি ইউআরএল (Cloudinary)</label>
+            <input id="m-profilePhoto" name="profilePhoto" class="input" placeholder="https://res.cloudinary.com/...">
+          </div>
+          <div>
+            <label class="label" for="m-roleType">সদস্যের ক্যাটাগরি</label>
+            <select id="m-roleType" name="roleType" class="select" onchange="document.getElementById('exec-post-wrapper').classList.toggle('hidden', this.value !== 'Executive Committee')">
+              <option value="General Member">সাধারণ সদস্য</option>
+              <option value="Executive Committee">কার্যনির্বাহী কমিটি</option>
+            </select>
+          </div>
+          <div id="exec-post-wrapper" class="hidden">
+            <label class="label" for="m-executivePost">কমিটির পদবী</label>
+            <input id="m-executivePost" name="executivePost" class="input" placeholder="সহ-সভাপতি / সাধারণ সম্পাদক">
+          </div>
+        </div>
+        <div>
+          <label class="label" for="m-biography">সংক্ষিপ্ত পরিচিতি (বায়োগ্রাফি)</label>
+          <textarea id="m-biography" name="biography" class="textarea h-24" placeholder="সদস্যের সংক্ষিপ্ত বিবরণ..."></textarea>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
+          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline">বাতিল</button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>সংরক্ষণ করুন</span></button>
+        </div>
+      </form>
+    </div>`,
+
+  AdminNoticeForm: () => `
+    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
+      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
+        <h2 class="h-section text-xl">নতুন নোটিশ প্রকাশ করুন</h2>
+        <button onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline text-xs">
+          ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
+        </button>
+      </div>
+      <form id="add-notice-form" class="space-y-6">
+        <div>
+          <label class="label" for="n-title">নোটিশের শিরোনাম</label>
+          <input id="n-title" name="title" required class="input" placeholder="বিজ্ঞপ্তি শিরোনাম...">
+        </div>
+        <div>
+          <label class="label" for="n-category">ক্যাটাগরি</label>
+          <select id="n-category" name="category" class="select">
+            <option value="General">সাধারণ বিজ্ঞপ্তি</option>
+            <option value="Urgent">জরুরি</option>
+            <option value="Meeting">সভা সংক্রান্ত</option>
+            <option value="Seminar">সেমিনার</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="n-content">বিস্তারিত তথ্য</label>
+          <textarea id="n-content" name="content" required class="textarea h-32" placeholder="নোটিশের বিস্তারিত বিবরণ..."></textarea>
+        </div>
+        <div>
+          <label class="label" for="n-pdfUrl">পিডিএফ (PDF) ইউআরএল (ঐচ্ছিক)</label>
+          <input id="n-pdfUrl" name="pdfUrl" class="input" placeholder="https://res.cloudinary.com/...">
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
+          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline">বাতিল</button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>প্রকাশ করুন</span></button>
+        </div>
+      </form>
+    </div>`,
 
   /* ================= SYSTEM HEALTH (kept from original API) ================= */
   SystemHealthMonitor: () => `
