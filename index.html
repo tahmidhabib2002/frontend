@@ -6,10 +6,6 @@
   <meta name="theme-color" content="#0b1e3f">
   <title>ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন | BDDPA</title>
   <meta name="description" content="ভোলা জেলার রেজিস্টার্ড ডেন্টাল চিকিৎসকদের অফিশিয়াল ডিজিটাল ডাটাবেজ ও প্রফেশনাল অ্যাসোসিয়েশন পোর্টাল।">
-  
-  <!-- Render ব্যাকএন্ড এপিআই রুট নির্দেশক মেটা ট্যাগ -->
-  <meta name="api-base" content="https://backend-fow0.onrender.com/api/v1">
-  
   <meta name="author" content="BDDPA">
   <meta property="og:type" content="website">
   <meta property="og:title" content="BDDPA — Bhola District Dental Practitioners Association">
@@ -19,7 +15,7 @@
   <!-- Preconnect for premium Bengali typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/png" href="assets/placeholder-avatar.png">
 
@@ -37,62 +33,67 @@
           },
           colors: {
             navy: {
-              50:  '#f4f6fb',
-              100: '#e6ebf5',
-              200: '#c5d0e5',
-              300: '#94a8cd',
-              400: '#5f7bb0',
-              500: '#3e5b95',
-              600: '#2f477a',
-              700: '#243761',
-              800: '#182848',
-              900: '#0b1e3f',
-              950: '#050f24'
+              50:  '#f3f6fc',
+              100: '#e6ecf6',
+              200: '#c5d1e8',
+              300: '#93a8ce',
+              400: '#5c7bb3',
+              500: '#3a5a97',
+              600: '#2b467c',
+              700: '#1f3563',
+              800: '#14264a',
+              900: '#0a1a3a',
+              950: '#050d20'
             },
             teal: {
-              50:  '#effcfb',
+              50:  '#eefcfb',
               100: '#cff8f4',
-              200: '#a2ede8',
-              400: '#22b8b0',
+              200: '#9fedea',
+              300: '#67e0ea',
+              400: '#22b8d0',
               500: '#0891b2',
-              600: '#0e7490',
+              600: '#0d7490',
               700: '#155e75',
+              800: '#0f4c62',
               900: '#083344'
             },
             emerald: {
               50:  '#ecfdf5',
+              400: '#34d399',
               500: '#10b981',
               600: '#059669',
               700: '#047857'
             },
             gold: {
-              400: '#e0b750',
+              400: '#e5bd58',
               500: '#c9a24a',
-              600: '#a5842f'
+              600: '#a17a24'
             },
             ink: {
               900: '#0a1220',
+              800: '#111827',
               700: '#1f2937',
+              600: '#374151',
               500: '#4b5563',
               400: '#6b7280',
               300: '#9ca3af',
-              200: '#d1d5db',
-              100: '#e5e7eb',
-              50:  '#f7f8fb'
+              200: '#d7dce6',
+              100: '#e8ecf3',
+              50:  '#f6f8fc'
             }
           },
           boxShadow: {
-            'soft':      '0 1px 2px rgba(11, 30, 63, 0.04), 0 4px 12px rgba(11, 30, 63, 0.05)',
-            'card':      '0 1px 2px rgba(11, 30, 63, 0.05), 0 12px 32px -12px rgba(11, 30, 63, 0.14)',
-            'elevated':  '0 24px 60px -24px rgba(11, 30, 63, 0.28)',
-            'ring-navy': '0 0 0 3px rgba(11, 30, 63, 0.08)'
+            'soft':      '0 1px 2px rgba(10, 26, 58, 0.04), 0 4px 12px rgba(10, 26, 58, 0.05)',
+            'card':      '0 1px 3px rgba(10, 26, 58, 0.06), 0 10px 28px -12px rgba(10, 26, 58, 0.16)',
+            'elevated':  '0 4px 8px rgba(10, 26, 58, 0.06), 0 32px 64px -24px rgba(10, 26, 58, 0.28)',
+            'ring-navy': '0 0 0 4px rgba(10, 26, 58, 0.08)'
           },
           backgroundImage: {
-            'gradient-navy':     'linear-gradient(135deg, #0b1e3f 0%, #182848 45%, #0e7490 100%)',
-            'gradient-medical':  'linear-gradient(135deg, #0b1e3f 0%, #0e7490 100%)',
-            'gradient-hero':     'radial-gradient(ellipse at top left, rgba(8,145,178,0.18), transparent 55%), radial-gradient(ellipse at bottom right, rgba(16,185,129,0.12), transparent 55%), linear-gradient(135deg, #050f24 0%, #0b1e3f 55%, #182848 100%)',
-            'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #f7f8fb 100%)',
-            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)'
+            'gradient-navy':     'linear-gradient(135deg, #0a1a3a 0%, #14264a 45%, #0d7490 100%)',
+            'gradient-medical':  'linear-gradient(135deg, #0a1a3a 0%, #14264a 40%, #0d7490 100%)',
+            'gradient-hero':     'radial-gradient(ellipse 60% 50% at 12% 5%, rgba(34,184,208,0.28), transparent 55%), radial-gradient(ellipse 55% 55% at 92% 92%, rgba(16,185,129,0.14), transparent 60%), linear-gradient(135deg, #030816 0%, #071331 40%, #0a1a3a 70%, #14264a 100%)',
+            'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%)',
+            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)'
           },
           keyframes: {
             'fade-in-up': { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
