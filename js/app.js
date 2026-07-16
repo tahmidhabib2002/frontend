@@ -34,29 +34,6 @@ window.showToast = (message, type = 'success') => {
   setTimeout(() => node.remove(), 3500);
 };
 
-/* ================= AUTOMATED NOTIFICATION SERVICE ================= */
-const NotificationService = {
-  // এসএমএস পাঠানোর গেটওয়ে হ্যান্ডলার
-  sendSMS: async (phone, name, memberId) => {
-    try {
-      const message = `অভিনন্দন ডাঃ ${name}, BDDPA-তে আপনার সদস্যপদ সফলভাবে নিবন্ধিত হয়েছে। আপনার মেম্বার আইডি: ${memberId}। মেয়াদ ২ বছর।`;
-      const smsGatewayUrl = `https://api.greenweb.com.bd/api.php?json&token=YOUR_GREENWEB_TOKEN&to=${phone}&message=${encodeURIComponent(message)}`;
-      await fetch(smsGatewayUrl, { mode: 'no-cors' });
-      console.log('Automated registration SMS sent successfully to:', phone);
-    } catch (err) {
-      console.error('Failed to trigger SMS notification:', err);
-    }
-  },
-
-  sendEmail: async (email, name, memberId) => {
-    try {
-      console.log('Automated registration Email triggered for:', email);
-    } catch (err) {
-      console.error('Email trigger failed:', err);
-    }
-  }
-};
-
 /* ================= SEO ================= */
 const seoEngine = {
   setMeta: (title, description, canonicalPath, schemaObj = null) => {
@@ -86,114 +63,6 @@ const seoEngine = {
   }
 };
 
-/* ================= DYNAMIC UI COMPONENTS OVERRIDES ================= */
-if (window.UIComponents) {
-  // ১. ড্যাশবোর্ড শেলে নতুন "সদস্য আবেদন" ট্যাব যুক্ত করা
-  UIComponents.AdminDashboardShell = (active = 'home', content = '') => {
-    const nav = [
-      ['home',       'home',       'ওভারভিউ'],
-      ['users',      'members',    'সদস্য তালিকা'],
-      ['user-plus',  'requests',   'সদস্য আবেদন'], // নতুন ট্যাব
-      ['megaphone',  'notices',    'নোটিশ বোর্ড'],
-      ['calendar',   'events',     'ইভেন্টস'],
-      ['sliders',    'leadership', 'সম্মানিত নেতৃত্ব'],
-    ];
-    const user = window.appState?.user || {};
-    return `
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="grid lg:grid-cols-[260px_1fr] gap-6">
-        <aside class="card p-4 h-max lg:sticky lg:top-28">
-          <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-medical text-white mb-4">
-            <div class="w-10 h-10 rounded-lg bg-white/15 grid place-items-center font-bold">${_initials(user.name || 'AD')}</div>
-            <div class="min-w-0">
-              <div class="text-sm font-bold truncate">${_esc(user.name || 'Admin')}</div>
-              <div class="text-[11px] text-teal-100 truncate font-latin">${_esc(user.role || 'Editor')}</div>
-            </div>
-          </div>
-          <nav class="space-y-1 text-sm font-medium">
-            ${nav.map(([ic, key, label]) => `
-              <a href="#/admin/dashboard?tab=${key}" data-admin-tab="${key}" class="drawer-link ${active === key ? 'is-active' : ''}">
-                ${_icon(ic, 'w-4 h-4')}<span>${label}</span>
-              </a>`).join('')}
-          </nav>
-          <div class="mt-4 pt-4 border-t border-ink-100">
-            <button onclick="window.appAuth.logout()" class="drawer-link w-full text-red-600 hover:bg-red-50">${_icon('log-out','w-4 h-4')}<span>লগআউট</span></button>
-          </div>
-        </aside>
-
-        <section class="min-w-0 space-y-6">
-          <header class="card p-5 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p class="text-[11px] uppercase tracking-widest text-teal-600 font-latin font-bold">Dashboard</p>
-              <h1 class="h-section text-xl mt-1">স্বাগতম, ${_esc((user.name || 'Admin').split(' ')[0])}</h1>
-            </div>
-            <div class="flex items-center gap-2">
-              <a href="#/" class="btn-outline">${_icon('external-link','w-4 h-4')}<span class="hidden sm:inline">সাইট দেখুন</span></a>
-              <button onclick="window.appAdmin.loadAddMemberForm()" class="btn-primary">${_icon('plus','w-4 h-4')}<span>নতুন সদস্য</span></button>
-            </div>
-          </header>
-          <div id="dashboard-content-area">${content}</div>
-        </section>
-      </div>
-    </div>`;
-  };
-
-  // ২. হোমপেজ হিরো সেকশনে ডাইরেক্ট আবেদন বাটন সেট করা
-  UIComponents.HomeHero = () => `
-    <section class="relative hero-bg">
-      <div class="hero-blob bg-teal-500/60" style="top:-4rem; left:-4rem;"></div>
-      <div class="hero-blob bg-emerald-500/40" style="bottom:-6rem; right:-4rem;"></div>
-
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:pt-24 lg:pb-32 text-center lg:text-left">
-        <div class="max-w-4xl mx-auto space-y-7 animate-fade-in-up flex flex-col items-center">
-          <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur text-[11px] font-semibold text-teal-100 tracking-wide">
-            ${_icon('shield-check', 'w-3.5 h-3.5')}
-            <span>Bhola District · Official Verified Directory</span>
-          </span>
-          <h1 class="text-[34px] sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
-            ভোলা জেলার <br class="hidden sm:block"/>
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-teal-100 to-emerald-200">অনুমোদিত ডেন্টাল</span>
-            <br class="hidden sm:block"/> চিকিৎসকদের অফিসিয়াল প্ল্যাটফর্ম
-          </h1>
-          <p class="text-base sm:text-lg text-ink-200/90 max-w-2xl leading-relaxed text-center">
-            রেজিস্টার্ড সদস্য, প্রকাশিত নোটিশ ও ইভেন্টসহ ভোলা জেলার সকল ভেরিফাইড দন্ত চিকিৎসকদের একটি নিরাপদ, স্বচ্ছ ও পেশাদার ডিজিটাল রেজিস্ট্রি।
-          </p>
-          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <a href="#/register" class="btn-primary btn-lg" style="background:linear-gradient(135deg,#0891b2,#10b981);">${_icon('user-plus', 'w-4 h-4')}<span>আবেদন করুন (অনলাইন রেজিস্ট্রেশন)</span></a>
-            <a href="#/members" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm backdrop-blur transition">
-              ${_icon('users', 'w-4 h-4')}<span>সদস্য তালিকা দেখুন</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-b from-transparent to-white pointer-events-none"></div>
-    </section>
-  `;
-
-  // ৩. হোমপেজ CTA সেকশনকে অনলাইন রেজিস্ট্রেশনের সাথে ম্যাপ করা
-  UIComponents.HomeCTA = () => `
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-      <div class="relative overflow-hidden rounded-[2rem] bg-gradient-medical p-8 sm:p-12 lg:p-16 text-white shadow-elevated">
-        <div class="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>
-        <div class="absolute -bottom-10 -left-10 w-72 h-72 rounded-full bg-emerald-400/20 blur-3xl"></div>
-        <div class="relative grid lg:grid-cols-3 gap-8 items-center">
-          <div class="lg:col-span-2 space-y-4">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] font-semibold tracking-widest uppercase font-latin">${_icon('shield-check', 'w-3.5 h-3.5')}Apply for Membership</span>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">ভোলা জেলার ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনে যোগ দিন</h2>
-            <p class="text-white/80 max-w-2xl">ভোলা জেলার ডেন্টাল চিকিৎসকদের পেশাদার অ্যাসোসিয়েশনে মেম্বারশিপের জন্য এখনই অনলাইনে আবেদন ফরম পূরণ করুন।</p>
-          </div>
-          <div class="flex lg:justify-end">
-            <a href="#/register" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-4 bg-white text-navy-900 font-bold shadow-card hover:shadow-elevated transition">
-              ${_icon('user-plus', 'w-5 h-5')}<span>অনলাইন রেজিস্ট্রেশন ফরম</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  `;
-}
-
 /* ================= ROUTES ================= */
 const routerConfig = {
   '/': {
@@ -219,9 +88,7 @@ const routerConfig = {
   '/register': {
     title: 'অনলাইন রেজিস্ট্রেশন | BDDPA ভোলা',
     description: 'ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনের সদস্যপদের জন্য আবেদন ফরম।',
-    render: () => {
-      return UIComponents.PublicRegistrationForm();
-    }
+    render: () => UIComponents.PublicRegistrationForm()
   },
 
   '/about': {
@@ -455,7 +322,7 @@ const routerConfig = {
           window.appAdmin.loadOverview();
         } else if (tab === 'members') {
           window.appAdmin.loadMemberList();
-        } else if (tab === 'requests') { // সদস্য আবেদন রাউট হ্যান্ডলিং
+        } else if (tab === 'requests') {
           window.appAdmin.loadRequestList();
         } else if (tab === 'notices') {
           window.appAdmin.loadNoticeList();
@@ -625,11 +492,6 @@ window.appPublic = {
           totalEvents:  res.data.events,
           totalNews:    res.data.news
         });
-        const map = { members: res.data.members, notices: res.data.notices, events: res.data.events };
-        document.querySelectorAll('[data-hero-count]').forEach(n => {
-          const k = n.getAttribute('data-hero-count');
-          if (map[k] != null) n.textContent = Number(map[k]).toLocaleString('bn-BD');
-        });
         refreshLucide();
       })
       .catch(() => {});
@@ -709,11 +571,7 @@ window.appAdmin = {
         }
         refreshLucide();
       })
-      .catch((err) => {
-        console.error(err);
-        target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
-        refreshLucide();
-      });
+      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
   },
 
   loadRequestPreview: async (slug) => {
@@ -730,14 +588,13 @@ window.appAdmin = {
       }
       refreshLucide();
     } catch (err) {
-      console.error(err);
       target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
       refreshLucide();
     }
   },
 
   approveRequest: async (id) => {
-    if (!confirm('আপনি কি এই আবেদনটি অনুমোদন (Approve) করতে চান? অনুমোদন করলে এই চিকিৎসক ভেরিফাইড সদস্য হিসেবে তালিকাভুক্ত হবেন।')) return;
+    if (!confirm('আপনি কি এই আবেদনটি অনুমোদন করতে চান?')) return;
     try {
       const res = await fetch(`${window.API_BASE}/members/${id}`, {
         method: 'PUT',
@@ -752,7 +609,6 @@ window.appAdmin = {
         window.showToast(data.message || 'অনুমোদন ব্যর্থ হয়েছে।', 'error');
       }
     } catch (err) {
-      console.error(err);
       window.showToast('সার্ভার সংযোগ সমস্যা।', 'error');
     }
   },
@@ -760,10 +616,7 @@ window.appAdmin = {
   rejectRequest: async (id) => {
     if (!confirm('আপনি কি এই আবেদনটি বাতিল ও মুছে ফেলতে চান?')) return;
     try {
-      const res = await fetch(`${window.API_BASE}/members/${id}`, {
-        method: 'DELETE',
-        headers: authHeaders()
-      });
+      const res = await fetch(`${window.API_BASE}/members/${id}`, { method: 'DELETE', headers: authHeaders() });
       const data = await res.json();
       if (data.success) {
         window.showToast('আবেদনটি বাতিল ও মুছে ফেলা হয়েছে।', 'success');
@@ -772,7 +625,6 @@ window.appAdmin = {
         window.showToast(data.message || 'বাতিল করা যায়নি।', 'error');
       }
     } catch (err) {
-      console.error(err);
       window.showToast('সার্ভার সংযোগ সমস্যা।', 'error');
     }
   },
@@ -791,7 +643,6 @@ window.appAdmin = {
       }
       refreshLucide();
     } catch (err) {
-      console.error(err);
       target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
       refreshLucide();
     }
@@ -804,11 +655,8 @@ window.appAdmin = {
     fetch(`${window.API_BASE}/notices`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
-        if (res.success) {
-          target.innerHTML = UIComponents.AdminNoticeList(res.data);
-        } else {
-          target.innerHTML = UIComponents.EmptyState('নোটিশ তালিকা লোড করা যায়নি।');
-        }
+        if (res.success) target.innerHTML = UIComponents.AdminNoticeList(res.data);
+        else target.innerHTML = UIComponents.EmptyState('নোটিশ তালিকা লোড করা যায়নি।');
         refreshLucide();
       })
       .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
@@ -821,11 +669,8 @@ window.appAdmin = {
     fetch(`${window.API_BASE}/cms/events`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
-        if (res.success) {
-          target.innerHTML = UIComponents.AdminEventList(res.data);
-        } else {
-          target.innerHTML = UIComponents.EmptyState('ইভেন্ট তালিকা লোড করা যায়নি।');
-        }
+        if (res.success) target.innerHTML = UIComponents.AdminEventList(res.data);
+        else target.innerHTML = UIComponents.EmptyState('ইভেন্ট তালিকা লোড করা যায়নি।');
         refreshLucide();
       })
       .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
@@ -838,11 +683,8 @@ window.appAdmin = {
     fetch(`${window.API_BASE}/cms/home`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
-        if (res.success) {
-          target.innerHTML = UIComponents.AdminLeadershipForm(res.data || {});
-        } else {
-          target.innerHTML = UIComponents.EmptyState('সম্মানিত নেতৃত্বের তথ্য লোড করা যায়নি।');
-        }
+        if (res.success) target.innerHTML = UIComponents.AdminLeadershipForm(res.data || {});
+        else target.innerHTML = UIComponents.EmptyState('সম্মানিত নেতৃত্বের তথ্য লোড করা যায়নি।');
         refreshLucide();
       })
       .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
@@ -850,10 +692,7 @@ window.appAdmin = {
 
   loadAddMemberForm: () => {
     const target = document.getElementById('dashboard-content-area');
-    if (target) {
-      target.innerHTML = UIComponents.AdminMemberForm();
-      refreshLucide();
-    }
+    if (target) { target.innerHTML = UIComponents.AdminMemberForm(); refreshLucide(); }
   },
 
   loadEditMemberForm: async (slug) => {
@@ -863,24 +702,15 @@ window.appAdmin = {
     try {
       const res = await fetch(`${window.API_BASE}/members/profile/${slug}`, { headers: authHeaders() });
       const data = await res.json();
-      if (data.success) {
-        target.innerHTML = UIComponents.AdminMemberForm(data.data);
-      } else {
-        target.innerHTML = UIComponents.EmptyState('সদস্য তথ্য লোড করা যায়নি।');
-      }
+      if (data.success) target.innerHTML = UIComponents.AdminMemberForm(data.data);
+      else target.innerHTML = UIComponents.EmptyState('সদস্য তথ্য লোড করা যায়নি।');
       refreshLucide();
-    } catch (err) {
-      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
-      refreshLucide();
-    }
+    } catch (err) { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); }
   },
 
   loadAddNoticeForm: () => {
     const target = document.getElementById('dashboard-content-area');
-    if (target) {
-      target.innerHTML = UIComponents.AdminNoticeForm();
-      refreshLucide();
-    }
+    if (target) { target.innerHTML = UIComponents.AdminNoticeForm(); refreshLucide(); }
   },
 
   loadEditNoticeForm: async (id) => {
@@ -888,34 +718,21 @@ window.appAdmin = {
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
     try {
-      // রাউট কনফিগারেশনের ভিত্তিতে standard বা cms রাউটের জন্য ট্রাই করা হবে
       let res = await fetch(`${window.API_BASE}/notices/${id}`, { headers: authHeaders() });
       let data = await res.json();
-
       if (!data.success || res.status === 404) {
         res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { headers: authHeaders() });
         data = await res.json();
       }
-
-      if (data.success) {
-        target.innerHTML = UIComponents.AdminNoticeForm(data.data);
-      } else {
-        target.innerHTML = UIComponents.EmptyState(data.message || 'নোটিশ তথ্য লোড করা যায়নি।');
-      }
+      if (data.success) target.innerHTML = UIComponents.AdminNoticeForm(data.data);
+      else target.innerHTML = UIComponents.EmptyState(data.message || 'নোটিশ তথ্য লোড করা যায়নি।');
       refreshLucide();
-    } catch (err) {
-      console.error(err);
-      target.innerHTML = UIComponents.EmptyState('সার্ভার সংযোগ ত্রুটি বা অবৈধ রাউট।');
-      refreshLucide();
-    }
+    } catch (err) { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); }
   },
 
   loadAddEventForm: () => {
     const target = document.getElementById('dashboard-content-area');
-    if (target) {
-      target.innerHTML = UIComponents.AdminEventForm();
-      refreshLucide();
-    }
+    if (target) { target.innerHTML = UIComponents.AdminEventForm(); refreshLucide(); }
   },
 
   loadEditEventForm: async (id) => {
@@ -925,37 +742,23 @@ window.appAdmin = {
     try {
       const res = await fetch(`${window.API_BASE}/cms/events/${id}`, { headers: authHeaders() });
       const data = await res.json();
-      if (data.success) {
-        target.innerHTML = UIComponents.AdminEventForm(data.data);
-      } else {
-        target.innerHTML = UIComponents.EmptyState('ইভেন্ট তথ্য লোড করা যায়নি।');
-      }
+      if (data.success) target.innerHTML = UIComponents.AdminEventForm(data.data);
+      else target.innerHTML = UIComponents.EmptyState('ইভেন্ট তথ্য লোড করা যায়নি।');
       refreshLucide();
-    } catch (err) {
-      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
-      refreshLucide();
-    }
+    } catch (err) { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); }
   },
 
   renewMember: async (id) => {
-    if (!confirm('আপনি কি এই সদস্যের মেম্বারশিপ মেয়াদ আরও ২ বছর নবায়ন (Renew) করতে চান?')) return;
+    if (!confirm('আপনি কি এই সদস্যের মেম্বারশিপ মেয়াদ আরও ২ বছর নবায়ন করতে চান?')) return;
     try {
-      const newJoiningDate = new Date().toISOString();
       const res = await fetch(`${window.API_BASE}/members/${id}`, {
-        method: 'PUT',
-        headers: authHeaders(),
-        body: JSON.stringify({ joiningDate: newJoiningDate, status: 'Active' })
+        method: 'PUT', headers: authHeaders(),
+        body: JSON.stringify({ joiningDate: new Date().toISOString(), status: 'Active' })
       });
       const data = await res.json();
-      if (data.success) {
-        window.showToast('মেম্বারশিপ মেয়াদ সফলভাবে ২ বছর বৃদ্ধি করা হয়েছে।', 'success');
-        window.appAdmin.loadMemberList();
-      } else {
-        window.showToast(data.message || 'নবায়ন ব্যর্থ হয়েছে।', 'error');
-      }
-    } catch (err) {
-      window.showToast('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'error');
-    }
+      if (data.success) { window.showToast('মেম্বারশিপ মেয়াদ সফলভাবে নবায়ন হয়েছে।', 'success'); window.appAdmin.loadMemberList(); }
+      else window.showToast(data.message || 'নবায়ন ব্যর্থ হয়েছে।', 'error');
+    } catch (err) { window.showToast('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'error'); }
   },
 
   deleteMember: async (id) => {
@@ -963,40 +766,23 @@ window.appAdmin = {
     try {
       const res = await fetch(`${window.API_BASE}/members/${id}`, { method: 'DELETE', headers: authHeaders() });
       const data = await res.json();
-      if (data.success) {
-        window.showToast('সদস্য সফলভাবে ডিলিট করা হয়েছে।', 'success');
-        window.appAdmin.loadMemberList();
-      } else {
-        window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
-      }
-    } catch (err) {
-      window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error');
-    }
+      if (data.success) { window.showToast('সদস্য সফলভাবে ডিলিট করা হয়েছে।', 'success'); window.appAdmin.loadMemberList(); }
+      else window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
+    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); }
   },
 
   deleteNotice: async (id) => {
     if (!confirm('আপনি কি এই নোটিশটি মুছে ফেলতে চান?')) return;
     try {
-      // standard রাউটে রিকোয়েস্ট পাঠানো হবে
       let res = await fetch(`${window.API_BASE}/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
       let data = await res.json();
-      
-      // standard রাউটে রিকোয়েস্ট ফেইল করলে cms রাউটে ট্রাই করা হবে
       if (!data.success || res.status === 404) {
         res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
         data = await res.json();
       }
-
-      if (data.success) {
-        window.showToast('নোটিশ সফলভাবে ডিলিট করা হয়েছে।', 'success');
-        window.appAdmin.loadNoticeList();
-      } else {
-        window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
-      }
-    } catch (err) {
-      console.error(err);
-      window.showToast('সার্ভার ত্রুটি বা সংযোগ সমস্যা।', 'error');
-    }
+      if (data.success) { window.showToast('নোটিশ ডিলিট করা হয়েছে।', 'success'); window.appAdmin.loadNoticeList(); }
+      else window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
+    } catch (err) { window.showToast('সার্ভার ত্রুটি।', 'error'); }
   },
 
   deleteEvent: async (id) => {
@@ -1004,12 +790,8 @@ window.appAdmin = {
     try {
       const res = await fetch(`${window.API_BASE}/cms/events/${id}`, { method: 'DELETE', headers: authHeaders() });
       const data = await res.json();
-      if (data.success) {
-        window.showToast('ইভেন্ট ডিলিট করা হয়েছে।', 'success');
-        window.appAdmin.loadEventList();
-      } else {
-        window.showToast('ডিলিট করা যায়নি।', 'error');
-      }
+      if (data.success) { window.showToast('ইভেন্ট ডিলিট করা হয়েছে।', 'success'); window.appAdmin.loadEventList(); }
+      else window.showToast('ডিলিট করা যায়নি।', 'error');
     } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 };
@@ -1064,7 +846,7 @@ class PublicClientRouter {
   }
 }
 
-/* ================= HELPERS & OVERLAY VIEWER ================= */
+/* ================= HELPERS ================= */
 function refreshLucide() {
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
@@ -1078,10 +860,9 @@ function highlightActiveNav(path) {
   });
 }
 
-// বড় ছবির ইন্টারেক্টিভ অন-পেজ লাইটবক্স প্রিভিউ (মোবাইল ক্র্যাশ বাগ সমাধান)
 window.viewLargeImage = (src) => {
   const modal = document.createElement('div');
-  modal.className = 'fixed inset-0 z-[100] bg-navy-950/85 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-fade-in no-print';
+  modal.className = 'fixed inset-0 z-[100] bg-navy-950/85 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-fade-in';
   modal.innerHTML = `
     <div class="absolute top-4 right-4 flex gap-2 z-10">
       <button onclick="window.print()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="প্রিন্ট করুন">
@@ -1091,29 +872,36 @@ window.viewLargeImage = (src) => {
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
-    <div class="relative max-w-full max-h-[85vh] overflow-auto flex items-center justify-center rounded-2xl border border-white/10 bg-black/40 shadow-elevated p-2 animate-scale-in">
+    <div class="relative max-w-full max-h-[85vh] overflow-auto flex items-center justify-center rounded-2xl border border-white/10 bg-black/40 shadow-elevated p-2">
       <img src="${src}" class="max-w-full max-h-[80vh] object-contain rounded-xl" alt="Notice Attachment" />
     </div>
   `;
   
-  const close = () => {
-    modal.remove();
-    document.body.style.overflow = '';
-  };
-  
+  const close = () => { modal.remove(); document.body.style.overflow = ''; };
   modal.querySelector('#close-lightbox-btn').addEventListener('click', close);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) close();
-  });
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
   
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
   refreshLucide();
 };
 
-// ন্যাভবারে রেজিস্ট্রেশন অপশন ইনজেক্ট করার হেল্পার
+function initChrome() {
+  const drawer = document.getElementById('mobile-drawer');
+  const btn = document.getElementById('mobile-menu-btn');
+  const open = () => { drawer.classList.remove('hidden'); document.body.style.overflow = 'hidden'; };
+  const close = () => { drawer.classList.add('hidden'); document.body.style.overflow = ''; };
+  btn?.addEventListener('click', open);
+  drawer?.querySelectorAll('[data-drawer-close]').forEach(el => el.addEventListener('click', close));
+  drawer?.querySelectorAll('[data-drawer-link]').forEach(el => el.addEventListener('click', close));
+
+  const header = document.getElementById('site-header');
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
 function patchNavbar() {
-  // ডেস্কটপ ন্যাভবার
   const nav = document.querySelector('nav.hidden.lg\\:flex');
   if (nav && !nav.querySelector('a[href="#/register"]')) {
     const regLink = document.createElement('a');
@@ -1124,7 +912,6 @@ function patchNavbar() {
     nav.appendChild(regLink);
   }
 
-  // মোবাইল ড্রয়ার ন্যাভবার
   const drawerNav = document.querySelector('#mobile-drawer nav');
   if (drawerNav && !drawerNav.querySelector('a[href="#/register"]')) {
     const regLink = document.createElement('a');
@@ -1136,7 +923,6 @@ function patchNavbar() {
   }
 }
 
-// গ্লোবাল ক্লিক ডেলিগেশন হ্যান্ডলার (ফিরে যান/বাতিল বাটন বাগের সমাধান)
 document.addEventListener('click', (e) => {
   const backBtn = e.target.closest('button[onclick*="dashboard?tab="]');
   if (backBtn) {
@@ -1147,7 +933,7 @@ document.addEventListener('click', (e) => {
       e.stopPropagation();
       const tab = match[1];
       if (tab === 'members') window.appAdmin.loadMemberList();
-      else if (tab === 'requests') window.appAdmin.loadRequestList(); // নতুন আবেদনের ব্যাক বাটন
+      else if (tab === 'requests') window.appAdmin.loadRequestList();
       else if (tab === 'notices') window.appAdmin.loadNoticeList();
       else if (tab === 'events') window.appAdmin.loadEventList();
       else if (tab === 'leadership') window.appAdmin.loadLeadershipForm();
@@ -1159,323 +945,132 @@ document.addEventListener('click', (e) => {
 document.addEventListener('submit', async (e) => {
   if (!e.target) return;
 
-  // ফাইলকে Base64-এ রূপান্তর করার গ্লোবাল হেল্পার ফাংশন
-  const fileToBase64 = (file) => {
-    return new Promise((resolve) => {
-      if (!file || !(file instanceof File) || file.size === 0) {
-        resolve("");
-        return;
-      }
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => resolve("");
-    });
-  };
+  const fileToBase64 = (file) => new Promise((resolve) => {
+    if (!file || !(file instanceof File) || file.size === 0) { resolve(""); return; }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => resolve("");
+  });
 
-  // ১. অ্যাডমিন লগইন
   if (e.target.id === 'admin-local-login') {
     e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    window.appAuth.login(email, password);
+    window.appAuth.login(document.getElementById('login-email').value, document.getElementById('login-password').value);
   }
 
-  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
     const form = e.target;
-    const memberId = form.dataset.id; // এডিট মোড হলে থাকবে
-    
-    // ফর্ম ইনপুট থেকে ফাইল অবজেক্টগুলো নেওয়া
+    const memberId = form.dataset.id;
     const profilePhotoFile = form.querySelector('input[name="profilePhoto"]')?.files[0];
     const degreePhotoFile = form.querySelector('input[name="degreePhoto"]')?.files[0];
     const nidPhotoFile = form.querySelector('input[name="nidPhoto"]')?.files[0];
 
-    // ফাইলগুলোকে Base64-এ রূপান্তর করা
-    const profilePhotoBase64 = await fileToBase64(profilePhotoFile);
-    const degreePhotoBase64 = await fileToBase64(degreePhotoFile);
-    const nidPhotoBase64 = await fileToBase64(nidPhotoFile);
-
-    // Form data তৈরি
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
-
-    // ব্যাকএন্ড স্কিমার রিকোয়ার্ড ফিল্ড এরর এড়াতে ডিফেন্সিভ ডেটা ম্যাপিং (ডিফল্ট ভ্যালু প্রদান)
-    data.nameBn = data.nameBn || "";
-    data.nameEn = data.nameEn || "";
-    data.phone = data.phone || "";
-    data.qualification = data.qualification || "";
-    data.bmdcReg = data.bmdcReg || "";
-    data.institution = data.institution || "";
-    data.experience = data.experience ? Number(data.experience) : 0;
-    data.nidNumber = data.nidNumber || "";
-    data.bloodGroup = data.bloodGroup || "";
-    data.email = data.email || "";
-    data.chamberName = data.chamberName || "";
-    data.chamberAddress = data.chamberAddress || "";
-    data.address = data.chamberAddress || ""; // chamberAddress কে address-এ ম্যাপ করা
-    data.personalAddress = data.personalAddress || "";
-    data.upazila = data.upazila || "Bhola Sadar";
-    data.biography = data.biography || "";
-    data.roleType = data.roleType || "General Member";
-    data.executivePost = data.executivePost || "";
-
-    // কনভার্ট করা Base64 ডাটা অ্যাসাইন করা
-    // এডিট মুডে যদি ব্যবহারকারী নতুন ছবি আপলোড না করে থাকেন, তবে বডি থেকে সংশ্লিষ্ট প্রোপার্টিগুলো মুছে ফেলা হবে
-    if (profilePhotoBase64) {
-      data.profilePhoto = profilePhotoBase64;
-    } else {
-      if (memberId) delete data.profilePhoto;
-      else data.profilePhoto = "";
-    }
-
-    if (degreePhotoBase64) {
-      data.degreePhoto = degreePhotoBase64;
-    } else {
-      if (memberId) delete data.degreePhoto;
-      else data.degreePhoto = "";
-    }
-
-    if (nidPhotoBase64) {
-      data.nidPhoto = nidPhotoBase64;
-    } else {
-      if (memberId) delete data.nidPhoto;
-      else data.nidPhoto = "";
-    }
-
-    // এডিট নাকি ক্রিয়েট—অনুরূপ ইউআরএল ও মেথড নির্ধারণ
-    const url = memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`;
-    const method = memberId ? 'PUT' : 'POST';
-
-    if (!memberId) {
-      const today = new Date().toISOString();
-      data.joiningDate = today;
-      data.status = 'Active';
-    }
+    data.profilePhoto = await fileToBase64(profilePhotoFile) || data.profilePhoto || "";
+    data.degreePhoto = await fileToBase64(degreePhotoFile) || data.degreePhoto || "";
+    data.nidPhoto = await fileToBase64(nidPhotoFile) || data.nidPhoto || "";
+    
+    if (!memberId) { data.joiningDate = new Date().toISOString(); data.status = 'Active'; }
 
     try {
-      const res = await fetch(url, {
-        method: method,
-        headers: authHeaders(false), // JSON ট্রান্সমিশনের জন্য application/json ব্যবহার করা হবে
+      const res = await fetch(memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`, {
+        method: memberId ? 'PUT' : 'POST',
+        headers: authHeaders(),
         body: JSON.stringify(data)
       });
       const resData = await res.json();
-      
       if (resData.success) {
-        window.showToast(memberId ? 'সদস্য তথ্য সফলভাবে আপডেট হয়েছে।' : 'সদস্য সফলভাবে নিবন্ধিত হয়েছে।', 'success');
-        
-        // অটোমেটেড মোবাইল এসএমেস ও ইমেইল নোটিফিকেশন (শুধুমাত্র নতুন এন্ট্রির ক্ষেত্রে)
-        if (!memberId && resData.data && resData.data.phone) {
-          NotificationService.sendSMS(resData.data.phone, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
-          NotificationService.sendEmail(resData.data.email, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
-        }
-        
+        window.showToast(memberId ? 'সদস্য আপডেট হয়েছে।' : 'সদস্য নিবন্ধিত হয়েছে।', 'success');
         window.location.hash = '#/admin/dashboard?tab=members';
-      } else {
-        window.showToast(resData.message || 'অপারেশন ব্যর্থ হয়েছে।', 'error');
-      }
-    } catch (err) {
-      console.error(err);
-      window.showToast('সার্ভারে সংযোগ স্থাপন করা যায়নি।', 'error');
-    }
+      } else window.showToast(resData.message || 'অপারেশন ব্যর্থ হয়েছে।', 'error');
+    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); }
   }
 
-  // ৩. নতুন নোটিশ প্রকাশ বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-notice-form') {
     e.preventDefault();
     const form = e.target;
     const noticeId = form.dataset.id;
-
-    // নোটিশের ছবি ইনপুট নেওয়া ও রূপান্তর করা
     const pdfUrlFile = form.querySelector('input[name="pdfUrl"]')?.files[0];
-    const pdfUrlBase64 = await fileToBase64(pdfUrlFile);
-
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
-
-    data.title = data.title || "";
-    data.category = data.category || "General";
-    data.content = data.content || "";
-
-    if (pdfUrlBase64) {
-      data.pdfUrl = pdfUrlBase64;
-    } else {
-      if (noticeId) delete data.pdfUrl;
-      else data.pdfUrl = "";
-    }
+    data.pdfUrl = await fileToBase64(pdfUrlFile) || data.pdfUrl || "";
 
     try {
-      let url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
-      let method = noticeId ? 'PUT' : 'POST';
-
-      let res = await fetch(url, {
-        method: method,
-        headers: authHeaders(false),
-        body: JSON.stringify(data)
+      let res = await fetch(noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`, {
+        method: noticeId ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(data)
       });
       let resData = await res.json();
-
       if (!resData.success || res.status === 404) {
-        url = noticeId ? `${window.API_BASE}/cms/notices/${noticeId}` : `${window.API_BASE}/cms/notices`;
-        res = await fetch(url, {
-          method: method,
-          headers: authHeaders(false),
-          body: JSON.stringify(data)
+        res = await fetch(noticeId ? `${window.API_BASE}/cms/notices/${noticeId}` : `${window.API_BASE}/cms/notices`, {
+          method: noticeId ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(data)
         });
         resData = await res.json();
       }
-
-      if (resData.success) {
-        window.showToast(noticeId ? 'নোটিশ সফলভাবে আপডেট হয়েছে।' : 'নোটিশ সফলভাবে প্রকাশিত হয়েছে।', 'success');
-        window.location.hash = '#/admin/dashboard?tab=notices';
-      } else {
-        window.showToast(resData.message || 'নোটিশ সংরক্ষণ করা যায়নি।', 'error');
-      }
-    } catch (err) {
-      console.error(err);
-      window.showToast('সার্ভারে সংযোগ স্থাপন করা যায়নি।', 'error');
-    }
+      if (resData.success) { window.showToast(noticeId ? 'নোটিশ আপডেট হয়েছে।' : 'নোটিশ প্রকাশিত হয়েছে।', 'success'); window.location.hash = '#/admin/dashboard?tab=notices'; }
+      else window.showToast(resData.message || 'সংরক্ষণ ব্যর্থ।', 'error');
+    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); }
   }
 
-  // ৪. ইভেন্ট এড বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-event-form') {
     e.preventDefault();
     const form = e.target;
     const eventId = form.dataset.id;
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-
+    const data = Object.fromEntries(new FormData(form));
     try {
-      const url = eventId ? `${window.API_BASE}/cms/events/${eventId}` : `${window.API_BASE}/cms/events`;
-      const method = eventId ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method: method,
-        headers: authHeaders(),
-        body: JSON.stringify(data)
+      const res = await fetch(eventId ? `${window.API_BASE}/cms/events/${eventId}` : `${window.API_BASE}/cms/events`, {
+        method: eventId ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(data)
       });
       const resData = await res.json();
-      if (resData.success) {
-        window.showToast(eventId ? 'ইভেন্ট সফলভাবে আপডেট হয়েছে।' : 'ইভেন্ট সফলভাবে তৈরি হয়েছে।', 'success');
-        window.location.hash = '#/admin/dashboard?tab=events';
-      } else {
-        window.showToast('ইভেন্ট তৈরি ব্যর্থ হয়েছে।', 'error');
-      }
+      if (resData.success) { window.showToast(eventId ? 'ইভেন্ট আপডেট হয়েছে।' : 'ইভেন্ট তৈরি হয়েছে।', 'success'); window.location.hash = '#/admin/dashboard?tab=events'; }
+      else window.showToast('ইভেন্ট সংরক্ষণ ব্যর্থ।', 'error');
     } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 
-  // ৫. হোমপেজ সম্মানিত নেতৃত্ব মডিউল আপডেট
   if (e.target.id === 'edit-leadership-form') {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
+    const data = Object.fromEntries(new FormData(e.target));
     try {
-      const res = await fetch(`${window.API_BASE}/cms/home`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify(data)
-      });
+      const res = await fetch(`${window.API_BASE}/cms/home`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
       const resData = await res.json();
-      if (resData.success) {
-        window.showToast('নেতৃত্বের বার্তা সফলভাবে আপডেট হয়েছে।', 'success');
-        window.location.hash = '#/admin/dashboard?tab=home';
-      } else {
-        window.showToast('আপডেট ব্যর্থ হয়েছে।', 'error');
-      }
+      if (resData.success) { window.showToast('নেতৃত্ব আপডেট হয়েছে।', 'success'); window.location.hash = '#/admin/dashboard?tab=home'; }
+      else window.showToast('আপডেট ব্যর্থ।', 'error');
     } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 
-  // ৬. পাবলিক রেজিস্ট্রেশন ফর্ম সাবমিট
   if (e.target.id === 'public-register-form') {
     e.preventDefault();
     const form = e.target;
-    
-    // ফর্ম ইনপুট থেকে ফাইল অবজেক্টগুলো নেওয়া
     const profilePhotoFile = form.querySelector('input[name="profilePhoto"]')?.files[0];
     const degreePhotoFile = form.querySelector('input[name="degreePhoto"]')?.files[0];
     const nidPhotoFile = form.querySelector('input[name="nidPhoto"]')?.files[0];
 
-    // বাধ্যতামূলক ফাইল চেকিং ভ্যালিডেশন
-    if (!profilePhotoFile || profilePhotoFile.size === 0) {
-      window.showToast('দয়া করে আপনার ছবি সিলেক্ট করুন।', 'error');
-      return;
-    }
-    if (!degreePhotoFile || degreePhotoFile.size === 0) {
-      window.showToast('দয়া করে ডিগ্রি সার্টিফিকেট ছবি সিলেক্ট করুন।', 'error');
-      return;
-    }
-    if (!nidPhotoFile || nidPhotoFile.size === 0) {
-      window.showToast('দয়া করে এনআইডি (NID) কার্ডের ছবি সিলেক্ট করুন।', 'error');
+    if (!profilePhotoFile?.size || !degreePhotoFile?.size || !nidPhotoFile?.size) {
+      window.showToast('সবগুলো ছবি সিলেক্ট করুন।', 'error');
       return;
     }
 
-    // বাটন লোডিং স্টেট পরিবর্তন
     const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnHtml = submitBtn.innerHTML;
+    const orig = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>প্রসেস হচ্ছে...</span>`;
+    submitBtn.innerHTML = '<span>প্রসেস হচ্ছে...</span>';
 
-    // ফাইলগুলোকে Base64-এ রূপান্তর করা
-    const profilePhotoBase64 = await fileToBase64(profilePhotoFile);
-    const degreePhotoBase64 = await fileToBase64(degreePhotoFile);
-    const nidPhotoBase64 = await fileToBase64(nidPhotoFile);
-
-    // ফর্ম ডাটা তৈরি
-    const formFields = new FormData(form);
-    const data = Object.fromEntries(formFields.entries());
-
-    // মেন্ডেটরি ও ডিফেন্সিভ অবজেক্ট ম্যাপিং
-    data.nameBn = data.nameBn || "";
-    data.nameEn = data.nameEn || "";
-    data.phone = data.phone || "";
-    data.qualification = data.qualification || "";
-    data.bmdcReg = data.bmdcReg || "";
-    data.institution = data.institution || "";
-    data.experience = data.experience ? Number(data.experience) : 0;
-    data.nidNumber = data.nidNumber || "";
-    data.bloodGroup = data.bloodGroup || "";
-    data.email = data.email || "";
-    data.chamberName = data.chamberName || "";
-    data.chamberAddress = data.chamberAddress || "";
-    data.address = data.chamberAddress || ""; 
-    data.personalAddress = data.personalAddress || "";
-    data.upazila = data.upazila || "Bhola Sadar";
-    data.biography = data.biography || "";
-    data.roleType = "General Member"; 
-    data.executivePost = "";
-    
-    // আবেদন অবশ্যই 'Pending' স্ট্যাটাসে ডাটাবেজে যাবে এবং এপ্রুভালের অপেক্ষায় থাকবে
+    const data = Object.fromEntries(new FormData(form));
+    data.profilePhoto = await fileToBase64(profilePhotoFile);
+    data.degreePhoto = await fileToBase64(degreePhotoFile);
+    data.nidPhoto = await fileToBase64(nidPhotoFile);
     data.status = 'Pending';
     data.joiningDate = new Date().toISOString();
 
-    data.profilePhoto = profilePhotoBase64;
-    data.degreePhoto = degreePhotoBase64;
-    data.nidPhoto = nidPhotoBase64;
-
     try {
       const res = await fetch(`${window.API_BASE}/members`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // টোকেন ছাড়া পাবলিক এপিআই হিসেবে সাবমিট হবে
-        body: JSON.stringify(data)
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
       });
       const resData = await res.json();
-      
-      if (resData.success) {
-        window.showToast('আপনার রেজিস্ট্রেশন আবেদন সফলভাবে জমা হয়েছে। অ্যাডমিন পর্যালোচনার পর এটি সক্রিয় করা হবে।', 'success');
-        window.location.hash = '#/';
-      } else {
-        window.showToast(resData.message || 'আবেদন জমা দেওয়া যায়নি।', 'error');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnHtml;
-      }
-    } catch (err) {
-      console.error(err);
-      window.showToast('সার্ভারে সংযোগ স্থাপন করা যায়নি।', 'error');
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalBtnHtml;
-    }
+      if (resData.success) { window.showToast('আবেদন জমা হয়েছে।', 'success'); window.location.hash = '#/'; }
+      else { window.showToast(resData.message || 'আবেদন জমা দেওয়া যায়নি।', 'error'); submitBtn.disabled = false; submitBtn.innerHTML = orig; }
+    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); submitBtn.disabled = false; submitBtn.innerHTML = orig; }
   }
 });
 
