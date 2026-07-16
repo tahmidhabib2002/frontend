@@ -286,7 +286,7 @@ const UIComponents = {
           <div class="lg:col-span-2 space-y-4">
             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] font-semibold tracking-widest uppercase font-latin">${_icon('shield-check', 'w-3.5 h-3.5')}Trust the Directory</span>
             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">ভোলা জেলার যেকোনো দন্ত চিকিৎসকের রেজিস্ট্রেশন যাচাই করুন এক ক্লিকেই</h2>
-            <p class="text-white/80 max-w-2xl">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি রেকর্ড থেকে সদস্যের সত্যতা নিশ্চিত করুন।</p>
+            <p class="text-white/80 max-w-2xl">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি রেকর্ড থেকে সদস্যপদ যাচাই করুন।</p>
           </div>
           <div class="flex lg:justify-end">
             <a href="#/verification" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-4 bg-white text-navy-900 font-bold shadow-card hover:shadow-elevated transition">
@@ -335,7 +335,7 @@ const UIComponents = {
       <div class="text-center max-w-2xl mx-auto space-y-3 mb-10">
         <span class="eyebrow">Verified Directory</span>
         <h1 class="h-section text-3xl sm:text-4xl lg:text-5xl">সদস্য তালিকা</h1>
-        <p class="text-sm sm:text-base text-ink-500">নাম, মোবাইল বা মেম্বার আইডি দিয়ে রেকর্ড থেকে সদস্য অনুসন্ধান করুন।</p>
+        <p class="text-sm sm:text-base text-ink-500">নাম, মোবাইল বা মেম্বার আইডি দিয়ে রেকর্ড থেকে সদস্যপদ যাচাই করুন।</p>
       </div>
 
       ${UIComponents.Search()}
@@ -458,13 +458,13 @@ const UIComponents = {
       <div class="text-center max-w-2xl mx-auto space-y-3 mb-10">
         <span class="eyebrow">Official Verification</span>
         <h1 class="h-section text-3xl sm:text-4xl">সদস্য যাচাইকরণ পোর্টাল</h1>
-        <p class="text-sm sm:text-base text-ink-500">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি রেকর্ড থেকে সদস্যপদ যাচাই করুন।</p>
+        <p class="text-sm sm:text-base text-ink-500">মেম্বারশিপ আইডি বা মোবাইল নম্বর দিয়ে সরাসরি রেকর্ড থেকে সদস্যপদ যাচাই করুন।</p>
       </div>
       <div class="card p-6 sm:p-10">
         <form onsubmit="event.preventDefault(); window.appVerify.check();" class="grid sm:grid-cols-[1fr_auto] gap-3">
           <div class="field">
             <span class="field-icon">${_icon('badge-check','w-4 h-4')}</span>
-            <input id="verify-input" class="input with-icon" placeholder="মেম্বারশিপ আইডি বা মোবাইল নম্বর" aria-label="যчай ইনপুট">
+            <input id="verify-input" class="input with-icon" placeholder="মেম্বারশিপ আইডি বা মোবাইল নম্বর" aria-label="যাচাই ইনপুট">
           </div>
           <button class="btn-primary btn-lg" type="submit">${_icon('search','w-4 h-4')}<span>যাচাই করুন</span></button>
         </form>
@@ -491,7 +491,9 @@ const UIComponents = {
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2">
               <h4 class="font-bold text-navy-900 text-lg">${_esc(m.nameBn || m.nameEn)}</h4>
-              <span class="verified-badge bg-emerald-600">${_icon('check','w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span></span>
+              <span class="verified-badge ${expiry.expired ? 'bg-red-600' : 'bg-emerald-600'}">
+                ${_icon('check', 'w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span>
+              </span>
             </div>
             <p class="text-sm text-ink-500 font-latin mt-0.5">${_esc(m.nameEn || '')} · ${_esc(m.memberId || '')}</p>
             <div class="mt-3 flex flex-wrap gap-1.5">
@@ -694,7 +696,8 @@ const UIComponents = {
                 <td class="font-bold text-navy-900">${_esc(n.title)}</td>
                 <td><span class="chip">${_esc(n.category)}</span></td>
                 <td>${_fmtDateBn(n.createdAt)}</td>
-                <td class="text-right">
+                <td class="text-right space-x-1">
+                  <button onclick="window.appAdmin.loadEditNoticeForm('${n._id}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
                   <button onclick="window.appAdmin.deleteNotice('${n._id}')" class="btn-outline px-2 py-1 text-xs text-red-600">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
               </tr>`).join('')}
@@ -725,7 +728,8 @@ const UIComponents = {
                 <td class="font-bold text-navy-900">${_esc(e.title)}</td>
                 <td>${_fmtDateBn(e.eventDate)}</td>
                 <td>${_esc(e.location)}</td>
-                <td class="text-right">
+                <td class="text-right space-x-1">
+                  <button onclick="window.appAdmin.loadEditEventForm('${e._id}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
                   <button onclick="window.appAdmin.deleteEvent('${e._id}')" class="btn-outline px-2 py-1 text-xs text-red-600">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
               </tr>`).join('')}
@@ -762,6 +766,14 @@ const UIComponents = {
           <div>
             <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর <span class="text-red-500">*</span></label>
             <input id="m-bmdcReg" name="bmdcReg" required class="input" value="${_esc(isEdit ? m.bmdcReg : '')}" placeholder="D-1234">
+          </div>
+          <div>
+            <label class="label" for="m-institution">শিক্ষা প্রতিষ্ঠান (ইনস্টিটিউট) <span class="text-red-500">*</span></label>
+            <input id="m-institution" name="institution" required class="input" value="${_esc(isEdit ? m.institution : '')}" placeholder="উদাঃ ঢাকা ডেন্টাল কলেজ">
+          </div>
+          <div>
+            <label class="label" for="m-experience">অভিজ্ঞতা (বছর) <span class="text-red-500">*</span></label>
+            <input id="m-experience" name="experience" required type="number" class="input" value="${_esc(isEdit ? m.experience : '')}" placeholder="উদাঃ ৫">
           </div>
           <div>
             <label class="label" for="m-nidNumber">ন্যাশনাল আইডি কার্ড নম্বর <span class="text-red-500">*</span></label>
@@ -846,94 +858,102 @@ const UIComponents = {
     </div>`;
   },
 
-  AdminNoticeForm: () => `
+  AdminNoticeForm: (n = null) => {
+    const isEdit = n !== null;
+    return `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">নতুন নোটিশ প্রকাশ করুন</h2>
+        <h2 class="h-section text-xl">${isEdit ? 'নোটিশ এডিট করুন' : 'নতুন নোটিশ প্রকাশ করুন'}</h2>
         <button onclick="window.location.hash = '#/admin/dashboard?tab=notices'" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-notice-form" class="space-y-6" enctype="multipart/form-data">
+      <form id="add-notice-form" data-id="${isEdit ? n._id : ''}" class="space-y-6" enctype="multipart/form-data">
         <div>
           <label class="label" for="n-title">নোটিশের শিরোনাম</label>
-          <input id="n-title" name="title" required class="input" placeholder="বিজ্ঞপ্তি শিরোনাম...">
+          <input id="n-title" name="title" required class="input" value="${_esc(isEdit ? n.title : '')}" placeholder="বিজ্ঞপ্তি শিরোনাম...">
         </div>
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="label" for="n-category">ক্যাটাগরি</label>
             <select id="n-category" name="category" class="select">
-              <option value="General">সাধারণ বিজ্ঞপ্তি</option>
-              <option value="Urgent">জরুরি</option>
-              <option value="Meeting">সভা সংক্রান্ত</option>
-              <option value="Seminar">সেমিনার</option>
+              ${['General', 'Urgent', 'Meeting', 'Seminar'].map(cat => `
+                <option value="${cat}" ${isEdit && n.category === cat ? 'selected' : ''}>
+                  ${cat === 'General' ? 'সাধারণ বিজ্ঞপ্তি' : cat === 'Urgent' ? 'জরুরি' : cat === 'Meeting' ? 'সভা সংক্রান্ত' : 'সেমিনার'}
+                </option>
+              `).join('')}
             </select>
           </div>
           <div>
-            <label class="label">নোটিশের ছবি / ডকুমেন্টস (আপলোড)</label>
-            <input type="file" name="noticeImage" accept="image/*" class="input py-2">
+            <label class="label">নোটিশের ছবি / ডকুমেন্টস (আপলোড) ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
+            <input type="file" name="pdfUrl" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
+            ${isEdit && n.pdfUrl ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের নোটিশ ছবি আপলোড করা আছে</p>` : ''}
           </div>
         </div>
         <div>
           <label class="label" for="n-content">বিস্তারিত তথ্য</label>
-          <textarea id="n-content" name="content" required class="textarea h-32" placeholder="নোটিশের বিস্তারিত বিবরণ..."></textarea>
+          <textarea id="n-content" name="content" required class="textarea h-32" placeholder="নোটিশের বিস্তারিত বিবরণ...">${_esc(isEdit ? n.content : '')}</textarea>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
           <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=notices'" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>প্রকাশ করুন</span></button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'আপডেট করুন' : 'প্রকাশ করুন'}</span></button>
         </div>
       </form>
-    </div>`,
+    </div>`;
+  },
 
-  AdminEventForm: () => `
+  AdminEventForm: (e = null) => {
+    const isEdit = e !== null;
+    return `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">নতুন ইভেন্ট তৈরি করুন</h2>
+        <h2 class="h-section text-xl">${isEdit ? 'ইভেন্ট এডিট করুন' : 'নতুন ইভেন্ট তৈরি করুন'}</h2>
         <button onclick="window.location.hash = '#/admin/dashboard?tab=events'" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-event-form" class="space-y-6">
+      <form id="add-event-form" data-id="${isEdit ? e._id : ''}" class="space-y-6">
         <div>
           <label class="label" for="e-title">ইভেন্টের শিরোনাম</label>
-          <input id="e-title" name="title" required class="input" placeholder="উদাঃ বিডিডিপিএ বার্ষিক সম্মেলন ২০২৬">
+          <input id="e-title" name="title" required class="input" value="${_esc(isEdit ? e.title : '')}" placeholder="উদাঃ বিডিডিপিএ বার্ষিক সম্মেলন ২০২৬">
         </div>
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="label" for="e-eventDate">ইভেন্ট তারিখ</label>
-            <input id="e-eventDate" name="eventDate" type="date" required class="input">
+            <input id="e-eventDate" name="eventDate" type="date" required class="input" value="${isEdit && e.eventDate ? new Date(e.eventDate).toISOString().split('T')[0] : ''}">
           </div>
           <div>
             <label class="label" for="e-location">লোকেশন / স্থান</label>
-            <input id="e-location" name="location" required class="input" placeholder="উদাঃ জেলা পরিষদ মিলনায়তন, ভোলা">
+            <input id="e-location" name="location" required class="input" value="${_esc(isEdit ? e.location : '')}" placeholder="উদাঃ জেলা পরিষদ মিলনায়তন, ভোলা">
           </div>
           <div>
             <label class="label" id="e-startTime">শুরুর সময়</label>
-            <input id="e-startTime" name="startTime" class="input" placeholder="উদাঃ সকাল ১০:০০ টা">
+            <input id="e-startTime" name="startTime" class="input" value="${_esc(isEdit ? e.startTime : '')}" placeholder="উদাঃ সকাল ১০:০০ টা">
           </div>
           <div>
             <label class="label" id="e-endTime">শেষের সময়</label>
-            <input id="e-endTime" name="endTime" class="input" placeholder="উদাঃ বিকাল ০৪:০০ টা">
+            <input id="e-endTime" name="endTime" class="input" value="${_esc(isEdit ? e.endTime : '')}" placeholder="উদাঃ বিকাল ০৪:০০ টা">
           </div>
           <div>
             <label class="label" id="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
-            <input id="e-mapLink" name="mapLink" class="input" placeholder="https://maps.google.com/...">
+            <input id="e-mapLink" name="mapLink" class="input" value="${_esc(isEdit ? e.mapLink : '')}" placeholder="https://maps.google.com/...">
           </div>
           <div>
             <label class="label" id="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
-            <input id="e-registrationLink" name="registrationLink" class="input" placeholder="https://forms.gle/...">
+            <input id="e-registrationLink" name="registrationLink" class="input" value="${_esc(isEdit ? e.registrationLink : '')}" placeholder="https://forms.gle/...">
           </div>
         </div>
         <div>
           <label class="label" for="e-description">ইভেন্টের সংক্ষিপ্ত বিবরণ</label>
-          <textarea id="e-description" name="description" required class="textarea h-32" placeholder="ইভেন্ট সম্পর্কিত বিবরণ বা নির্দেশনাসমূহ..."></textarea>
+          <textarea id="e-description" name="description" required class="textarea h-32" placeholder="ইভেন্ট সম্পর্কিত বিবরণ বা নির্দেশনাসমূহ...">${_esc(isEdit ? e.description : '')}</textarea>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
           <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=events'" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>ইভেন্ট তৈরি করুন</span></button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'ইভেন্ট আপডেট করুন' : 'ইভেন্ট তৈরি করুন'}</span></button>
         </div>
       </form>
-    </div>`,
+    </div>`;
+  },
 
   AdminLeadershipForm: (data) => `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
