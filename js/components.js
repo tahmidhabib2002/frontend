@@ -260,7 +260,7 @@ const UIComponents = {
             <h4 class="font-bold text-base leading-tight">${_esc(m.nameBn || m.nameEn)}</h4>
             <p class="text-xs text-teal-200 font-latin">${_esc(m.nameEn)}</p>
             <p class="text-xs text-ink-300 font-latin">${_esc(m.qualification || 'BDS')}</p>
-            <div class="pt-2 flex items-center gap-1.5 text-[10px]">
+            <div class="pt-2 flex flex-wrap items-center gap-1.5 text-[10px]">
               <span class="chip bg-white/10 text-white border-none font-latin">${_esc(m.bloodGroup || 'O+')}</span>
               <span class="chip bg-white/10 text-white border-none">${_esc(m.upazila || 'Bhola Sadar')}</span>
             </div>
@@ -629,7 +629,7 @@ const UIComponents = {
       </div>`;
   },
 
-  /* ================= LIST PAGES ================= */
+  /* ================= ADMIN LIST PAGES ================= */
   AdminMemberList: (list = []) => `
     <div class="card p-6 space-y-6 animate-fade-in">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
@@ -689,16 +689,19 @@ const UIComponents = {
             </tr>
           </thead>
           <tbody>
-            ${list.map(n => `
+            ${list.map(n => {
+              const noticeId = n._id || n.id || '';
+              return `
               <tr>
                 <td class="font-bold text-navy-900">${_esc(n.title)}</td>
                 <td><span class="chip">${_esc(n.category)}</span></td>
                 <td>${_fmtDateBn(n.createdAt)}</td>
                 <td class="text-right space-x-1">
-                  <button onclick="window.appAdmin.loadEditNoticeForm('${n._id}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteNotice('${n._id}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                  <button onclick="window.appAdmin.loadEditNoticeForm('${noticeId}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
+                  <button onclick="window.appAdmin.deleteNotice('${noticeId}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
-              </tr>`).join('')}
+              </tr>`;
+            }).join('')}
           </tbody>
         </table>
       </div>
@@ -736,7 +739,7 @@ const UIComponents = {
       </div>
     </div>`,
 
-  /* ================= CREATION FORMS ================= */
+  /* ================= ADMIN FORM PAGES ================= */
   AdminMemberForm: (m = null) => {
     const isEdit = m !== null;
     return `
@@ -823,7 +826,7 @@ const UIComponents = {
           </div>
           <div id="exec-post-wrapper" class="${isEdit && m.roleType === 'Executive Committee' ? '' : 'hidden'}">
             <label class="label" for="m-executivePost">কমিটির পদবী</label>
-            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="सह-সভাপতি / সাধারণ সম্পাদক">
+            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="সহ-সভাপতি / সাধারণ সম্পাদক">
           </div>
         </div>
 
@@ -858,6 +861,7 @@ const UIComponents = {
 
   AdminNoticeForm: (n = null) => {
     const isEdit = n !== null;
+    const noticeId = isEdit ? (n._id || n.id || '') : '';
     return `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
@@ -866,7 +870,7 @@ const UIComponents = {
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-notice-form" data-id="${isEdit ? n._id : ''}" class="space-y-6" enctype="multipart/form-data">
+      <form id="add-notice-form" data-id="${noticeId}" class="space-y-6" enctype="multipart/form-data">
         <div>
           <label class="label" for="n-title">নোটিশের শিরোনাম</label>
           <input id="n-title" name="title" required class="input" value="${_esc(isEdit ? n.title : '')}" placeholder="বিজ্ঞপ্তি শিরোনাম...">
@@ -925,19 +929,19 @@ const UIComponents = {
             <input id="e-location" name="location" required class="input" value="${_esc(isEdit ? e.location : '')}" placeholder="উদাঃ জেলা পরিষদ মিলনায়তন, ভোলা">
           </div>
           <div>
-            <label class="label" id="e-startTime">শুরুর সময়</label>
+            <label class="label" for="e-startTime">শুরুর সময়</label>
             <input id="e-startTime" name="startTime" class="input" value="${_esc(isEdit ? e.startTime : '')}" placeholder="উদাঃ সকাল ১০:০০ টা">
           </div>
           <div>
-            <label class="label" id="e-endTime">শেষের সময়</label>
+            <label class="label" for="e-endTime">শেষের সময়</label>
             <input id="e-endTime" name="endTime" class="input" value="${_esc(isEdit ? e.endTime : '')}" placeholder="উদাঃ বিকাল ০৪:০০ টা">
           </div>
           <div>
-            <label class="label" id="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
+            <label class="label" for="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
             <input id="e-mapLink" name="mapLink" class="input" value="${_esc(isEdit ? e.mapLink : '')}" placeholder="https://maps.google.com/...">
           </div>
           <div>
-            <label class="label" id="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
+            <label class="label" for="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
             <input id="e-registrationLink" name="registrationLink" class="input" value="${_esc(isEdit ? e.registrationLink : '')}" placeholder="https://forms.gle/...">
           </div>
         </div>
@@ -1001,7 +1005,7 @@ const UIComponents = {
       </form>
     </div>`,
 
-  /* ================= SYSTEM HEALTH (kept from original API) ================= */
+  /* ================= SYSTEM HEALTH ================= */
   SystemHealthMonitor: () => `
     <div class="card p-6 sm:p-8 space-y-6">
       <div class="flex items-center gap-3">
