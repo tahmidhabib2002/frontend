@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0b1e3f">
+  <meta name="theme-color" content="#000000">
+
   <title>ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন | BDDPA</title>
   <meta name="description" content="ভোলা জেলার রেজিস্টার্ড ডেন্টাল চিকিৎসকদের অফিশিয়াল ডিজিটাল ডাটাবেজ ও প্রফেশনাল অ্যাসোসিয়েশন পোর্টাল।">
   <meta name="api-base" content="https://backend-fow0.onrender.com/api/v1">
@@ -23,6 +24,10 @@
   <!-- Tailwind (CDN, per project stack) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Vercel-monochrome remap: token NAMES are preserved so every existing
+    // Tailwind class in HTML/JS keeps working. Only the resolved values
+    // change. navy-* -> grayscale (black -> white), teal-*/emerald-* ->
+    // #0070f3 blue accent ramp, gold-* -> warm neutrals, ink-* -> neutral gray.
     tailwind.config = {
       theme: {
         extend: {
@@ -30,71 +35,74 @@
             bn: ['"Hind Siliguri"', '"Noto Sans Bengali"', 'system-ui', 'sans-serif'],
             display: ['"Noto Sans Bengali"', '"Hind Siliguri"', 'Inter', 'sans-serif'],
             latin: ['Inter', 'system-ui', 'sans-serif'],
-            serif: ['"Playfair Display"', 'Georgia', 'serif']
+            serif: ['"Instrument Serif"', '"Playfair Display"', 'Georgia', 'serif']
           },
           colors: {
+            /* navy-* -> grayscale ramp (near-black to off-white) */
             navy: {
-              50:  '#f3f6fc',
-              100: '#e6ecf6',
-              200: '#c5d1e8',
-              300: '#93a8ce',
-              400: '#5c7bb3',
-              500: '#3a5a97',
-              600: '#2b467c',
-              700: '#1f3563',
-              800: '#14264a',
-              900: '#0a1a3a',
-              950: '#050d20'
+              50:  '#fafafa',
+              100: '#f4f4f5',
+              200: '#e4e4e7',
+              300: '#a1a1aa',
+              400: '#71717a',
+              500: '#52525b',
+              600: '#3f3f46',
+              700: '#27272a',
+              800: '#18181b',
+              900: '#0a0a0a',
+              950: '#000000'
             },
+            /* teal-* -> Vercel blue accent ramp */
             teal: {
-              50:  '#eefcfb',
-              100: '#cff8f4',
-              200: '#9fedea',
-              300: '#67e0ea',
-              400: '#22b8d0',
-              500: '#0891b2',
-              600: '#0d7490',
-              700: '#155e75',
-              800: '#0f4c62',
-              900: '#083344'
+              50:  '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#0070f3',
+              600: '#0061d5',
+              700: '#0052b3',
+              800: '#003d85',
+              900: '#00285c'
             },
+            /* emerald-* -> folded into the same blue accent for a true monochrome+one-accent system */
             emerald: {
-              50:  '#ecfdf5',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857'
+              50:  '#eff6ff',
+              400: '#60a5fa',
+              500: '#0070f3',
+              600: '#0061d5',
+              700: '#0052b3'
             },
             gold: {
-              400: '#e5bd58',
-              500: '#c9a24a',
-              600: '#a17a24'
+              400: '#d4d4d8',
+              500: '#a1a1aa',
+              600: '#71717a'
             },
             ink: {
-              900: '#0a1220',
-              800: '#111827',
-              700: '#1f2937',
-              600: '#374151',
-              500: '#4b5563',
-              400: '#6b7280',
-              300: '#9ca3af',
-              200: '#d7dce6',
-              100: '#e8ecf3',
-              50:  '#f6f8fc'
+              900: '#0a0a0a',
+              800: '#171717',
+              700: '#262626',
+              600: '#404040',
+              500: '#525252',
+              400: '#737373',
+              300: '#a3a3a3',
+              200: '#e5e5e5',
+              100: '#ededed',
+              50:  '#fafafa'
             }
           },
           boxShadow: {
-            'soft':      '0 1px 2px rgba(10, 26, 58, 0.04), 0 4px 12px rgba(10, 26, 58, 0.05)',
-            'card':      '0 1px 3px rgba(10, 26, 58, 0.06), 0 10px 28px -12px rgba(10, 26, 58, 0.16)',
-            'elevated':  '0 4px 8px rgba(10, 26, 58, 0.06), 0 32px 64px -24px rgba(10, 26, 58, 0.28)',
-            'ring-navy': '0 0 0 4px rgba(10, 26, 58, 0.08)'
+            'soft':      '0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06)',
+            'card':      '0 1px 2px rgba(0,0,0,0.05), 0 8px 24px -12px rgba(0,0,0,0.14)',
+            'elevated':  '0 2px 4px rgba(0,0,0,0.05), 0 24px 48px -20px rgba(0,0,0,0.20)',
+            'ring-navy': '0 0 0 4px rgba(0,0,0,0.06)'
           },
           backgroundImage: {
-            'gradient-navy':     'linear-gradient(135deg, #0a1a3a 0%, #14264a 45%, #0d7490 100%)',
-            'gradient-medical':  'linear-gradient(135deg, #0a1a3a 0%, #14264a 40%, #0d7490 100%)',
-            'gradient-hero':     'radial-gradient(ellipse 60% 50% at 12% 5%, rgba(34,184,208,0.28), transparent 55%), radial-gradient(ellipse 55% 55% at 92% 92%, rgba(16,185,129,0.14), transparent 60%), linear-gradient(135deg, #030816 0%, #071331 40%, #0a1a3a 70%, #14264a 100%)',
-            'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%)',
-            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)'
+            'gradient-navy':     'linear-gradient(135deg, #000000 0%, #0a0a0a 60%, #171717 100%)',
+            'gradient-medical':  'linear-gradient(135deg, #000000 0%, #0a0a0a 60%, #171717 100%)',
+            'gradient-hero':     'radial-gradient(ellipse 55% 45% at 15% 8%, rgba(0,112,243,0.22), transparent 60%), radial-gradient(ellipse 50% 40% at 88% 92%, rgba(0,112,243,0.10), transparent 65%), linear-gradient(180deg, #000000 0%, #0a0a0a 55%, #171717 100%)',
+            'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)',
+            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)'
           },
           keyframes: {
             'fade-in-up': { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
@@ -116,6 +124,7 @@
       }
     }
   </script>
+
 
   <!-- Lucide icons for consistent iconography -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
