@@ -641,13 +641,6 @@ window.appAdmin = {
   renewMember: async (id) => {
     if (!confirm('আপনি কি এই সদস্যের মেম্বারশিপ মেয়াদ আরও ২ বছর নবায়ন (Renew) করতে চান?')) return;
     try {
-      const currentRes = await fetch(`${window.API_BASE}/members/profile/${id}`);
-      const currentJson = await currentRes.json();
-      if (!currentJson.success) {
-        window.showToast('সদস্য তথ্য খুঁজে পাওয়া যায়নি', 'error');
-        return;
-      }
-      
       const newJoiningDate = new Date().toISOString();
       const res = await fetch(`${window.API_BASE}/members/${id}`, {
         method: 'PUT',
