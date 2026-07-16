@@ -44,9 +44,12 @@ window.showToast = (message, type = 'success') => {
 
 /* ================= AUTOMATED NOTIFICATION SERVICE ================= */
 const NotificationService = {
+  // এসএমএস পাঠানোর গেটওয়ে হ্যান্ডলার (এখানে আপনার সবুজ বা অন্য এসএমএস গেটওয়ে লিংকটি বসান)
   sendSMS: async (phone, name, memberId) => {
     try {
       const message = `অভিনন্দন ডাঃ ${name}, BDDPA-তে আপনার সদস্যপদ সফলভাবে নিবন্ধিত হয়েছে। আপনার মেম্বার আইডি: ${memberId}। মেয়াদ ২ বছর।`;
+      
+      // আপনার নির্দিষ্ট এসএমএস গেটওয়ের API লিংকটি এখানে কনফিগার করুন
       const smsGatewayUrl = `https://api.greenweb.com.bd/api.php?json&token=YOUR_GREENWEB_TOKEN&to=${phone}&message=${encodeURIComponent(message)}`;
       
       await fetch(smsGatewayUrl, { mode: 'no-cors' });
@@ -652,10 +655,48 @@ window.appAdmin = {
     }
   },
 
+  loadEditNoticeForm: async (id) => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    try {
+      const res = await fetch(`${window.API_BASE}/notices/${id}`, { headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        target.innerHTML = UIComponents.AdminNoticeForm(data.data);
+      } else {
+        target.innerHTML = UIComponents.EmptyState('নোটিশ তথ্য লোড করা যায়নি।');
+      }
+      refreshLucide();
+    } catch (err) {
+      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+      refreshLucide();
+    }
+  },
+
   loadAddEventForm: () => {
     const target = document.getElementById('dashboard-content-area');
     if (target) {
       target.innerHTML = UIComponents.AdminEventForm();
+      refreshLucide();
+    }
+  },
+
+  loadEditEventForm: async (id) => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    try {
+      const res = await fetch(`${window.API_BASE}/cms/events/${id}`, { headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        target.innerHTML = UIComponents.AdminEventForm(data.data);
+      } else {
+        target.innerHTML = UIComponents.EmptyState('ইভেন্ট তথ্য লোড করা যায়নি।');
+      }
+      refreshLucide();
+    } catch (err) {
+      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
       refreshLucide();
     }
   },
@@ -897,26 +938,30 @@ document.addEventListener('submit', async (e) => {
   if (e.target.id === 'add-notice-form') {
     e.preventDefault();
     const form = e.target;
+    const noticeId = form.dataset.id;
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
 
-    const noticeFileInput = form.querySelector('input[name="noticeImage"]');
+    const noticeFileInput = form.querySelector('input[name="pdfUrl"]');
 
     try {
       if (noticeFileInput && noticeFileInput.files[0]) {
-        data.noticeImage = await fileToBase64(noticeFileInput.files[0]);
+        data.pdfUrl = await fileToBase64(noticeFileInput.files[0]);
       } else {
-        delete data.noticeImage;
+        delete data.pdfUrl;
       }
 
-      const res = await fetch(`${window.API_BASE}/notices`, {
-        method: 'POST',
+      const url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
+      const method = noticeId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
         headers: authHeaders(false),
         body: JSON.stringify(data)
       });
       const resData = await res.json();
       if (resData.success) {
-        window.showToast('নোটিশ সফলভাবে প্রকাশিত হয়েছে।', 'success');
+        window.showToast(noticeId ? 'নোটিশ সফলভাবে আপডেট হয়েছে।' : 'নোটিশ সফলভাবে প্রকাশিত হয়েছে।', 'success');
         window.location.hash = '#/admin/dashboard?tab=notices';
       } else {
         window.showToast(resData.message || 'নোটিশ প্রকাশ ব্যর্থ হয়েছে।', 'error');
@@ -927,21 +972,26 @@ document.addEventListener('submit', async (e) => {
     }
   }
 
-  // ৪. নতুন ইভেন্ট এড করার ফর্ম সাবমিট
+  // ৪. ইভেন্ট এড বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-event-form') {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const eventId = form.dataset.id;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
     try {
-      const res = await fetch(`${window.API_BASE}/cms/events`, {
-        method: 'POST',
+      const url = eventId ? `${window.API_BASE}/cms/events/${eventId}` : `${window.API_BASE}/cms/events`;
+      const method = eventId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
         headers: authHeaders(),
         body: JSON.stringify(data)
       });
       const resData = await res.json();
       if (resData.success) {
-        window.showToast('ইভেন্ট সফলভাবে তৈরি হয়েছে।', 'success');
+        window.showToast(eventId ? 'イভেন্ট সফলভাবে আপডেট হয়েছে।' : 'ইভেন্ট সফলভাবে তৈরি হয়েছে।', 'success');
         window.location.hash = '#/admin/dashboard?tab=events';
       } else {
         window.showToast('ইভেন্ট তৈরি ব্যর্থ হয়েছে।', 'error');
