@@ -25,14 +25,6 @@ const authHeaders = (isMultipart = false) => {
   return h;
 };
 
-// ফাইলকে সরাসরি Base64 কোডেড টেক্সটে রূপান্তর করার হেল্পার ফাংশন
-const fileToBase64 = (file) => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result);
-  reader.onerror = (error) => reject(error);
-});
-
 window.showToast = (message, type = 'success') => {
   const el = document.createElement('div');
   el.innerHTML = UIComponents.ToastNotification(message, type);
@@ -858,27 +850,38 @@ document.addEventListener('submit', async (e) => {
     window.appAuth.login(email, password);
   }
 
-  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট
+  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট (JSON payload with text inputs)
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
     const form = e.target;
-    const memberId = form.dataset.id; // এডিট মোড হলে থাকবে, নতুন তৈরিতে খালি থাকবে
+    const memberId = form.dataset.id; // এডিট মোড হলে থাকবে
     
     // ফর্ম ডেটা অবজেক্ট তৈরি
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
 
-    // chamberAddress কে address-এ ম্যাপ করা ব্যাকএন্ড ডেটাবেজ স্কিমার সাথে সামঞ্জস্যের জন্য
-    if (data.chamberAddress) {
-      data.address = data.chamberAddress;
-    }
-
-    // এক্সপেরিয়েন্সকে সংখ্যায় রূপান্তর
-    if (data.experience) {
-      data.experience = Number(data.experience);
-    } else {
-      delete data.experience;
-    }
+    // ব্যাকএন্ড স্কিমার রিকোয়ার্ড ফিল্ড এরর এড়াতে ডিফেন্সিভ ডেটা ম্যাপিং (ডিফল্ট ভ্যালু প্রদান)
+    data.nameBn = data.nameBn || "";
+    data.nameEn = data.nameEn || "";
+    data.phone = data.phone || "";
+    data.qualification = data.qualification || "";
+    data.bmdcReg = data.bmdcReg || "";
+    data.institution = data.institution || "";
+    data.experience = data.experience ? Number(data.experience) : 0;
+    data.nidNumber = data.nidNumber || "";
+    data.bloodGroup = data.bloodGroup || "";
+    data.email = data.email || "";
+    data.chamberName = data.chamberName || "";
+    data.chamberAddress = data.chamberAddress || "";
+    data.address = data.chamberAddress || ""; // chamberAddress কে address-এ ম্যাপ করা
+    data.personalAddress = data.personalAddress || "";
+    data.upazila = data.upazila || "Bhola Sadar";
+    data.biography = data.biography || "";
+    data.roleType = data.roleType || "General Member";
+    data.executivePost = data.executivePost || "";
+    data.profilePhoto = data.profilePhoto || "";
+    data.degreePhoto = data.degreePhoto || "";
+    data.nidPhoto = data.nidPhoto || "";
 
     // এডিট নাকি ক্রিয়েট—অনুরূপ ইউআরএল ও মেথড নির্ধারণ
     const url = memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`;
@@ -924,6 +927,11 @@ document.addEventListener('submit', async (e) => {
     const noticeId = form.dataset.id;
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
+
+    data.title = data.title || "";
+    data.category = data.category || "General";
+    data.content = data.content || "";
+    data.pdfUrl = data.pdfUrl || "";
 
     try {
       const url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
