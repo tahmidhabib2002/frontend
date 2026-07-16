@@ -612,7 +612,7 @@ const UIComponents = {
         </div>
         <div class="card p-6">
           <div class="flex items-center justify-between mb-4">
-            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুত কাজ</h3></div>
+            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুট কাজ</h3></div>
           </div>
           <div class="space-y-2.5">
             ${[
@@ -971,56 +971,3 @@ const UIComponents = {
               <label class="label">সাধারণ সম্পাদকের নাম</label>
               <input name="secretaryName" value="${_esc(data.secretaryName || '')}" class="input" placeholder="ডাঃ মোঃ সাধারণ সম্পাদক">
             </div>
-            <div>
-              <label class="label">পদবী / পোস্ট</label>
-              <input name="secretaryPost" value="${_esc(data.secretaryPost || '')}" class="input" placeholder="সাধারণ সম্পাদক, বিডিডিপিএ ভোলা">
-            </div>
-            <div>
-              <label class="label">বার্তাসমূহ</label>
-              <textarea name="secretaryMsg" class="textarea h-28" placeholder="সাধারণ সম্পাদকের বার্তা...">${_esc(data.secretaryMsg || '')}</textarea>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>সম্মানিত নেতৃত্ব আপডেট করুন</span></button>
-        </div>
-      </form>
-    </div>`,
-
-  /* ================= SYSTEM HEALTH (kept from original API) ================= */
-  SystemHealthMonitor: () => `
-    <div class="card p-6 sm:p-8 space-y-6">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 grid place-items-center">${_icon('activity','w-5 h-5')}</div>
-        <div>
-          <span class="eyebrow">Diagnostics</span>
-          <h4 class="h-section text-base mt-1">সিস্টেম ও সার্ভার স্ট্যাটাস</h4>
-        </div>
-      </div>
-      <div class="grid sm:grid-cols-3 gap-4 text-sm">
-        <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
-          <div class="flex items-center gap-2 text-emerald-700 text-xs font-bold uppercase tracking-widest font-latin">${_icon('database','w-3.5 h-3.5')}MongoDB Atlas</div>
-          <p class="mt-1.5 font-semibold text-emerald-900">Connected</p>
-        </div>
-        <div class="p-4 rounded-2xl bg-teal-50/50 border border-teal-100">
-          <div class="flex items-center gap-2 text-teal-700 text-xs font-bold uppercase tracking-widest font-latin">${_icon('zap','w-3.5 h-3.5')}Latency</div>
-          <p class="mt-1.5 font-semibold text-teal-900 font-latin">44 ms</p>
-        </div>
-        <div class="p-4 rounded-2xl bg-navy-50 border border-navy-100">
-          <div class="flex items-center gap-2 text-navy-700 text-xs font-bold uppercase tracking-widest font-latin">${_icon('cloud','w-3.5 h-3.5')}Cloudinary</div>
-          <p class="mt-1.5 font-semibold text-navy-900">Active</p>
-        </div>
-      </div>
-    </div>`,
-
-  MaintenancePage: () => `
-    <section class="min-h-[70vh] grid place-items-center px-4">
-      <div class="max-w-md text-center space-y-4">
-        <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-medical grid place-items-center text-white shadow-elevated">${_icon('wrench','w-7 h-7')}</div>
-        <h2 class="h-section text-2xl">সাময়িক রক্ষণাবেক্ষণ চলছে</h2>
-        <p class="text-sm text-ink-500">আমরা কিছু আপডেট সম্পন্ন করছি। কিছুক্ষণ পরে আবার চেষ্টা করুন।</p>
-      </div>
-    </section>`
-};
-
-window.UIComponents = UIComponents;
