@@ -116,13 +116,13 @@ const UIComponents = {
             <span class="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-teal-100 to-emerald-200">অনুমোদিত ডেন্টাল</span>
             <br class="hidden sm:block"/> চিকিৎসকদের অফিসিয়াল প্ল্যাটফর্ম
           </h1>
-          <p class="text-base sm:text-lg text-ink-200/90 max-w-2xl leading-relaxed">
+          <p class="text-base sm:text-lg text-ink-200/90 max-w-2xl leading-relaxed text-center">
             রেজিস্টার্ড সদস্য, প্রকাশিত নোটিশ ও ইভেন্টসহ ভোলা জেলার সকল ভেরিফাইড দন্ত চিকিৎসকদের একটি নিরাপদ, স্বচ্ছ ও পেশাদার ডিজিটাল রেজিস্ট্রি।
           </p>
           <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <a href="#/members" class="btn-primary btn-lg" style="background:linear-gradient(135deg,#0891b2,#10b981);">${_icon('users', 'w-4 h-4')}<span>সদস্য তালিকা দেখুন</span></a>
-            <a href="#/verification" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm backdrop-blur transition">
-              ${_icon('badge-check', 'w-4 h-4')}<span>সদস্য যাচাই করুন</span>
+            <a href="#/register" class="btn-primary btn-lg" style="background:linear-gradient(135deg,#0891b2,#10b981);">${_icon('user-plus', 'w-4 h-4')}<span>আবেদন করুন (অনলাইন রেজিস্ট্রেশন)</span></a>
+            <a href="#/members" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm backdrop-blur transition">
+              ${_icon('users', 'w-4 h-4')}<span>সদস্য তালিকা দেখুন</span>
             </a>
           </div>
         </div>
@@ -211,7 +211,7 @@ const UIComponents = {
               </div>
             </div>
             <p class="relative text-sm text-ink-700 leading-relaxed">
-              <span class="text-4xl text-teal-500/40 leading-none font-serif absolute -left-1 -top-3">“</span>
+              <span class="text-4xl text-teal-500/40 leading-none font-serif absolute -left-1 -top-3">"</span>
               ${_esc(msg)}
             </p>
           </article>`).join('')}
@@ -284,13 +284,13 @@ const UIComponents = {
         <div class="absolute -bottom-10 -left-10 w-72 h-72 rounded-full bg-emerald-400/20 blur-3xl"></div>
         <div class="relative grid lg:grid-cols-3 gap-8 items-center">
           <div class="lg:col-span-2 space-y-4">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] font-semibold tracking-widest uppercase font-latin">${_icon('shield-check', 'w-3.5 h-3.5')}Trust the Directory</span>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">ভোলা জেলার যেকোনো দন্ত চিকিৎসকের রেজিস্ট্রেশন যাচাই করুন এক ক্লিকেই</h2>
-            <p class="text-white/80 max-w-2xl">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি রেকর্ড থেকে সদস্যপদ যাচাই করুন।</p>
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] font-semibold tracking-widest uppercase font-latin">${_icon('shield-check', 'w-3.5 h-3.5')}Apply for Membership</span>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">ভোলা জেলার ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনে যোগ দিন</h2>
+            <p class="text-white/80 max-w-2xl">ভোলা জেলার ডেন্টাল চিকিৎসকদের পেশাদার অ্যাসোসিয়েশনে মেম্বারশিপের জন্য এখনই অনলাইনে আবেদন ফরম পূরণ করুন।</p>
           </div>
           <div class="flex lg:justify-end">
-            <a href="#/verification" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-4 bg-white text-navy-900 font-bold shadow-card hover:shadow-elevated transition">
-              ${_icon('badge-check', 'w-5 h-5')}<span>এখনই যাচাই করুন</span>
+            <a href="#/register" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-4 bg-white text-navy-900 font-bold shadow-card hover:shadow-elevated transition">
+              ${_icon('user-plus', 'w-5 h-5')}<span>অনলাইন রেজিস্ট্রেশন ফরম</span>
             </a>
           </div>
         </div>
@@ -351,7 +351,7 @@ const UIComponents = {
       <div class="field">
         <span class="field-icon">${_icon('search', 'w-4 h-4')}</span>
         <input id="dir-search-input" type="text" class="input with-icon"
-               placeholder="সদস্যের নাম, মোবাইল অথবা মেম্বার আইডি লিখুন…"
+               placeholder="সদস্যের নাম, মোবাইল অথবা মেম্বার আইডি লিখুন..."
                aria-label="সদস্য অনুসন্ধান">
       </div>
       <button type="submit" class="btn-primary btn-lg">${_icon('search','w-4 h-4')}<span>অনুসন্ধান</span></button>
@@ -411,7 +411,7 @@ const UIComponents = {
             <dl class="grid sm:grid-cols-2 gap-5">
               ${[
                 ['graduation-cap', 'ডিগ্রি',       m.qualification],
-                ['building-2',     'ইনституটিউট',    m.institution],
+                ['building-2',     'ইনস্টিটিউট',    m.institution],
                 ['badge',          'BMDC Reg',      m.bmdcReg],
                 ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
                 ['briefcase',      'চেম্বার',      m.chamberName],
@@ -525,7 +525,7 @@ const UIComponents = {
             <label class="label" for="login-password">পাসওয়ার্ড</label>
             <div class="field">
               <span class="field-icon">${_icon('key-round','w-4 h-4')}</span>
-              <input id="login-password" type="password" required autocomplete="current-password" class="input with-icon" placeholder="••••••••">
+              <input id="login-password" type="password" required autocomplete="current-password" class="input with-icon" placeholder="........">
             </div>
           </div>
           <button type="submit" class="btn-primary btn-lg w-full">${_icon('log-in','w-4 h-4')}<span>লগইন করুন</span></button>
@@ -538,6 +538,7 @@ const UIComponents = {
     const nav = [
       ['home',       'home',       'ওভারভিউ'],
       ['users',      'members',    'সদস্য তালিকা'],
+      ['user-plus',  'requests',   'সদস্য আবেদন'],
       ['megaphone',  'notices',    'নোটিশ বোর্ড'],
       ['calendar',   'events',     'ইভেন্টস'],
       ['sliders',    'leadership', 'সম্মানিত নেতৃত্ব'],
@@ -673,6 +674,153 @@ const UIComponents = {
         </table>
       </div>
     </div>`,
+
+  AdminRequestList: (list = []) => {
+    if (list.length === 0) {
+      return UIComponents.EmptyState('বর্তমানে কোনো নতুন সদস্য আবেদন জমা নেই।', 'user-plus');
+    }
+    return `
+      <div class="card p-6 space-y-6 animate-fade-in">
+        <div class="border-b border-ink-100 pb-4">
+          <h2 class="h-section text-xl">সদস্য আবেদন তালিকা (Pending Requests)</h2>
+          <p class="text-xs text-ink-500 mt-1">নতুন চিকিৎসকদের রেজিস্ট্রেশন আবেদনগুলো পর্যালোচনা করে অনুমোদন অথবা বাতিল করুন।</p>
+        </div>
+        <div class="overflow-x-auto rounded-xl border border-ink-100">
+          <table>
+            <thead>
+              <tr>
+                <th>নাম (বাংলা)</th>
+                <th>মোবাইল নম্বর</th>
+                <th>উপজেলা</th>
+                <th>তারিখ</th>
+                <th class="text-right">অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${list.map(m => {
+                const memberIdVal = m._id || m.id || '';
+                return `
+                <tr>
+                  <td class="font-bold text-navy-900">${_esc(m.nameBn || m.nameEn)}</td>
+                  <td class="font-latin">${_esc(m.phone || '—')}</td>
+                  <td><span class="chip">${_esc(m.upazila || '—')}</span></td>
+                  <td class="text-xs text-ink-400 font-latin">${_fmtDateBn(m.createdAt || m.joiningDate)}</td>
+                  <td class="text-right space-x-1">
+                    <button onclick="window.appAdmin.loadRequestPreview('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-navy-600 border-navy-300">${_icon('eye','w-3 h-3')} রিভিউ</button>
+                    <button onclick="window.appAdmin.approveRequest('${memberIdVal}')" class="btn-outline px-2 py-1 text-xs text-emerald-600 border-emerald-300 bg-emerald-50 hover:bg-emerald-100">${_icon('check','w-3 h-3')} অনুমোদন</button>
+                    <button onclick="window.appAdmin.rejectRequest('${memberIdVal}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300 bg-red-50 hover:bg-red-100">${_icon('x','w-3 h-3')} বাতিল</button>
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  },
+
+  AdminRequestPreview: (m = {}) => {
+    const profileImg = m.profilePhoto ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover rounded-xl"/>` : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-xl">${_initials(m.nameEn || m.nameBn)}</div>`;
+    const degreeImg = m.degreePhoto ? `<img src="${_esc(m.degreePhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">সার্টিফিকেটের ছবি আপলোড করা হয়নি</div>`;
+    const nidImg = m.nidPhoto ? `<img src="${_esc(m.nidPhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">এনআইডি কার্ডের ছবি আপলোড করা হয়নি</div>`;
+    const memberIdVal = m._id || m.id || '';
+
+    return `
+      <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
+          <div>
+            <span class="eyebrow">Application Review</span>
+            <h2 class="h-section text-xl mt-1">সদস্য পদের আবেদন পর্যালোচনা</h2>
+          </div>
+          <button onclick="window.appAdmin.loadRequestList()" class="btn-outline text-xs inline-flex items-center gap-1">
+            ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>আবেদন তালিকায় ফিরে যান</span>
+          </button>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-4 space-y-6">
+            <div class="card p-5 text-center bg-ink-50/50">
+              <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
+                ${profileImg}
+              </div>
+              <h3 class="text-lg font-bold text-navy-900 mt-4">${_esc(m.nameBn || m.nameEn)}</h3>
+              <p class="text-xs text-ink-500 font-latin mt-1">${_esc(m.nameEn || '')}</p>
+              <div class="pt-3">
+                <span class="chip chip-teal">Pending Approval</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-8 space-y-6">
+            <div class="card p-6 space-y-5">
+              <h3 class="font-bold text-navy-900 border-b pb-2 text-base">আবেদনকারীর বিবরণ</h3>
+              <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                ${[
+                  ['graduation-cap', 'যোগ্যতা/ডিগ্রি', m.qualification],
+                  ['building-2',     'শিক্ষা প্রতিষ্ঠান', m.institution],
+                  ['badge',          'BMDC Reg No',     m.bmdcReg],
+                  ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} বছর` : '০ বছর'],
+                  ['briefcase',      'চেম্বারের নাম',    m.chamberName],
+                  ['map-pin',        'চেম্বারের ঠিকানা',  m.chamberAddress || m.address],
+                  ['phone',          'মোবাইল নম্বর',    m.phone],
+                  ['mail',           'ইমেল এড্রেস',     m.email],
+                  ['heart',          'ব্লাড গ্রুপ',      m.bloodGroup],
+                  ['credit-card',    'এনআইডি নম্বর',     m.nidNumber],
+                  ['home',           'স্থায়ী ঠিকানা',    m.personalAddress],
+                  ['map',            'উপজেলা',          m.upazila],
+                ].map(([ic, label, val]) => `
+                  <div class="flex items-start gap-2.5">
+                    <span class="text-teal-600 mt-0.5">${_icon(ic, 'w-4 h-4')}</span>
+                    <div>
+                      <dt class="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">${label}</dt>
+                      <dd class="font-semibold text-navy-900 mt-0.5">${_esc(val || '—')}</dd>
+                    </div>
+                  </div>
+                `).join('')}
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-ink-100 pt-6 space-y-6">
+          <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
+            ${_icon('image', 'w-5 h-5 text-teal-600')}
+            <span>আপলোডকৃত নথি ও সার্টিফিকেট প্রিভিউ</span>
+          </h3>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="card p-5 space-y-4 bg-ink-50/30">
+              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
+                ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
+                <span>ডিগ্রি সার্টিফিকেট ছবি</span>
+              </h4>
+              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
+                ${degreeImg}
+              </div>
+            </div>
+
+            <div class="card p-5 space-y-4 bg-ink-50/30">
+              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
+                ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
+                <span>ন্যাশনাল আইডি (NID) কার্ডের ছবি</span>
+              </h4>
+              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
+                ${nidImg}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-6 border-t border-ink-100">
+          <button onclick="window.appAdmin.rejectRequest('${memberIdVal}')" class="btn-outline text-red-600 border-red-300 bg-red-50 hover:bg-red-100 py-3 px-6">
+            ${_icon('x', 'w-4 h-4 inline mr-1')}<span>আবেদন বাতিল (Delete)</span>
+          </button>
+          <button onclick="window.appAdmin.approveRequest('${memberIdVal}')" class="btn-primary bg-emerald-600 hover:bg-emerald-700 py-3 px-6">
+            ${_icon('check', 'w-4 h-4 inline mr-1')}<span>আবেদন অনুমোদন (Approve)</span>
+          </button>
+        </div>
+      </div>
+    `;
+  },
 
   AdminNoticeList: (list = []) => `
     <div class="card p-6 space-y-6 animate-fade-in">
@@ -838,7 +986,6 @@ const UIComponents = {
 
         <div class="divider-grad"></div>
 
-        <!-- File Upload Section -->
         <div class="grid sm:grid-cols-3 gap-5">
           <div>
             <label class="label">ওই ব্যক্তির ছবি</label>
@@ -936,19 +1083,19 @@ const UIComponents = {
             <input id="e-location" name="location" required class="input" value="${_esc(isEdit ? e.location : '')}" placeholder="উদাঃ জেলা পরিষদ মিলনায়তন, ভোলা">
           </div>
           <div>
-            <label class="label" id="e-startTime">শুরুর সময়</label>
+            <label class="label" for="e-startTime">শুরুর সময়</label>
             <input id="e-startTime" name="startTime" class="input" value="${_esc(isEdit ? e.startTime : '')}" placeholder="উদাঃ সকাল ১০:০০ টা">
           </div>
           <div>
-            <label class="label" id="e-endTime">শেষের সময়</label>
+            <label class="label" for="e-endTime">শেষের সময়</label>
             <input id="e-endTime" name="endTime" class="input" value="${_esc(isEdit ? e.endTime : '')}" placeholder="উদাঃ বিকাল ০৪:০০ টা">
           </div>
           <div>
-            <label class="label" id="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
+            <label class="label" for="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
             <input id="e-mapLink" name="mapLink" class="input" value="${_esc(isEdit ? e.mapLink : '')}" placeholder="https://maps.google.com/...">
           </div>
           <div>
-            <label class="label" id="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
+            <label class="label" for="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
             <input id="e-registrationLink" name="registrationLink" class="input" value="${_esc(isEdit ? e.registrationLink : '')}" placeholder="https://forms.gle/...">
           </div>
         </div>
@@ -972,7 +1119,6 @@ const UIComponents = {
       </div>
       <form id="edit-leadership-form" class="space-y-6">
         <div class="grid sm:grid-cols-2 gap-8">
-          <!-- President Section -->
           <div class="space-y-4">
             <h3 class="font-bold text-navy-900 border-b pb-2">সভাপতির বার্তা মডিউল</h3>
             <div>
@@ -989,7 +1135,6 @@ const UIComponents = {
             </div>
           </div>
           
-          <!-- Secretary Section -->
           <div class="space-y-4">
             <h3 class="font-bold text-navy-900 border-b pb-2">সাধারণ সম্পাদকের বার্তা মডিউল</h3>
             <div>
@@ -1021,7 +1166,6 @@ const UIComponents = {
 
     return `
       <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
-        <!-- Header -->
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
           <div>
             <span class="eyebrow">Admin Preview</span>
@@ -1032,9 +1176,7 @@ const UIComponents = {
           </button>
         </div>
 
-        <!-- Main Layout -->
         <div class="grid lg:grid-cols-12 gap-8">
-          <!-- Profile Column -->
           <div class="lg:col-span-4 space-y-6">
             <div class="card p-5 text-center bg-ink-50/50">
               <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
@@ -1048,7 +1190,6 @@ const UIComponents = {
               </div>
             </div>
             
-            <!-- Quick Status info -->
             <div class="card p-5 space-y-3">
               <h4 class="font-bold text-xs uppercase tracking-wider text-ink-400">মেম্বারশিপ স্ট্যাটাস</h4>
               <div class="text-sm space-y-2">
@@ -1064,7 +1205,6 @@ const UIComponents = {
             </div>
           </div>
 
-          <!-- Info Fields Column -->
           <div class="lg:col-span-8 space-y-6">
             <div class="card p-6 space-y-5">
               <h3 class="font-bold text-navy-900 border-b pb-2 text-base">ব্যক্তিগত ও পেশাগত বিবরণ</h3>
@@ -1096,7 +1236,6 @@ const UIComponents = {
           </div>
         </div>
 
-        <!-- Image Previews Section -->
         <div class="border-t border-ink-100 pt-6 space-y-6">
           <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
             ${_icon('image', 'w-5 h-5 text-teal-600')}
@@ -1104,7 +1243,6 @@ const UIComponents = {
           </h3>
           
           <div class="grid md:grid-cols-2 gap-6">
-            <!-- Degree Card -->
             <div class="card p-5 space-y-4 bg-ink-50/30">
               <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
                 ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
@@ -1115,7 +1253,6 @@ const UIComponents = {
               </div>
             </div>
 
-            <!-- NID Card -->
             <div class="card p-5 space-y-4 bg-ink-50/30">
               <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
                 ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
@@ -1131,7 +1268,130 @@ const UIComponents = {
     `;
   },
 
-  /* ================= SYSTEM HEALTH (kept from original API) ================= */
+  /* ================= PUBLIC REGISTRATION FORM ================= */
+  PublicRegistrationForm: () => `
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="text-center max-w-2xl mx-auto space-y-3 mb-10">
+        <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-medical grid place-items-center text-white shadow-elevated">
+          ${_icon('user-plus', 'w-6 h-6')}
+        </div>
+        <h1 class="h-section text-3xl">অনলাইন সদস্যপদ আবেদন ফরম</h1>
+        <p class="text-sm sm:text-base text-ink-500">BDDPA ভোলা জেলার সদস্যপদ নিবন্ধনের জন্য নিচের ফরমটি সঠিক তথ্য দিয়ে পূরণ করুন। আপনার আবেদনটি অ্যাডমিন কর্তৃক ভেরিফিকেশন ও অনুমোদনের পর সক্রিয় করা হবে।</p>
+      </div>
+
+      <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
+        <form id="public-register-form" class="space-y-6" enctype="multipart/form-data">
+          
+          <div class="border-b pb-2">
+            <h3 class="font-bold text-navy-900 text-base">১. ব্যক্তিগত তথ্য (Personal Info)</h3>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="label" for="reg-nameBn">নাম (বাংলায়) <span class="text-red-500">*</span></label>
+              <input id="reg-nameBn" name="nameBn" required class="input" placeholder="ডাঃ মোঃ আবদুর রহমান">
+            </div>
+            <div>
+              <label class="label" for="reg-nameEn">Name (English) <span class="text-red-500">*</span></label>
+              <input id="reg-nameEn" name="nameEn" required class="input" placeholder="Dr. Md. Abdur Rahman">
+            </div>
+            <div>
+              <label class="label" for="reg-phone">মোবাইল নম্বর <span class="text-red-500">*</span></label>
+              <input id="reg-phone" name="phone" required class="input" placeholder="017XXXXXXXX">
+            </div>
+            <div>
+              <label class="label" for="reg-email">ইমেইল এড্রেস <span class="text-ink-400 font-normal text-xs">(ঐচ্ছিক)</span></label>
+              <input id="reg-email" name="email" type="email" class="input" placeholder="member@email.com">
+            </div>
+            <div>
+              <label class="label" for="reg-bloodGroup">ব্লাড গ্রুপ <span class="text-red-500">*</span></label>
+              <select id="reg-bloodGroup" name="bloodGroup" required class="select">
+                <option value="">সিলেক্ট করুন</option>
+                ${['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => `
+                  <option value="${bg}">${bg}</option>
+                `).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="label" for="reg-nidNumber">ন্যাশনাল আইডি (NID) নম্বর <span class="text-red-500">*</span></label>
+              <input id="reg-nidNumber" name="nidNumber" required class="input" placeholder="199XXXXXXXXXXXX">
+            </div>
+          </div>
+
+          <div class="border-b pb-2 pt-4">
+            <h3 class="font-bold text-navy-900 text-base">২. শিক্ষাগত ও পেশাগত তথ্য (Professional Info)</h3>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="label" for="reg-qualification">যোগ্যতা/ডিগ্রি <span class="text-red-500">*</span></label>
+              <input id="reg-qualification" name="qualification" required class="input" placeholder="BDS, PGT (Dental)">
+            </div>
+            <div>
+              <label class="label" for="reg-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর <span class="text-ink-400 font-normal text-xs">(ঐচ্ছিক)</span></label>
+              <input id="reg-bmdcReg" name="bmdcReg" class="input" placeholder="D-1234">
+            </div>
+            <div>
+              <label class="label" for="reg-institution">শিক্ষা প্রতিষ্ঠান (ইনস্টিটিউট) <span class="text-red-500">*</span></label>
+              <input id="reg-institution" name="institution" required class="input" placeholder="উদাঃ ঢাকা ডেন্টাল কলেজ">
+            </div>
+            <div>
+              <label class="label" for="reg-experience">পেশাগত অভিজ্ঞতা (বছর) <span class="text-red-500">*</span></label>
+              <input id="reg-experience" name="experience" type="number" required class="input" placeholder="উদাঃ ৫">
+            </div>
+            <div>
+              <label class="label" for="reg-chamberName">চেম্বারের নাম <span class="text-red-500">*</span></label>
+              <input id="reg-chamberName" name="chamberName" required class="input" placeholder="রহমান ডেন্টাল কেয়ার">
+            </div>
+            <div>
+              <label class="label" for="reg-chamberAddress">চেম্বারের ঠিকানা <span class="text-red-500">*</span></label>
+              <input id="reg-chamberAddress" name="chamberAddress" required class="input" placeholder="সদর রোড, ভোলা সদর">
+            </div>
+            <div>
+              <label class="label" for="reg-personalAddress">স্থায়ী ঠিকানা <span class="text-red-500">*</span></label>
+              <input id="reg-personalAddress" name="personalAddress" required class="input" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
+            </div>
+            <div>
+              <label class="label" for="reg-upazila">উপজেলা (ভোলা জেলা) <span class="text-red-500">*</span></label>
+              <select id="reg-upazila" name="upazila" required class="select">
+                <option value="">সিলেক্ট করুন</option>
+                ${['Bhola Sadar', 'Borhanuddin', 'Char Fasson', 'Daulatkhan', 'Lalmohan', 'Manpura', 'Tazumuddin'].map(up => `
+                  <option value="${up}">${up}</option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="border-b pb-2 pt-4">
+            <h3 class="font-bold text-navy-900 text-base">৩. প্রয়োজনীয় নথি আপলোড (File Uploads)</h3>
+            <p class="text-[11px] text-ink-500 mt-1">দয়া করে স্পষ্ট এবং পড়ার উপযোগী ছবি আপলোড করুন।</p>
+          </div>
+
+          <div class="grid sm:grid-cols-3 gap-5">
+            <div>
+              <label class="label">আপনার ছবি (Profile Photo) <span class="text-red-500">*</span></label>
+              <input type="file" name="profilePhoto" accept="image/*" required class="input py-2">
+            </div>
+            <div>
+              <label class="label">ডিগ্রি সার্টিফিকেট ছবি <span class="text-red-500">*</span></label>
+              <input type="file" name="degreePhoto" accept="image/*" required class="input py-2">
+            </div>
+            <div>
+              <label class="label">এনআইডি (NID) কার্ডের ছবি <span class="text-red-500">*</span></label>
+              <input type="file" name="nidPhoto" accept="image/*" required class="input py-2">
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-6 border-t border-ink-100">
+            <button type="button" onclick="window.location.hash = '#/'" class="btn-outline">বাতিল</button>
+            <button type="submit" class="btn-primary w-full sm:w-auto">${_icon('save', 'w-4 h-4')}<span>আবেদন জমা দিন (Submit Application)</span></button>
+          </div>
+        </form>
+      </div>
+    </section>
+  `,
+
+  /* ================= SYSTEM HEALTH ================= */
   SystemHealthMonitor: () => `
     <div class="card p-6 sm:p-8 space-y-6">
       <div class="flex items-center gap-3">
