@@ -286,7 +286,7 @@ const UIComponents = {
           <div class="lg:col-span-2 space-y-4">
             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] font-semibold tracking-widest uppercase font-latin">${_icon('shield-check', 'w-3.5 h-3.5')}Trust the Directory</span>
             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">ভোলা জেলার যেকোনো দন্ত চিকিৎসকের রেজিস্ট্রেশন যাচাই করুন এক ক্লিকেই</h2>
-            <p class="text-white/80 max-w-2xl">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি অফিসিয়াল রেকর্ড থেকে সদস্যের সত্যতা নিশ্চিত করুন।</p>
+            <p class="text-white/80 max-w-2xl">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি রেকর্ড থেকে সদস্যের সত্যতা নিশ্চিত করুন।</p>
           </div>
           <div class="flex lg:justify-end">
             <a href="#/verification" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-4 bg-white text-navy-900 font-bold shadow-card hover:shadow-elevated transition">
@@ -335,7 +335,7 @@ const UIComponents = {
       <div class="text-center max-w-2xl mx-auto space-y-3 mb-10">
         <span class="eyebrow">Verified Directory</span>
         <h1 class="h-section text-3xl sm:text-4xl lg:text-5xl">সদস্য তালিকা</h1>
-        <p class="text-sm sm:text-base text-ink-500">নাম, মোবাইল বা মেম্বার আইডি দিয়ে অফিসিয়াল রেকর্ড থেকে যেকোনো সদস্য অনুসন্ধান করুন।</p>
+        <p class="text-sm sm:text-base text-ink-500">নাম, মোবাইল বা মেম্বার আইডি দিয়ে রেকর্ড থেকে সদস্য অনুসন্ধান করুন।</p>
       </div>
 
       ${UIComponents.Search()}
@@ -411,7 +411,7 @@ const UIComponents = {
             <dl class="grid sm:grid-cols-2 gap-5">
               ${[
                 ['graduation-cap', 'ডিগ্রি',       m.qualification],
-                ['building-2',     'ইনস্টিটিউট',    m.institution],
+                ['building-2',     'ইনституটিউট',    m.institution],
                 ['badge',          'BMDC Reg',      m.bmdcReg],
                 ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
                 ['briefcase',      'চেম্বার',      m.chamberName],
@@ -464,7 +464,7 @@ const UIComponents = {
         <form onsubmit="event.preventDefault(); window.appVerify.check();" class="grid sm:grid-cols-[1fr_auto] gap-3">
           <div class="field">
             <span class="field-icon">${_icon('badge-check','w-4 h-4')}</span>
-            <input id="verify-input" class="input with-icon" placeholder="মেম্বারশিপ আইডি বা মোবাইল নম্বর" aria-label="যাচাই ইনপুট">
+            <input id="verify-input" class="input with-icon" placeholder="মেম্বারশিপ আইডি বা মোবাইল নম্বর" aria-label="যчай ইনপুট">
           </div>
           <button class="btn-primary btn-lg" type="submit">${_icon('search','w-4 h-4')}<span>যাচাই করুন</span></button>
         </form>
@@ -491,9 +491,7 @@ const UIComponents = {
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2">
               <h4 class="font-bold text-navy-900 text-lg">${_esc(m.nameBn || m.nameEn)}</h4>
-              <span class="verified-badge ${expiry.expired ? 'bg-red-600' : 'bg-emerald-600'}">
-                ${_icon('check','w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span>
-              </span>
+              <span class="verified-badge bg-emerald-600">${_icon('check','w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span></span>
             </div>
             <p class="text-sm text-ink-500 font-latin mt-0.5">${_esc(m.nameEn || '')} · ${_esc(m.memberId || '')}</p>
             <div class="mt-3 flex flex-wrap gap-1.5">
@@ -612,7 +610,7 @@ const UIComponents = {
         </div>
         <div class="card p-6">
           <div class="flex items-center justify-between mb-4">
-            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুট কাজ</h3></div>
+            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুত কাজ</h3></div>
           </div>
           <div class="space-y-2.5">
             ${[
@@ -663,8 +661,9 @@ const UIComponents = {
                   </span>
                 </td>
                 <td class="text-right space-x-1">
-                  ${expiry.expired ? `<button onclick="window.appAdmin.renewMember('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-emerald-600 border-emerald-300">${_icon('refresh-cw','w-3 h-3')} নবায়ন</button>` : ''}
-                  <button onclick="window.appAdmin.deleteMember('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                  ${expiry.expired ? `<button onclick="window.appAdmin.renewMember('${m._id}')" class="btn-outline px-2 py-1 text-xs text-emerald-600 border-emerald-300">${_icon('refresh-cw','w-3 h-3')} নবায়ন</button>` : ''}
+                  <button onclick="window.appAdmin.loadEditMemberForm('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
+                  <button onclick="window.appAdmin.deleteMember('${m._id}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
               </tr>`;
             }).join('')}
@@ -736,92 +735,85 @@ const UIComponents = {
     </div>`,
 
   /* ================= CREATION FORMS ================= */
-  AdminMemberForm: () => `
+  AdminMemberForm: (m = null) => {
+    const isEdit = m !== null;
+    return `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">নতুন সদস্য নিবন্ধন করুন</h2>
+        <h2 class="h-section text-xl">${isEdit ? 'সদস্য তথ্য এডিট করুন' : 'নতুন সদস্য নিবন্ধন করুন'}</h2>
         <button onclick="window.location.hash = '#/admin/dashboard?tab=members'" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-member-form" class="space-y-6" enctype="multipart/form-data">
+      <form id="add-member-form" data-id="${isEdit ? m._id : ''}" class="space-y-6">
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="label" for="m-nameBn">নাম (বাংলা) <span class="text-red-500">*</span></label>
-            <input id="m-nameBn" name="nameBn" required class="input" placeholder="ডাঃ মোঃ আবদুর রহমান">
+            <input id="m-nameBn" name="nameBn" required class="input" value="${_esc(isEdit ? m.nameBn : '')}" placeholder="ডাঃ মোঃ আবদুর রহমান">
           </div>
           <div>
             <label class="label" for="m-nameEn">Name (English) <span class="text-red-500">*</span></label>
-            <input id="m-nameEn" name="nameEn" required class="input" placeholder="Dr. Md. Abdur Rahman">
+            <input id="m-nameEn" name="nameEn" required class="input" value="${_esc(isEdit ? m.nameEn : '')}" placeholder="Dr. Md. Abdur Rahman">
           </div>
           <div>
             <label class="label" for="m-qualification">যোগ্যতা/ডিগ্রি <span class="text-red-500">*</span></label>
-            <input id="m-qualification" name="qualification" required class="input" placeholder="BDS, PGT (Dental)">
+            <input id="m-qualification" name="qualification" required class="input" value="${_esc(isEdit ? m.qualification : '')}" placeholder="BDS, PGT (Dental)">
           </div>
           <div>
             <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর <span class="text-red-500">*</span></label>
-            <input id="m-bmdcReg" name="bmdcReg" required class="input" placeholder="D-1234">
+            <input id="m-bmdcReg" name="bmdcReg" required class="input" value="${_esc(isEdit ? m.bmdcReg : '')}" placeholder="D-1234">
           </div>
           <div>
             <label class="label" for="m-nidNumber">ন্যাশনাল আইডি কার্ড নম্বর <span class="text-red-500">*</span></label>
-            <input id="m-nidNumber" name="nidNumber" required class="input" placeholder="199XXXXXXXXXXXX">
+            <input id="m-nidNumber" name="nidNumber" required class="input" value="${_esc(isEdit ? m.nidNumber : '')}" placeholder="199XXXXXXXXXXXX">
           </div>
           <div>
             <label class="label" for="m-bloodGroup">ব্লাড গ্রুপ <span class="text-red-500">*</span></label>
             <select id="m-bloodGroup" name="bloodGroup" required class="select">
               <option value="">সিলেক্ট করুন</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
+              ${['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => `
+                <option value="${bg}" ${isEdit && m.bloodGroup === bg ? 'selected' : ''}>${bg}</option>
+              `).join('')}
             </select>
           </div>
           <div>
             <label class="label" for="m-phone">মোবাইল নম্বর <span class="text-red-500">*</span></label>
-            <input id="m-phone" name="phone" required class="input" placeholder="017XXXXXXXX">
+            <input id="m-phone" name="phone" required class="input" value="${_esc(isEdit ? m.phone : '')}" placeholder="017XXXXXXXX">
           </div>
           <div>
             <label class="label" for="m-email">ইমেল অ্যাড্রেস <span class="text-red-500">*</span></label>
-            <input id="m-email" name="email" required type="email" class="input" placeholder="member@email.com">
+            <input id="m-email" name="email" required type="email" class="input" value="${_esc(isEdit ? m.email : '')}" placeholder="member@email.com">
           </div>
           <div>
             <label class="label" for="m-chamberName">চেম্বারের নাম <span class="text-red-500">*</span></label>
-            <input id="m-chamberName" name="chamberName" required class="input" placeholder="রহমান ডেন্টাল কেয়ার">
+            <input id="m-chamberName" name="chamberName" required class="input" value="${_esc(isEdit ? m.chamberName : '')}" placeholder="রহমান ডেন্টাল কেয়ার">
           </div>
           <div>
             <label class="label" for="m-chamberAddress">চেম্বারের ঠিকানা <span class="text-red-500">*</span></label>
-            <input id="m-chamberAddress" name="chamberAddress" required class="input" placeholder="সদর রোড, ভোলা সদর">
+            <input id="m-chamberAddress" name="chamberAddress" required class="input" value="${_esc(isEdit ? m.chamberAddress : '')}" placeholder="সদর রোড, ভোলা সদর">
           </div>
           <div>
             <label class="label" for="m-personalAddress">নিজের স্থায়ী ঠিকানা <span class="text-red-500">*</span></label>
-            <input id="m-personalAddress" name="personalAddress" required class="input" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
+            <input id="m-personalAddress" name="personalAddress" required class="input" value="${_esc(isEdit ? m.personalAddress : '')}" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
           </div>
           <div>
             <label class="label" for="m-upazila">উপজেলা (ভোলা জেলা)</label>
             <select id="m-upazila" name="upazila" class="select">
-              <option value="Bhola Sadar">ভোলা সদর</option>
-              <option value="Borhanuddin">বোরহানউদ্দিন</option>
-              <option value="Char Fasson">চরফ্যাশন</option>
-              <option value="Daulatkhan">দৌলতখান</option>
-              <option value="Lalmohan">লালমোহন</option>
-              <option value="Manpura">মনপুরা</option>
-              <option value="Tazumuddin">তজুমদ্দিন</option>
+              ${['Bhola Sadar', 'Borhanuddin', 'Char Fasson', 'Daulatkhan', 'Lalmohan', 'Manpura', 'Tazumuddin'].map(up => `
+                <option value="${up}" ${isEdit && m.upazila === up ? 'selected' : ''}>${up}</option>
+              `).join('')}
             </select>
           </div>
           <div>
             <label class="label" for="m-roleType">সদস্যের ক্যাটাগরি</label>
             <select id="m-roleType" name="roleType" class="select" onchange="document.getElementById('exec-post-wrapper').classList.toggle('hidden', this.value !== 'Executive Committee')">
-              <option value="General Member">সাধারণ সদস্য</option>
-              <option value="Executive Committee">কার্যনির্বাহী কমিটি</option>
+              <option value="General Member" ${isEdit && m.roleType === 'General Member' ? 'selected' : ''}>সাধারণ সদস্য</option>
+              <option value="Executive Committee" ${isEdit && m.roleType === 'Executive Committee' ? 'selected' : ''}>কার্যনির্বাহী কমিটি</option>
             </select>
           </div>
-          <div id="exec-post-wrapper" class="hidden">
+          <div id="exec-post-wrapper" class="${isEdit && m.roleType === 'Executive Committee' ? '' : 'hidden'}">
             <label class="label" for="m-executivePost">কমিটির পদবী</label>
-            <input id="m-executivePost" name="executivePost" class="input" placeholder="সহ-সভাপতি / সাধারণ সম্পাদক">
+            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="सह-সভাপতি / সাধারণ সম্পাদক">
           </div>
         </div>
 
@@ -830,25 +822,29 @@ const UIComponents = {
         <!-- File Upload Section -->
         <div class="grid sm:grid-cols-3 gap-5">
           <div>
-            <label class="label">ওই ব্যক্তির ছবি <span class="text-red-500">*</span></label>
-            <input type="file" name="profilePhoto" required accept="image/*" class="input py-2">
+            <label class="label">ওই ব্যক্তির ছবি ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
+            <input type="file" name="profilePhoto" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
+            ${isEdit && m.profilePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
           </div>
           <div>
-            <label class="label">ডিগ্রির সার্টিফিকেট ছবি <span class="text-red-500">*</span></label>
-            <input type="file" name="degreePhoto" required accept="image/*" class="input py-2">
+            <label class="label">ডিগ্রির সার্টিফিকেট ছবি ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
+            <input type="file" name="degreePhoto" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
+            ${isEdit && m.degreePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
           </div>
           <div>
-            <label class="label">ন্যাশনাল আইডি কার্ড ছবি <span class="text-red-500">*</span></label>
-            <input type="file" name="nidPhoto" required accept="image/*" class="input py-2">
+            <label class="label">ন্যাশনাল আইডি কার্ড ছবি ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
+            <input type="file" name="nidPhoto" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
+            ${isEdit && m.nidPhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
           </div>
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
           <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=members'" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>সংরক্ষণ ও নিবন্ধন করুন</span></button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'আপডেট করুন' : 'সংরক্ষণ ও নিবন্ধন করুন'}</span></button>
         </div>
       </form>
-    </div>`,
+    </div>`;
+  },
 
   AdminNoticeForm: () => `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
