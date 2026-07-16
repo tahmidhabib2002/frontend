@@ -260,7 +260,7 @@ const UIComponents = {
             <h4 class="font-bold text-base leading-tight">${_esc(m.nameBn || m.nameEn)}</h4>
             <p class="text-xs text-teal-200 font-latin">${_esc(m.nameEn)}</p>
             <p class="text-xs text-ink-300 font-latin">${_esc(m.qualification || 'BDS')}</p>
-            <div class="pt-2 flex flex-wrap items-center gap-1.5 text-[10px]">
+            <div class="pt-2 flex items-center gap-1.5 text-[10px]">
               <span class="chip bg-white/10 text-white border-none font-latin">${_esc(m.bloodGroup || 'O+')}</span>
               <span class="chip bg-white/10 text-white border-none">${_esc(m.upazila || 'Bhola Sadar')}</span>
             </div>
@@ -629,7 +629,7 @@ const UIComponents = {
       </div>`;
   },
 
-  /* ================= ADMIN LIST PAGES ================= */
+  /* ================= LIST PAGES ================= */
   AdminMemberList: (list = []) => `
     <div class="card p-6 space-y-6 animate-fade-in">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
@@ -650,6 +650,7 @@ const UIComponents = {
           <tbody>
             ${list.map(m => {
               const expiry = _checkExpiry(m.joiningDate);
+              const memberIdVal = m._id || m.id || '';
               return `
               <tr>
                 <td class="font-bold text-navy-900">${_esc(m.nameBn || m.nameEn)}</td>
@@ -661,9 +662,10 @@ const UIComponents = {
                   </span>
                 </td>
                 <td class="text-right space-x-1">
-                  ${expiry.expired ? `<button onclick="window.appAdmin.renewMember('${m._id}')" class="btn-outline px-2 py-1 text-xs text-emerald-600 border-emerald-300">${_icon('refresh-cw','w-3 h-3')} নবায়ন</button>` : ''}
+                  <button onclick="window.appAdmin.loadMemberPreview('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-navy-600 border-navy-300">${_icon('eye','w-3 h-3')} প্রিভিউ</button>
+                  ${expiry.expired ? `<button onclick="window.appAdmin.renewMember('${memberIdVal}')" class="btn-outline px-2 py-1 text-xs text-emerald-600 border-emerald-300">${_icon('refresh-cw','w-3 h-3')} নবায়ন</button>` : ''}
                   <button onclick="window.appAdmin.loadEditMemberForm('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteMember('${m._id}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                  <button onclick="window.appAdmin.deleteMember('${memberIdVal}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
               </tr>`;
             }).join('')}
@@ -690,15 +692,15 @@ const UIComponents = {
           </thead>
           <tbody>
             ${list.map(n => {
-              const noticeId = n._id || n.id || '';
+              const noticeIdVal = n._id || n.id || '';
               return `
               <tr>
                 <td class="font-bold text-navy-900">${_esc(n.title)}</td>
                 <td><span class="chip">${_esc(n.category)}</span></td>
                 <td>${_fmtDateBn(n.createdAt)}</td>
                 <td class="text-right space-x-1">
-                  <button onclick="window.appAdmin.loadEditNoticeForm('${noticeId}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteNotice('${noticeId}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                  <button onclick="window.appAdmin.loadEditNoticeForm('${noticeIdVal}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
+                  <button onclick="window.appAdmin.deleteNotice('${noticeIdVal}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
               </tr>`;
             }).join('')}
@@ -724,33 +726,37 @@ const UIComponents = {
             </tr>
           </thead>
           <tbody>
-            ${list.map(e => `
+            ${list.map(e => {
+              const eventIdVal = e._id || e.id || '';
+              return `
               <tr>
                 <td class="font-bold text-navy-900">${_esc(e.title)}</td>
                 <td>${_fmtDateBn(e.eventDate)}</td>
                 <td>${_esc(e.location)}</td>
                 <td class="text-right space-x-1">
-                  <button onclick="window.appAdmin.loadEditEventForm('${e._id}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteEvent('${e._id}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                  <button onclick="window.appAdmin.loadEditEventForm('${eventIdVal}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
+                  <button onclick="window.appAdmin.deleteEvent('${eventIdVal}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
-              </tr>`).join('')}
+              </tr>`;
+            }).join('')}
           </tbody>
         </table>
       </div>
     </div>`,
 
-  /* ================= ADMIN FORM PAGES ================= */
+  /* ================= CREATION FORMS ================= */
   AdminMemberForm: (m = null) => {
     const isEdit = m !== null;
+    const memberIdVal = isEdit ? (m._id || m.id || '') : '';
     return `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
         <h2 class="h-section text-xl">${isEdit ? 'সদস্য তথ্য এডিট করুন' : 'নতুন সদস্য নিবন্ধন করুন'}</h2>
-        <button onclick="window.location.hash = '#/admin/dashboard?tab=members'" class="btn-outline text-xs">
+        <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-member-form" data-id="${isEdit ? m._id : ''}" class="space-y-6" enctype="multipart/form-data">
+      <form id="add-member-form" data-id="${memberIdVal}" class="space-y-6" enctype="multipart/form-data">
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="label" for="m-nameBn">নাম (বাংলা) <span class="text-red-500">*</span></label>
@@ -826,7 +832,7 @@ const UIComponents = {
           </div>
           <div id="exec-post-wrapper" class="${isEdit && m.roleType === 'Executive Committee' ? '' : 'hidden'}">
             <label class="label" for="m-executivePost">কমিটির পদবী</label>
-            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="সহ-সভাপতি / সাধারণ সম্পাদক">
+            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="सह-সভাপতি / সাধারণ সম্পাদক">
           </div>
         </div>
 
@@ -852,7 +858,7 @@ const UIComponents = {
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=members'" class="btn-outline">বাতিল</button>
+          <button type="button" onclick="window.appAdmin.loadMemberList()" class="btn-outline">বাতিল</button>
           <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'আপডেট করুন' : 'সংরক্ষণ ও নিবন্ধন করুন'}</span></button>
         </div>
       </form>
@@ -861,16 +867,16 @@ const UIComponents = {
 
   AdminNoticeForm: (n = null) => {
     const isEdit = n !== null;
-    const noticeId = isEdit ? (n._id || n.id || '') : '';
+    const noticeIdVal = isEdit ? (n._id || n.id || '') : '';
     return `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
         <h2 class="h-section text-xl">${isEdit ? 'নোটিশ এডিট করুন' : 'নতুন নোটিশ প্রকাশ করুন'}</h2>
-        <button onclick="window.location.hash = '#/admin/dashboard?tab=notices'" class="btn-outline text-xs">
+        <button onclick="window.appAdmin.loadNoticeList()" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-notice-form" data-id="${noticeId}" class="space-y-6" enctype="multipart/form-data">
+      <form id="add-notice-form" data-id="${noticeIdVal}" class="space-y-6" enctype="multipart/form-data">
         <div>
           <label class="label" for="n-title">নোটিশের শিরোনাম</label>
           <input id="n-title" name="title" required class="input" value="${_esc(isEdit ? n.title : '')}" placeholder="বিজ্ঞপ্তি শিরোনাম...">
@@ -897,7 +903,7 @@ const UIComponents = {
           <textarea id="n-content" name="content" required class="textarea h-32" placeholder="নোটিশের বিস্তারিত বিবরণ...">${_esc(isEdit ? n.content : '')}</textarea>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=notices'" class="btn-outline">বাতিল</button>
+          <button type="button" onclick="window.appAdmin.loadNoticeList()" class="btn-outline">বাতিল</button>
           <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'আপডেট করুন' : 'প্রকাশ করুন'}</span></button>
         </div>
       </form>
@@ -906,15 +912,16 @@ const UIComponents = {
 
   AdminEventForm: (e = null) => {
     const isEdit = e !== null;
+    const eventIdVal = isEdit ? (e._id || e.id || '') : '';
     return `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
         <h2 class="h-section text-xl">${isEdit ? 'ইভেন্ট এডিট করুন' : 'নতুন ইভেন্ট তৈরি করুন'}</h2>
-        <button onclick="window.location.hash = '#/admin/dashboard?tab=events'" class="btn-outline text-xs">
+        <button onclick="window.appAdmin.loadEventList()" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-event-form" data-id="${isEdit ? e._id : ''}" class="space-y-6">
+      <form id="add-event-form" data-id="${eventIdVal}" class="space-y-6">
         <div>
           <label class="label" for="e-title">ইভেন্টের শিরোনাম</label>
           <input id="e-title" name="title" required class="input" value="${_esc(isEdit ? e.title : '')}" placeholder="উদাঃ বিডিডিপিএ বার্ষিক সম্মেলন ২০২৬">
@@ -929,19 +936,19 @@ const UIComponents = {
             <input id="e-location" name="location" required class="input" value="${_esc(isEdit ? e.location : '')}" placeholder="উদাঃ জেলা পরিষদ মিলনায়তন, ভোলা">
           </div>
           <div>
-            <label class="label" for="e-startTime">শুরুর সময়</label>
+            <label class="label" id="e-startTime">শুরুর সময়</label>
             <input id="e-startTime" name="startTime" class="input" value="${_esc(isEdit ? e.startTime : '')}" placeholder="উদাঃ সকাল ১০:০০ টা">
           </div>
           <div>
-            <label class="label" for="e-endTime">শেষের সময়</label>
+            <label class="label" id="e-endTime">শেষের সময়</label>
             <input id="e-endTime" name="endTime" class="input" value="${_esc(isEdit ? e.endTime : '')}" placeholder="উদাঃ বিকাল ০৪:০০ টা">
           </div>
           <div>
-            <label class="label" for="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
+            <label class="label" id="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
             <input id="e-mapLink" name="mapLink" class="input" value="${_esc(isEdit ? e.mapLink : '')}" placeholder="https://maps.google.com/...">
           </div>
           <div>
-            <label class="label" for="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
+            <label class="label" id="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
             <input id="e-registrationLink" name="registrationLink" class="input" value="${_esc(isEdit ? e.registrationLink : '')}" placeholder="https://forms.gle/...">
           </div>
         </div>
@@ -950,7 +957,7 @@ const UIComponents = {
           <textarea id="e-description" name="description" required class="textarea h-32" placeholder="ইভেন্ট সম্পর্কিত বিবরণ বা নির্দেশনাসমূহ...">${_esc(isEdit ? e.description : '')}</textarea>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=events'" class="btn-outline">বাতিল</button>
+          <button type="button" onclick="window.appAdmin.loadEventList()" class="btn-outline">বাতিল</button>
           <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'ইভেন্ট আপডেট করুন' : 'ইভেন্ট তৈরি করুন'}</span></button>
         </div>
       </form>
@@ -1005,7 +1012,126 @@ const UIComponents = {
       </form>
     </div>`,
 
-  /* ================= SYSTEM HEALTH ================= */
+  /* ================= ADMIN MEMBER PREVIEW MODULE ================= */
+  AdminMemberPreview: (m = {}) => {
+    const expiry = _checkExpiry(m.joiningDate);
+    const profileImg = m.profilePhoto ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover rounded-xl"/>` : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-xl">${_initials(m.nameEn || m.nameBn)}</div>`;
+    const degreeImg = m.degreePhoto ? `<img src="${_esc(m.degreePhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">সার্টিফিকেটের ছবি আপলোড করা হয়নি</div>`;
+    const nidImg = m.nidPhoto ? `<img src="${_esc(m.nidPhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">এনআইডি কার্ডের ছবি আপলোড করা হয়নি</div>`;
+
+    return `
+      <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
+        <!-- Header -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
+          <div>
+            <span class="eyebrow">Admin Preview</span>
+            <h2 class="h-section text-xl mt-1">সদস্যের সম্পূর্ণ তথ্য ও নথি যাচাই</h2>
+          </div>
+          <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs inline-flex items-center gap-1">
+            ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
+          </button>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="grid lg:grid-cols-12 gap-8">
+          <!-- Profile Column -->
+          <div class="lg:col-span-4 space-y-6">
+            <div class="card p-5 text-center bg-ink-50/50">
+              <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
+                ${profileImg}
+              </div>
+              <h3 class="text-lg font-bold text-navy-900 mt-4">${_esc(m.nameBn || m.nameEn)}</h3>
+              <p class="text-xs text-ink-500 font-latin mt-1">${_esc(m.nameEn || '')}</p>
+              <div class="flex items-center justify-center gap-2 pt-3">
+                <span class="chip chip-teal font-latin">${_esc(m.memberId || 'BDPA-XXXX')}</span>
+                <span class="chip ${expiry.expired ? 'chip-red' : 'chip-emerald'}">${expiry.diffText}</span>
+              </div>
+            </div>
+            
+            <!-- Quick Status info -->
+            <div class="card p-5 space-y-3">
+              <h4 class="font-bold text-xs uppercase tracking-wider text-ink-400">মেম্বারশিপ স্ট্যাটাস</h4>
+              <div class="text-sm space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-ink-500">যোগদানের তারিখ:</span>
+                  <span class="font-semibold text-navy-900">${_fmtDateBn(m.joiningDate)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-ink-500">স্ট্যাটাস:</span>
+                  <span class="font-semibold ${expiry.expired ? 'text-red-600' : 'text-emerald-600'}">${expiry.expired ? 'Expired' : 'Active'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Fields Column -->
+          <div class="lg:col-span-8 space-y-6">
+            <div class="card p-6 space-y-5">
+              <h3 class="font-bold text-navy-900 border-b pb-2 text-base">ব্যক্তিগত ও পেশাগত বিবরণ</h3>
+              <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                ${[
+                  ['graduation-cap', 'যোগ্যতা/ডিগ্রি', m.qualification],
+                  ['building-2',     'শিক্ষা প্রতিষ্ঠান', m.institution],
+                  ['badge',          'BMDC Reg No',     m.bmdcReg],
+                  ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} বছর` : '০ বছর'],
+                  ['briefcase',      'চেম্বারের নাম',    m.chamberName],
+                  ['map-pin',        'চেম্বারের ঠিকানা',  m.chamberAddress || m.address],
+                  ['phone',          'মোবাইল নম্বর',    m.phone],
+                  ['mail',           'ইমেল এড্রেস',     m.email],
+                  ['heart',          'ব্লাড গ্রুপ',      m.bloodGroup],
+                  ['credit-card',    'এনআইডি নম্বর',     m.nidNumber],
+                  ['home',           'স্থায়ী ঠিকানা',    m.personalAddress],
+                  ['map',            'উপজেলা',          m.upazila],
+                ].map(([ic, label, val]) => `
+                  <div class="flex items-start gap-2.5">
+                    <span class="text-teal-600 mt-0.5">${_icon(ic, 'w-4 h-4')}</span>
+                    <div>
+                      <dt class="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">${label}</dt>
+                      <dd class="font-semibold text-navy-900 mt-0.5">${_esc(val || '—')}</dd>
+                    </div>
+                  </div>
+                `).join('')}
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Previews Section -->
+        <div class="border-t border-ink-100 pt-6 space-y-6">
+          <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
+            ${_icon('image', 'w-5 h-5 text-teal-600')}
+            <span>আপলোডকৃত নথি ও সার্টিফিকেট প্রিভিউ</span>
+          </h3>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- Degree Card -->
+            <div class="card p-5 space-y-4 bg-ink-50/30">
+              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
+                ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
+                <span>ডিগ্রি সার্টিফিকেট ছবি</span>
+              </h4>
+              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border animate-fade-in">
+                ${degreeImg}
+              </div>
+            </div>
+
+            <!-- NID Card -->
+            <div class="card p-5 space-y-4 bg-ink-50/30">
+              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
+                ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
+                <span>ন্যাশনাল আইডি (NID) কার্ডের ছবি</span>
+              </h4>
+              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border animate-fade-in">
+                ${nidImg}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /* ================= SYSTEM HEALTH (kept from original API) ================= */
   SystemHealthMonitor: () => `
     <div class="card p-6 sm:p-8 space-y-6">
       <div class="flex items-center gap-3">
