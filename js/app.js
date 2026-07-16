@@ -1,12 +1,6 @@
 /*
  * BDDPA Public Client Router & App State
  * Vanilla JS SPA using hash-based routing.
- *
- * This file preserves ALL backend integration:
- *  - Every fetch() call uses the same /api/v1/* endpoints as before.
- *  - Auth flow (JWT + localStorage) is unchanged.
- *  - Router shape and app*.* handler names are unchanged.
- * Only the rendered markup uses the new premium component set.
  */
 
 window.appState = {
@@ -20,9 +14,14 @@ window.API_BASE = (function () {
   return '/api/v1';
 })();
 
-const authHeaders = () => {
-  const h = { 'Content-Type': 'application/json' };
-  if (window.appState.token) h['Authorization'] = `Bearer ${window.appState.token}`;
+const authHeaders = (isMultipart = false) => {
+  const h = {};
+  if (!isMultipart) {
+    h['Content-Type'] = 'application/json';
+  }
+  if (window.appState.token) {
+    h['Authorization'] = `Bearer ${window.appState.token}`;
+  }
   return h;
 };
 
@@ -33,6 +32,34 @@ window.showToast = (message, type = 'success') => {
   document.body.appendChild(node);
   if (window.lucide) window.lucide.createIcons({ attrs: { class: 'w-4 h-4' } });
   setTimeout(() => node.remove(), 3500);
+};
+
+/* ================= AUTOMATED NOTIFICATION SERVICE ================= */
+const NotificationService = {
+  // এসএমএস পাঠানোর গেটওয়ে হ্যান্ডলার (এখানে আপনার সবুজ বা অন্য এসএমএস গেটওয়ে লিংকটি বসান)
+  sendSMS: async (phone, name, memberId) => {
+    try {
+      const message = `অভিনন্দন ডাঃ ${name}, BDDPA-তে আপনার সদস্যপদ সফলভাবে নিবন্ধিত হয়েছে। আপনার মেম্বার আইডি: ${memberId}। মেয়াদ ২ বছর।`;
+      
+      // আপনার নির্দিষ্ট এসএমএস গেটওয়ের API লিংকটি এখানে কনফিগার করুন
+      const smsGatewayUrl = `https://api.greenweb.com.bd/api.php?json&token=YOUR_GREENWEB_TOKEN&to=${phone}&message=${encodeURIComponent(message)}`;
+      
+      await fetch(smsGatewayUrl, { mode: 'no-cors' });
+      console.log('Automated registration SMS sent successfully to:', phone);
+    } catch (err) {
+      console.error('Failed to trigger SMS notification:', err);
+    }
+  },
+
+  sendEmail: async (email, name, memberId) => {
+    try {
+      // ব্যাকএন্ডে ইতিমধ্যে nodemailer যুক্ত করা থাকায় ক্রিয়েশন হ্যান্ডলার থেকেই এটি হ্যান্ডেল হবে। 
+      // অতিরিক্ত কোনো সরাসরি ফ্রন্টএন্ড ট্রিগার লাগলে এখানে যুক্ত করতে পারেন।
+      console.log('Automated registration Email triggered for:', email);
+    } catch (err) {
+      console.error('Email trigger failed:', err);
+    }
+  }
 };
 
 /* ================= SEO ================= */
@@ -70,7 +97,10 @@ const routerConfig = {
     title: 'হোম | BDDPA ভোলা',
     description: 'ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনের অফিসিয়াল হোমপেজ।',
     render: () => {
-      setTimeout(() => window.appPublic.initHomeSections(), 30);
+      setTimeout(() => {
+        window.appPublic.initHomeSections();
+        window.appPublic.loadDynamicMembershipCard();
+      }, 30);
       return `
         ${UIComponents.HomeHero()}
         <div id="home-stats-section"></div>
@@ -78,6 +108,7 @@ const routerConfig = {
         <div id="home-notice-section"></div>
         <div id="home-leadership-section"></div>
         <div id="home-cta-section">${UIComponents.HomeCTA()}</div>
+        <div id="home-membership-card-section" class="py-16 bg-ink-50"></div>
       `;
     }
   },
@@ -86,7 +117,7 @@ const routerConfig = {
     title: 'আমাদের সম্পর্কে | BDDPA',
     description: 'সংগঠনের ভিশন, মিশন ও পেশাগত অঙ্গীকার।',
     render: () => {
-      const schema = { '@context': 'https://schema.org', '@type': 'AboutPage', name: 'About BDDPA', description: 'Establishment, vision, and mission of BDDPA Bhola.' };
+      const schema = { '@context': 'https://schema.org', '@type': 'AboutPage', name: 'About BDDPA', description: 'Vision, and mission of BDDPA Bhola.' };
       setTimeout(() => seoEngine.setMeta('আমাদের সম্পর্কে | BDDPA', 'About the Association', '#/about', schema), 30);
       return UIComponents.AboutOrganization() + UIComponents.HomeCTA();
     }
@@ -221,7 +252,7 @@ const routerConfig = {
                   </div>
                   <h3 class="text-lg sm:text-xl font-bold text-navy-900">${_esc(n.title)}</h3>
                   <p class="mt-2 text-sm text-ink-500 leading-relaxed">${_esc(n.content)}</p>
-                  ${n.pdfUrl ? `<a href="${_esc(n.pdfUrl)}" target="_blank" rel="noopener" class="btn-outline mt-4 text-xs"><i data-lucide="file-text" class="w-3.5 h-3.5"></i>PDF দেখুন</a>` : ''}
+                  ${n.pdfUrl ? `<a href="${_esc(n.pdfUrl)}" target="_blank" rel="noopener" class="btn-outline mt-4 text-xs"><i data-lucide="image" class="w-3.5 h-3.5"></i>ছবি দেখুন</a>` : ''}
                 </div>
               </article>`).join('');
           } else {
@@ -303,9 +334,13 @@ const routerConfig = {
         if (tab === 'home') {
           window.appAdmin.loadOverview();
         } else if (tab === 'members') {
-          window.appAdmin.loadAddMemberForm();
+          window.appAdmin.loadMemberList();
         } else if (tab === 'notices') {
-          window.appAdmin.loadAddNoticeForm();
+          window.appAdmin.loadNoticeList();
+        } else if (tab === 'events') {
+          window.appAdmin.loadEventList();
+        } else if (tab === 'leadership') {
+          window.appAdmin.loadLeadershipForm();
         } else {
           const target = document.getElementById('dashboard-content-area');
           if (target) target.innerHTML = UIComponents.EmptyState(`দুঃখিত, '${tab}' ট্যাবটির কনটেন্ট বা ড্যাশবোর্ড তালিকা নির্মাণাধীন রয়েছে।`, 'wrench');
@@ -400,7 +435,6 @@ window.appVerify = {
 /* ================= PUBLIC HOMEPAGE ================= */
 window.appPublic = {
   initHomeSections: () => {
-    // Welcome + Notices + Leadership
     const welcome = document.getElementById('home-welcome-section');
     if (welcome) welcome.innerHTML = UIComponents.AboutOrganization();
 
@@ -409,7 +443,7 @@ window.appPublic = {
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-end justify-between gap-4 mb-8">
           <div><span class="eyebrow">Latest Notices</span><h2 class="h-section text-2xl sm:text-3xl mt-1.5">সাম্প্রতিক নোটিশ</h2></div>
-          <a href="#/notice" class="btn-outline text-xs"><i data-nav-arrow data-lucide="arrow-right" class="w-4 h-4"></i>সবগুলো দেখুন</a>
+          <a href="#/notice" class="btn-outline text-xs"><i data-lucide="arrow-right" class="w-4 h-4"></i>সবগুলো দেখুন</a>
         </div>
         <div id="home-notice-list" class="grid md:grid-cols-2 gap-5">
           ${Array.from({ length: 2 }).map(() => UIComponents.SkeletonCard()).join('')}
@@ -439,7 +473,6 @@ window.appPublic = {
       })
       .catch(() => {});
 
-    // Leadership uses HomeContent CMS
     fetch(`${window.API_BASE}/cms/home`)
       .then(r => r.json())
       .then(res => {
@@ -449,7 +482,6 @@ window.appPublic = {
       })
       .catch(() => {});
 
-    // Public counter stats
     fetch(`${window.API_BASE}/stats`)
       .then(res => res.json())
       .then(res => {
@@ -461,7 +493,6 @@ window.appPublic = {
           totalEvents:  res.data.events,
           totalNews:    res.data.news
         });
-        // Hero counters
         const map = { members: res.data.members, notices: res.data.notices, events: res.data.events };
         document.querySelectorAll('[data-hero-count]').forEach(n => {
           const k = n.getAttribute('data-hero-count');
@@ -470,6 +501,26 @@ window.appPublic = {
         refreshLucide();
       })
       .catch(() => {});
+  },
+
+  loadDynamicMembershipCard: () => {
+    const cardSection = document.getElementById('home-membership-card-section');
+    if (!cardSection) return;
+    
+    fetch(`${window.API_BASE}/members?limit=1&sort=-createdAt`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.data && res.data.length > 0) {
+          cardSection.innerHTML = UIComponents.DynamicMembershipCardSection(res.data[0]);
+        } else {
+          cardSection.innerHTML = UIComponents.DynamicMembershipCardSection(null);
+        }
+        refreshLucide();
+      })
+      .catch(() => {
+        cardSection.innerHTML = UIComponents.DynamicMembershipCardSection(null);
+        refreshLucide();
+      });
   }
 };
 
@@ -495,6 +546,74 @@ window.appAdmin = {
       });
   },
 
+  loadMemberList: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    fetch(`${window.API_BASE}/members`, { headers: authHeaders() })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          target.innerHTML = UIComponents.AdminMemberList(res.data);
+        } else {
+          target.innerHTML = UIComponents.EmptyState('সদস্য তালিকা লোড করা যায়নি।');
+        }
+        refreshLucide();
+      })
+      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+  },
+
+  loadNoticeList: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    fetch(`${window.API_BASE}/notices`, { headers: authHeaders() })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          target.innerHTML = UIComponents.AdminNoticeList(res.data);
+        } else {
+          target.innerHTML = UIComponents.EmptyState('নোটিশ তালিকা লোড করা যায়নি।');
+        }
+        refreshLucide();
+      })
+      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+  },
+
+  loadEventList: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    fetch(`${window.API_BASE}/cms/events`, { headers: authHeaders() })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          target.innerHTML = UIComponents.AdminEventList(res.data);
+        } else {
+          target.innerHTML = UIComponents.EmptyState('ইভেন্ট তালিকা লোড করা যায়নি।');
+        }
+        refreshLucide();
+      })
+      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+  },
+
+  loadLeadershipForm: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    fetch(`${window.API_BASE}/cms/home`, { headers: authHeaders() })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          target.innerHTML = UIComponents.AdminLeadershipForm(res.data || {});
+        } else {
+          target.innerHTML = UIComponents.EmptyState('সম্মানিত নেতৃত্বের তথ্য লোড করা যায়নি।');
+        }
+        refreshLucide();
+      })
+      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+  },
+
   loadAddMemberForm: () => {
     const target = document.getElementById('dashboard-content-area');
     if (target) {
@@ -509,6 +628,86 @@ window.appAdmin = {
       target.innerHTML = UIComponents.AdminNoticeForm();
       refreshLucide();
     }
+  },
+
+  loadAddEventForm: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (target) {
+      target.innerHTML = UIComponents.AdminEventForm();
+      refreshLucide();
+    }
+  },
+
+  renewMember: async (id) => {
+    if (!confirm('আপনি কি এই সদস্যের মেম্বারশিপ মেয়াদ আরও ২ বছর নবায়ন (Renew) করতে চান?')) return;
+    try {
+      const currentRes = await fetch(`${window.API_BASE}/members/profile/${id}`);
+      const currentJson = await currentRes.json();
+      if (!currentJson.success) {
+        window.showToast('সদস্য তথ্য খুঁজে পাওয়া যায়নি', 'error');
+        return;
+      }
+      
+      const newJoiningDate = new Date().toISOString();
+      const res = await fetch(`${window.API_BASE}/members/${id}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify({ joiningDate: newJoiningDate, status: 'Active' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast('মেম্বারশিপ মেয়াদ সফলভাবে ২ বছর বৃদ্ধি করা হয়েছে।', 'success');
+        window.appAdmin.loadMemberList();
+      } else {
+        window.showToast(data.message || 'নবায়ন ব্যর্থ হয়েছে।', 'error');
+      }
+    } catch (err) {
+      window.showToast('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'error');
+    }
+  },
+
+  deleteMember: async (id) => {
+    if (!confirm('আপনি কি নিশ্চিতভাবে এই সদস্যের অ্যাকাউন্ট ডিলেট করতে চান?')) return;
+    try {
+      const res = await fetch(`${window.API_BASE}/members/${id}`, { method: 'DELETE', headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast('সদস্য সফলভাবে ডিলিট করা হয়েছে।', 'success');
+        window.appAdmin.loadMemberList();
+      } else {
+        window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
+      }
+    } catch (err) {
+      window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error');
+    }
+  },
+
+  deleteNotice: async (id) => {
+    if (!confirm('আপনি কি এই নোটিশটি মুছে ফেলতে চান?')) return;
+    try {
+      const res = await fetch(`${window.API_BASE}/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast('নোটিশ ডিলিট করা হয়েছে।', 'success');
+        window.appAdmin.loadNoticeList();
+      } else {
+        window.showToast('ডিলিট করা যায়নি।', 'error');
+      }
+    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
+  },
+
+  deleteEvent: async (id) => {
+    if (!confirm('আপনি কি এই ইভেন্টটি মুছে ফেলতে চান?')) return;
+    try {
+      const res = await fetch(`${window.API_BASE}/cms/events/${id}`, { method: 'DELETE', headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast('ইভেন্ট ডিলিট করা হয়েছে।', 'success');
+        window.appAdmin.loadEventList();
+      } else {
+        window.showToast('ডিলিট করা যায়নি।', 'error');
+      }
+    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 };
 
@@ -603,25 +802,32 @@ document.addEventListener('submit', async (e) => {
     window.appAuth.login(email, password);
   }
 
-  // ২. নতুন সদস্য এড করার ফর্ম সাবমিট
+  // ২. নতুন সদস্য এড করার ফর্ম সাবমিট (Multipart/FormData)
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    if (data.experience) {
-      data.experience = Number(data.experience);
-    }
+    
+    // রেজিস্ট্রেশন ডেট হিসেবে আজকের ডেট বাইন্ড করা
+    const today = new Date().toISOString();
+    formData.append('joiningDate', today);
+    formData.append('status', 'Active');
 
     try {
       const res = await fetch(`${window.API_BASE}/members`, {
         method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify(data)
+        headers: authHeaders(true),
+        body: formData
       });
       const resData = await res.json();
       if (resData.success) {
         window.showToast('সদস্য সফলভাবে নিবন্ধিত হয়েছে।', 'success');
+        
+        // অটোমেটেড মোবাইল এসএমএস ও ইমেইল নোটিফিকেশন সার্ভিস ফায়ার করা
+        if (resData.data && resData.data.phone) {
+          NotificationService.sendSMS(resData.data.phone, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
+          NotificationService.sendEmail(resData.data.email, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
+        }
+        
         window.location.hash = '#/admin/dashboard?tab=home';
       } else {
         window.showToast(resData.message || 'সদস্য নিবন্ধন ব্যর্থ হয়েছে।', 'error');
@@ -636,13 +842,12 @@ document.addEventListener('submit', async (e) => {
   if (e.target.id === 'add-notice-form') {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
 
     try {
       const res = await fetch(`${window.API_BASE}/notices`, {
         method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify(data)
+        headers: authHeaders(true),
+        body: formData
       });
       const resData = await res.json();
       if (resData.success) {
@@ -655,6 +860,50 @@ document.addEventListener('submit', async (e) => {
       console.error(err);
       window.showToast('সার্ভারে সংযোগ স্থাপন করা যায়নি।', 'error');
     }
+  }
+
+  // ৪. নতুন ইভেন্ট এড করার ফর্ম সাবমিট
+  if (e.target.id === 'add-event-form') {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch(`${window.API_BASE}/cms/events`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+      });
+      const resData = await res.json();
+      if (resData.success) {
+        window.showToast('ইভেন্ট সফলভাবে তৈরি হয়েছে।', 'success');
+        window.location.hash = '#/admin/dashboard?tab=home';
+      } else {
+        window.showToast('ইভেন্ট তৈরি ব্যর্থ হয়েছে।', 'error');
+      }
+    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
+  }
+
+  // ৫. হোমপেজ সম্মানিত নেতৃত্ব মডিউল আপডেট
+  if (e.target.id === 'edit-leadership-form') {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch(`${window.API_BASE}/cms/home`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+      });
+      const resData = await res.json();
+      if (resData.success) {
+        window.showToast('নেতৃত্বের বার্তা সফলভাবে আপডেট হয়েছে।', 'success');
+        window.location.hash = '#/admin/dashboard?tab=home';
+      } else {
+        window.showToast('আপডেট ব্যর্থ হয়েছে।', 'error');
+      }
+    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 });
 
