@@ -652,16 +652,24 @@ window.appAdmin = {
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
     try {
-      const res = await fetch(`${window.API_BASE}/notices/${id}`, { headers: authHeaders() });
-      const data = await res.json();
+      // রাউট কনফিগারেশনের ভিত্তিতে standard বা cms রাউটের জন্য ট্রাই করা হবে
+      let res = await fetch(`${window.API_BASE}/notices/${id}`, { headers: authHeaders() });
+      let data = await res.json();
+
+      if (!data.success || res.status === 404) {
+        res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { headers: authHeaders() });
+        data = await res.json();
+      }
+
       if (data.success) {
         target.innerHTML = UIComponents.AdminNoticeForm(data.data);
       } else {
-        target.innerHTML = UIComponents.EmptyState('নোটিশ তথ্য লোড করা যায়নি।');
+        target.innerHTML = UIComponents.EmptyState(data.message || 'নোটিশ তথ্য লোড করা যায়নি।');
       }
       refreshLucide();
     } catch (err) {
-      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+      console.error(err);
+      target.innerHTML = UIComponents.EmptyState('সার্ভার সংযোগ ত্রুটি বা অবৈধ রাউট।');
       refreshLucide();
     }
   },
@@ -733,15 +741,26 @@ window.appAdmin = {
   deleteNotice: async (id) => {
     if (!confirm('আপনি কি এই নোটিশটি মুছে ফেলতে চান?')) return;
     try {
-      const res = await fetch(`${window.API_BASE}/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
-      const data = await res.json();
+      // standard রাউটে রিকোয়েস্ট পাঠানো হবে
+      let res = await fetch(`${window.API_BASE}/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
+      let data = await res.json();
+      
+      // standard রাউটে রিকোয়েস্ট ফেইল করলে cms রাউটে ট্রাই করা হবে
+      if (!data.success || res.status === 404) {
+        res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
+        data = await res.json();
+      }
+
       if (data.success) {
-        window.showToast('নোটিশ ডিলিট করা হয়েছে।', 'success');
+        window.showToast('নোটিশ সফলভাবে ডিলিট করা হয়েছে।', 'success');
         window.appAdmin.loadNoticeList();
       } else {
-        window.showToast('ডিলিট করা যায়নি।', 'error');
+        window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
       }
-    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
+    } catch (err) {
+      console.error(err);
+      window.showToast('সার্ভার ত্রুটি বা সংযোগ সমস্যা।', 'error');
+    }
   },
 
   deleteEvent: async (id) => {
@@ -989,20 +1008,33 @@ document.addEventListener('submit', async (e) => {
     }
 
     try {
-      const url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
-      const method = noticeId ? 'PUT' : 'POST';
+      // standard রাউটের জন্য চেষ্টা করা হবে
+      let url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
+      let method = noticeId ? 'PUT' : 'POST';
 
-      const res = await fetch(url, {
+      let res = await fetch(url, {
         method: method,
         headers: authHeaders(false),
         body: JSON.stringify(data)
       });
-      const resData = await res.json();
+      let resData = await res.json();
+
+      // যদি ফেইল করে বা রাউট অনুপস্থিত থাকে, তবে cms রাউটে ট্রাই করা হবে
+      if (!resData.success || res.status === 404) {
+        url = noticeId ? `${window.API_BASE}/cms/notices/${noticeId}` : `${window.API_BASE}/cms/notices`;
+        res = await fetch(url, {
+          method: method,
+          headers: authHeaders(false),
+          body: JSON.stringify(data)
+        });
+        resData = await res.json();
+      }
+
       if (resData.success) {
         window.showToast(noticeId ? 'নোটিশ সফলভাবে আপডেট হয়েছে।' : 'নোটিশ সফলভাবে প্রকাশিত হয়েছে।', 'success');
         window.location.hash = '#/admin/dashboard?tab=notices';
       } else {
-        window.showToast(resData.message || 'নোটিশ প্রকাশ ব্যর্থ হয়েছে।', 'error');
+        window.showToast(resData.message || 'নোটিশ সংরক্ষণ করা যায়নি।', 'error');
       }
     } catch (err) {
       console.error(err);
