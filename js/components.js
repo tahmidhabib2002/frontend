@@ -384,17 +384,6 @@ const UIComponents = {
                   ${m.status === 'Active' ? `<span class="verified-badge">${_icon('badge-check','w-3.5 h-3.5')}<span>Verified</span></span>` : ''}
                 </div>
               </div>
-
-              ${m.qrCode ? `
-                <div class="mt-6 p-4 rounded-2xl bg-ink-50 border border-ink-100 text-center">
-                  <img src="${_esc(m.qrCode)}" alt="QR" class="mx-auto w-32 h-32 rounded-xl bg-white p-2"/>
-                  <p class="mt-3 text-[11px] text-ink-500 font-latin tracking-widest">SCAN TO VERIFY</p>
-                </div>` : ''}
-
-              <div class="mt-6 grid grid-cols-2 gap-2">
-                <button onclick="window.print()" class="btn-outline text-xs">${_icon('printer','w-3.5 h-3.5')}Print</button>
-                <button onclick="navigator.share ? navigator.share({title:document.title, url:location.href}) : navigator.clipboard.writeText(location.href).then(() => window.showToast('লিংক কপি হয়েছে'))" class="btn-outline text-xs">${_icon('share-2','w-3.5 h-3.5')}Share</button>
-              </div>
             </div>
           </div>
         </div>
@@ -980,7 +969,7 @@ const UIComponents = {
           </div>
           <div id="exec-post-wrapper" class="${isEdit && m.roleType === 'Executive Committee' ? '' : 'hidden'}">
             <label class="label" for="m-executivePost">কমিটির পদবী</label>
-            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="सह-সভাপতি / সাধারণ সম্পাদক">
+            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="সহ-সভাপতি / সাধারণ সম্পাদক">
           </div>
         </div>
 
@@ -1043,6 +1032,10 @@ const UIComponents = {
             <label class="label" for="n-pdfUrl">নোটিশের ছবি (আপলোড)</label>
             <input type="file" name="pdfUrl" accept="image/*" class="input py-2">
             ${isEdit && n.pdfUrl ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের নোটিশ ছবি আপলোড করা আছে</p>` : ''}
+            ${isEdit && n.pdfUrl ? `
+              <div class="mt-3 overflow-hidden rounded-xl border border-ink-100">
+                <img src="${_esc(n.pdfUrl)}" alt="Notice Image" class="w-full h-40 object-cover" loading="lazy"/>
+              </div>` : ''}
           </div>
         </div>
         <div>
@@ -1157,7 +1150,7 @@ const UIComponents = {
       </form>
     </div>`,
 
-  /* ================= ADMIN MEMBER PREVIEW MODULE ================= */
+  /* ================= ADMIN MEMBER PREVIEW ================= */
   AdminMemberPreview: (m = {}) => {
     const expiry = _checkExpiry(m.joiningDate);
     const profileImg = m.profilePhoto ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover rounded-xl"/>` : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-xl">${_initials(m.nameEn || m.nameBn)}</div>`;
