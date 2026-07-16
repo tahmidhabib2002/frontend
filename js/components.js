@@ -491,9 +491,7 @@ const UIComponents = {
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2">
               <h4 class="font-bold text-navy-900 text-lg">${_esc(m.nameBn || m.nameEn)}</h4>
-              <span class="verified-badge ${expiry.expired ? 'bg-red-600' : 'bg-emerald-600'}">
-                ${_icon('check', 'w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span>
-              </span>
+              <span class="verified-badge bg-emerald-600">${_icon('check','w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span></span>
             </div>
             <p class="text-sm text-ink-500 font-latin mt-0.5">${_esc(m.nameEn || '')} · ${_esc(m.memberId || '')}</p>
             <div class="mt-3 flex flex-wrap gap-1.5">
@@ -685,7 +683,7 @@ const UIComponents = {
           <thead>
             <tr>
               <th>শিরোনাম</th>
-              <th>ক্যাটাগরি</th>
+              <th>क্যাটাগরি</th>
               <th>তারিখ</th>
               <th class="text-right">অ্যাকশন</th>
             </tr>
@@ -698,7 +696,7 @@ const UIComponents = {
                 <td>${_fmtDateBn(n.createdAt)}</td>
                 <td class="text-right space-x-1">
                   <button onclick="window.appAdmin.loadEditNoticeForm('${n._id}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteNotice('${n._id}')" class="btn-outline px-2 py-1 text-xs text-red-600">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                  <button onclick="window.appAdmin.deleteNotice('${n._id}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
               </tr>`).join('')}
           </tbody>
@@ -730,7 +728,7 @@ const UIComponents = {
                 <td>${_esc(e.location)}</td>
                 <td class="text-right space-x-1">
                   <button onclick="window.appAdmin.loadEditEventForm('${e._id}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteEvent('${e._id}')" class="btn-outline px-2 py-1 text-xs text-red-600">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                  <button onclick="window.appAdmin.deleteEvent('${e._id}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
                 </td>
               </tr>`).join('')}
           </tbody>
@@ -760,28 +758,32 @@ const UIComponents = {
             <input id="m-nameEn" name="nameEn" required class="input" value="${_esc(isEdit ? m.nameEn : '')}" placeholder="Dr. Md. Abdur Rahman">
           </div>
           <div>
-            <label class="label" for="m-qualification">যোগ্যতা/ডিগ্রি <span class="text-red-500">*</span></label>
-            <input id="m-qualification" name="qualification" required class="input" value="${_esc(isEdit ? m.qualification : '')}" placeholder="BDS, PGT (Dental)">
+            <label class="label" for="m-phone">মোবাইল নম্বর <span class="text-red-500">*</span></label>
+            <input id="m-phone" name="phone" required class="input" value="${_esc(isEdit ? m.phone : '')}" placeholder="017XXXXXXXX">
           </div>
           <div>
-            <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর <span class="text-red-500">*</span></label>
-            <input id="m-bmdcReg" name="bmdcReg" required class="input" value="${_esc(isEdit ? m.bmdcReg : '')}" placeholder="D-1234">
+            <label class="label" for="m-qualification">যোগ্যতা/ডিগ্রি</label>
+            <input id="m-qualification" name="qualification" class="input" value="${_esc(isEdit ? m.qualification : '')}" placeholder="BDS, PGT (Dental)">
           </div>
           <div>
-            <label class="label" for="m-institution">শিক্ষা প্রতিষ্ঠান (ইনস্টিটিউট) <span class="text-red-500">*</span></label>
-            <input id="m-institution" name="institution" required class="input" value="${_esc(isEdit ? m.institution : '')}" placeholder="উদাঃ ঢাকা ডেন্টাল কলেজ">
+            <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর</label>
+            <input id="m-bmdcReg" name="bmdcReg" class="input" value="${_esc(isEdit ? m.bmdcReg : '')}" placeholder="D-1234">
           </div>
           <div>
-            <label class="label" for="m-experience">অভিজ্ঞতা (বছর) <span class="text-red-500">*</span></label>
-            <input id="m-experience" name="experience" required type="number" class="input" value="${_esc(isEdit ? m.experience : '')}" placeholder="উদাঃ ৫">
+            <label class="label" for="m-institution">শিক্ষা প্রতিষ্ঠান (ইনস্টিটিউট)</label>
+            <input id="m-institution" name="institution" class="input" value="${_esc(isEdit ? m.institution : '')}" placeholder="উদাঃ ঢাকা ডেন্টাল কলেজ">
           </div>
           <div>
-            <label class="label" for="m-nidNumber">ন্যাশনাল আইডি কার্ড নম্বর <span class="text-red-500">*</span></label>
-            <input id="m-nidNumber" name="nidNumber" required class="input" value="${_esc(isEdit ? m.nidNumber : '')}" placeholder="199XXXXXXXXXXXX">
+            <label class="label" for="m-experience">অভিজ্ঞতা (বছর)</label>
+            <input id="m-experience" name="experience" type="number" class="input" value="${_esc(isEdit ? m.experience : '')}" placeholder="উদাঃ ৫">
           </div>
           <div>
-            <label class="label" for="m-bloodGroup">ব্লাড গ্রুপ <span class="text-red-500">*</span></label>
-            <select id="m-bloodGroup" name="bloodGroup" required class="select">
+            <label class="label" for="m-nidNumber">ন্যাশনাল আইডি কার্ড নম্বর</label>
+            <input id="m-nidNumber" name="nidNumber" class="input" value="${_esc(isEdit ? m.nidNumber : '')}" placeholder="199XXXXXXXXXXXX">
+          </div>
+          <div>
+            <label class="label" for="m-bloodGroup">ব্লাড গ্রুপ</label>
+            <select id="m-bloodGroup" name="bloodGroup" class="select">
               <option value="">সিলেক্ট করুন</option>
               ${['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => `
                 <option value="${bg}" ${isEdit && m.bloodGroup === bg ? 'selected' : ''}>${bg}</option>
@@ -789,24 +791,20 @@ const UIComponents = {
             </select>
           </div>
           <div>
-            <label class="label" for="m-phone">মোবাইল নম্বর <span class="text-red-500">*</span></label>
-            <input id="m-phone" name="phone" required class="input" value="${_esc(isEdit ? m.phone : '')}" placeholder="017XXXXXXXX">
+            <label class="label" for="m-email">ইমেল অ্যাড্রেস</label>
+            <input id="m-email" name="email" type="email" class="input" value="${_esc(isEdit ? m.email : '')}" placeholder="member@email.com">
           </div>
           <div>
-            <label class="label" for="m-email">ইমেল অ্যাড্রেস <span class="text-red-500">*</span></label>
-            <input id="m-email" name="email" required type="email" class="input" value="${_esc(isEdit ? m.email : '')}" placeholder="member@email.com">
+            <label class="label" for="m-chamberName">চেম্বারের নাম</label>
+            <input id="m-chamberName" name="chamberName" class="input" value="${_esc(isEdit ? m.chamberName : '')}" placeholder="রহমান ডেন্টাল কেয়ার">
           </div>
           <div>
-            <label class="label" for="m-chamberName">চেম্বারের নাম <span class="text-red-500">*</span></label>
-            <input id="m-chamberName" name="chamberName" required class="input" value="${_esc(isEdit ? m.chamberName : '')}" placeholder="রহমান ডেন্টাল কেয়ার">
+            <label class="label" for="m-chamberAddress">চেম্বারের ঠিকানা</label>
+            <input id="m-chamberAddress" name="chamberAddress" class="input" value="${_esc(isEdit ? m.chamberAddress : '')}" placeholder="সদর রোড, ভোলা সদর">
           </div>
           <div>
-            <label class="label" for="m-chamberAddress">চেম্বারের ঠিকানা <span class="text-red-500">*</span></label>
-            <input id="m-chamberAddress" name="chamberAddress" required class="input" value="${_esc(isEdit ? m.chamberAddress : '')}" placeholder="সদর রোড, ভোলা সদর">
-          </div>
-          <div>
-            <label class="label" for="m-personalAddress">নিজের স্থায়ী ঠিকানা <span class="text-red-500">*</span></label>
-            <input id="m-personalAddress" name="personalAddress" required class="input" value="${_esc(isEdit ? m.personalAddress : '')}" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
+            <label class="label" for="m-personalAddress">নিজের স্থায়ী ঠিকানা</label>
+            <input id="m-personalAddress" name="personalAddress" class="input" value="${_esc(isEdit ? m.personalAddress : '')}" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
           </div>
           <div>
             <label class="label" for="m-upazila">উপজেলা (ভোলা জেলা)</label>
@@ -831,23 +829,25 @@ const UIComponents = {
 
         <div class="divider-grad"></div>
 
-        <!-- File Upload Section -->
+        <!-- Image Link Inputs Section -->
         <div class="grid sm:grid-cols-3 gap-5">
           <div>
-            <label class="label">ওই ব্যক্তির ছবি ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
-            <input type="file" name="profilePhoto" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
-            ${isEdit && m.profilePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
+            <label class="label" for="m-profilePhoto">ওই ব্যক্তির প্রোফাইল ছবির লিংক (URL)</label>
+            <input id="m-profilePhoto" name="profilePhoto" class="input" value="${_esc(isEdit ? m.profilePhoto : '')}" placeholder="https://res.cloudinary.com/...">
           </div>
           <div>
-            <label class="label">ডিগ্রির সার্টিফিকেট ছবি ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
-            <input type="file" name="degreePhoto" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
-            ${isEdit && m.degreePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
+            <label class="label" for="m-degreePhoto">ডিগ্রির সার্টিফিকেট ছবির লিংক (URL)</label>
+            <input id="m-degreePhoto" name="degreePhoto" class="input" value="${_esc(isEdit ? m.degreePhoto : '')}" placeholder="https://res.cloudinary.com/...">
           </div>
           <div>
-            <label class="label">ন্যাশনাল আইডি কার্ড ছবি ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
-            <input type="file" name="nidPhoto" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
-            ${isEdit && m.nidPhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
+            <label class="label" for="m-nidPhoto">ন্যাশনাল আইডি কার্ড ছবির লিংক (URL)</label>
+            <input id="m-nidPhoto" name="nidPhoto" class="input" value="${_esc(isEdit ? m.nidPhoto : '')}" placeholder="https://res.cloudinary.com/...">
           </div>
+        </div>
+
+        <div>
+          <label class="label" for="m-biography">সংক্ষিপ্ত পরিচিতি (বায়োগ্রাফি)</label>
+          <textarea id="m-biography" name="biography" class="textarea h-24" placeholder="সদস্যের সংক্ষিপ্ত বিবরণ...">${_esc(isEdit ? m.biography : '')}</textarea>
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
@@ -868,7 +868,7 @@ const UIComponents = {
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-notice-form" data-id="${isEdit ? n._id : ''}" class="space-y-6" enctype="multipart/form-data">
+      <form id="add-notice-form" data-id="${isEdit ? n._id : ''}" class="space-y-6">
         <div>
           <label class="label" for="n-title">নোটিশের শিরোনাম</label>
           <input id="n-title" name="title" required class="input" value="${_esc(isEdit ? n.title : '')}" placeholder="বিজ্ঞপ্তি শিরোনাম...">
@@ -885,9 +885,8 @@ const UIComponents = {
             </select>
           </div>
           <div>
-            <label class="label">নোটিশের ছবি / ডকুমেন্টস (আপলোড) ${isEdit ? '' : '<span class="text-red-500">*</span>'}</label>
-            <input type="file" name="pdfUrl" ${isEdit ? '' : 'required'} accept="image/*" class="input py-2">
-            ${isEdit && n.pdfUrl ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের নোটিশ ছবি আপলোড করা আছে</p>` : ''}
+            <label class="label" for="n-pdfUrl">নোটিশের ছবির লিংক / URL</label>
+            <input id="n-pdfUrl" name="pdfUrl" class="input" value="${_esc(isEdit ? n.pdfUrl : '')}" placeholder="https://res.cloudinary.com/...">
           </div>
         </div>
         <div>
