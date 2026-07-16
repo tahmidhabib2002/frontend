@@ -1024,6 +1024,3 @@ const UIComponents = {
 };
 
 window.UIComponents = UIComponents;
-
---- END OF FILE ---
-ঠিক করে দেওয়া কোড টুকু দাও।
