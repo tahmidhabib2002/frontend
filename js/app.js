@@ -549,16 +549,7 @@ window.appAdmin = {
       .then(r => r.json())
       .then(res => {
         if (res.success) {
-          let html = UIComponents.AdminMemberList(res.data);
-          
-          // ডাইনামিক্যালি তালিকায় প্রিভিউ বাটন ইনজেক্ট করা
-          res.data.forEach(m => {
-            const editBtnPattern = `onclick="window.appAdmin.loadEditMemberForm('${m.slug}')"`;
-            const previewBtnHtml = `onclick="window.appAdmin.loadMemberPreview('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-navy-600 border-navy-300"><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>প্রিভিউ</button> <button ${editBtnPattern}`;
-            html = html.replace(editBtnPattern, previewBtnHtml);
-          });
-
-          target.innerHTML = html;
+          target.innerHTML = UIComponents.AdminMemberList(res.data);
         } else {
           target.innerHTML = UIComponents.EmptyState('সদস্য তালিকা লোড করা যায়নি।');
         }
@@ -575,7 +566,7 @@ window.appAdmin = {
       const res = await fetch(`${window.API_BASE}/members/profile/${slug}`, { headers: authHeaders() });
       const data = await res.json();
       if (data.success) {
-        target.innerHTML = renderAdminMemberPreviewInline(data.data);
+        target.innerHTML = UIComponents.AdminMemberPreview(data.data);
       } else {
         target.innerHTML = UIComponents.EmptyState('সদস্য তথ্য লোড করা যায়নি।');
       }
@@ -678,7 +669,6 @@ window.appAdmin = {
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
     try {
-      // রাউট কনফিগারেশনের ভিত্তিতে standard বা cms রাউটের জন্য ট্রাই করা হবে
       let res = await fetch(`${window.API_BASE}/notices/${id}`, { headers: authHeaders() });
       let data = await res.json();
 
@@ -767,11 +757,9 @@ window.appAdmin = {
   deleteNotice: async (id) => {
     if (!confirm('আপনি কি এই নোটিশটি মুছে ফেলতে চান?')) return;
     try {
-      // standard রাউটে রিকোয়েস্ট পাঠানো হবে
       let res = await fetch(`${window.API_BASE}/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
       let data = await res.json();
       
-      // standard রাউটে রিকোয়েস্ট ফেইল করলে cms রাউটে ট্রাই করা হবে
       if (!data.success || res.status === 404) {
         res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
         data = await res.json();
@@ -854,7 +842,7 @@ class PublicClientRouter {
   }
 }
 
-/* ================= HELPERS & INLINE VIEWER ================= */
+/* ================= HELPERS ================= */
 function refreshLucide() {
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
@@ -866,156 +854,6 @@ function highlightActiveNav(path) {
     const target = (a.getAttribute('href') || '').replace(/^#/, '');
     a.classList.toggle('is-active', target === path || (target === '/' && path === '/'));
   });
-}
-
-function _fmtDateBn(d) {
-  if (!d) return '';
-  try { return new Date(d).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' }); }
-  catch { return new Date(d).toDateString(); }
-}
-
-function _checkExpiry(joiningDate) {
-  if (!joiningDate) return { expired: false, diffText: '' };
-  const jDate = new Date(joiningDate);
-  const expDate = new Date(jDate.setFullYear(jDate.getFullYear() + 2));
-  const today = new Date();
-  
-  if (today > expDate) {
-    return { expired: true, diffText: 'মেয়াদোত্তীর্ণ (Expired)' };
-  }
-  
-  const diffTime = Math.abs(expDate - today);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return { expired: false, diffText: `${diffDays} দিন বাকি` };
-}
-
-function _initials(name = '') {
-  return name.trim().split(/\s+/).slice(0, 2).map(s => s[0] || '').join('').toUpperCase() || 'BD';
-}
-
-const _icon = (name, cls = 'w-4 h-4') =>
-  `<i data-lucide="${name}" class="${cls}"></i>`;
-
-function renderAdminMemberPreviewInline(m = {}) {
-  const expiry = _checkExpiry(m.joiningDate);
-  const _esc = (v) => (v == null ? '' : String(v)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;'));
-
-  const profileImg = m.profilePhoto ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover rounded-xl"/>` : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-xl">${_initials(m.nameEn || m.nameBn)}</div>`;
-  const degreeImg = m.degreePhoto ? `<img src="${_esc(m.degreePhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">সার্টিফিকেটের ছবি আপলোড করা হয়নি</div>`;
-  const nidImg = m.nidPhoto ? `<img src="${_esc(m.nidPhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">এনআইডি কার্ডের ছবি আপলোড করা হয়নি</div>`;
-
-  return `
-    <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
-      <!-- Header -->
-      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
-        <div>
-          <span class="eyebrow">Admin Preview</span>
-          <h2 class="h-section text-xl mt-1">সদস্যের সম্পূর্ণ তথ্য ও নথি যাচাই</h2>
-        </div>
-        <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs inline-flex items-center gap-1">
-          ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
-        </button>
-      </div>
-
-      <!-- Main Layout -->
-      <div class="grid lg:grid-cols-12 gap-8">
-        <!-- Profile Column -->
-        <div class="lg:col-span-4 space-y-6">
-          <div class="card p-5 text-center bg-ink-50/50">
-            <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
-              ${profileImg}
-            </div>
-            <h3 class="text-lg font-bold text-navy-900 mt-4">${_esc(m.nameBn || m.nameEn)}</h3>
-            <p class="text-xs text-ink-500 font-latin mt-1">${_esc(m.nameEn || '')}</p>
-            <div class="flex items-center justify-center gap-2 pt-3">
-              <span class="chip chip-teal font-latin">${_esc(m.memberId || 'BDPA-XXXX')}</span>
-              <span class="chip ${expiry.expired ? 'chip-red' : 'chip-emerald'}">${expiry.diffText}</span>
-            </div>
-          </div>
-          
-          <!-- Quick Status info -->
-          <div class="card p-5 space-y-3">
-            <h4 class="font-bold text-xs uppercase tracking-wider text-ink-400">মেম্বারশিপ স্ট্যাটাস</h4>
-            <div class="text-sm space-y-2">
-              <div class="flex justify-between">
-                <span class="text-ink-500">যোগদানের তারিখ:</span>
-                <span class="font-semibold text-navy-900">${_fmtDateBn(m.joiningDate)}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-ink-500">স্ট্যাটাস:</span>
-                <span class="font-semibold ${expiry.expired ? 'text-red-600' : 'text-emerald-600'}">${expiry.expired ? 'Expired' : 'Active'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Info Fields Column -->
-        <div class="lg:col-span-8 space-y-6">
-          <div class="card p-6 space-y-5">
-            <h3 class="font-bold text-navy-900 border-b pb-2 text-base">ব্যক্তিগত ও পেশাগত বিবরণ</h3>
-            <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-              ${[
-                ['graduation-cap', 'যোগ্যতা/ডিগ্রি', m.qualification],
-                ['building-2',     'শিক্ষা প্রতিষ্ঠান', m.institution],
-                ['badge',          'BMDC Reg No',     m.bmdcReg],
-                ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} বছর` : '০ বছর'],
-                ['briefcase',      'চেম্বারের নাম',    m.chamberName],
-                ['map-pin',        'চেম্বারের ঠিকানা',  m.chamberAddress || m.address],
-                ['phone',          'মোবাইল নম্বর',    m.phone],
-                ['mail',           'ইমেল এড্রেস',     m.email],
-                ['heart',          'ব্লাড গ্রুপ',      m.bloodGroup],
-                ['credit-card',    'এনআইডি নম্বর',     m.nidNumber],
-                ['home',           'স্থায়ী ঠিকানা',    m.personalAddress],
-                ['map',            'উপজেলা',          m.upazila],
-              ].map(([ic, label, val]) => `
-                <div class="flex items-start gap-2.5">
-                  <span class="text-teal-600 mt-0.5">${_icon(ic, 'w-4 h-4')}</span>
-                  <div>
-                    <dt class="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">${label}</dt>
-                    <dd class="font-semibold text-navy-900 mt-0.5">${_esc(val || '—')}</dd>
-                  </div>
-                </div>
-              `).join('')}
-            </dl>
-          </div>
-        </div>
-      </div>
-
-      <!-- Image Previews Section -->
-      <div class="border-t border-ink-100 pt-6 space-y-6">
-        <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
-          ${_icon('image', 'w-5 h-5 text-teal-600')}
-          <span>আপলোডকৃত নথি ও সার্টিফিকেট প্রিভিউ</span>
-        </h3>
-        
-        <div class="grid md:grid-cols-2 gap-6">
-          <!-- Degree Card -->
-          <div class="card p-5 space-y-4 bg-ink-50/30">
-            <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-              ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
-              <span>ডিগ্রি সার্টিফিকেট ছবি</span>
-            </h4>
-            <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
-              ${degreeImg}
-            </div>
-          </div>
-
-          <!-- NID Card -->
-          <div class="card p-5 space-y-4 bg-ink-50/30">
-            <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-              ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
-              <span>ন্যাশনাল আইডি (NID) কার্ডের ছবি</span>
-            </h4>
-            <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
-              ${nidImg}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
 }
 
 /* ================= MOBILE DRAWER + STICKY HEADER ================= */
@@ -1055,6 +893,20 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('submit', async (e) => {
   if (!e.target) return;
+
+  // ফাইলকে Base64-এ রূপান্তর করার গ্লোবাল হেল্পার ফাংশন
+  const fileToBase64 = (file) => {
+    return new Promise((resolve) => {
+      if (!file || !(file instanceof File) || file.size === 0) {
+        resolve("");
+        return;
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => resolve("");
+    });
+  };
 
   // ১. অ্যাডমিন লগইন
   if (e.target.id === 'admin-local-login') {
@@ -1189,7 +1041,6 @@ document.addEventListener('submit', async (e) => {
     }
 
     try {
-      // standard রাউটের জন্য চেষ্টা করা হবে
       let url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
       let method = noticeId ? 'PUT' : 'POST';
 
@@ -1200,7 +1051,6 @@ document.addEventListener('submit', async (e) => {
       });
       let resData = await res.json();
 
-      // যদি ফেইল করে বা রাউট অনুপস্থিত থাকে, তবে cms রাউটে ট্রাই করা হবে
       if (!resData.success || res.status === 404) {
         url = noticeId ? `${window.API_BASE}/cms/notices/${noticeId}` : `${window.API_BASE}/cms/notices`;
         res = await fetch(url, {
