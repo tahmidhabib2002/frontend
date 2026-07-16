@@ -25,6 +25,14 @@ const authHeaders = (isMultipart = false) => {
   return h;
 };
 
+// ফাইলকে সরাসরি Base64 কোডেড টেক্সটে রূপান্তর করার হেল্পার ফাংশন
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = (error) => reject(error);
+});
+
 window.showToast = (message, type = 'success') => {
   const el = document.createElement('div');
   el.innerHTML = UIComponents.ToastNotification(message, type);
@@ -36,12 +44,9 @@ window.showToast = (message, type = 'success') => {
 
 /* ================= AUTOMATED NOTIFICATION SERVICE ================= */
 const NotificationService = {
-  // এসএমএস পাঠানোর গেটওয়ে হ্যান্ডলার (এখানে আপনার সবুজ বা অন্য এসএমএস গেটওয়ে লিংকটি বসান)
   sendSMS: async (phone, name, memberId) => {
     try {
       const message = `অভিনন্দন ডাঃ ${name}, BDDPA-তে আপনার সদস্যপদ সফলভাবে নিবন্ধিত হয়েছে। আপনার মেম্বার আইডি: ${memberId}। মেয়াদ ২ বছর।`;
-      
-      // আপনার নির্দিষ্ট এসএমএস গেটওয়ের API লিংকটি এখানে কনফিগার করুন
       const smsGatewayUrl = `https://api.greenweb.com.bd/api.php?json&token=YOUR_GREENWEB_TOKEN&to=${phone}&message=${encodeURIComponent(message)}`;
       
       await fetch(smsGatewayUrl, { mode: 'no-cors' });
@@ -53,8 +58,6 @@ const NotificationService = {
 
   sendEmail: async (email, name, memberId) => {
     try {
-      // ব্যাকএন্ডে ইতিমধ্যে nodemailer যুক্ত করা থাকায় ক্রিয়েশন হ্যান্ডলার থেকেই এটি হ্যান্ডেল হবে। 
-      // অতিরিক্ত কোনো সরাসরি ফ্রন্টএন্ড ট্রিগার লাগলে এখানে যুক্ত করতে পারেন।
       console.log('Automated registration Email triggered for:', email);
     } catch (err) {
       console.error('Email trigger failed:', err);
@@ -622,6 +625,25 @@ window.appAdmin = {
     }
   },
 
+  loadEditMemberForm: async (slug) => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    try {
+      const res = await fetch(`${window.API_BASE}/members/profile/${slug}`, { headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        target.innerHTML = UIComponents.AdminMemberForm(data.data);
+      } else {
+        target.innerHTML = UIComponents.EmptyState('সদস্য তথ্য লোড করা যায়নি।');
+      }
+      refreshLucide();
+    } catch (err) {
+      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+      refreshLucide();
+    }
+  },
+
   loadAddNoticeForm: () => {
     const target = document.getElementById('dashboard-content-area');
     if (target) {
@@ -795,35 +817,75 @@ document.addEventListener('submit', async (e) => {
     window.appAuth.login(email, password);
   }
 
-  // ২. নতুন সদস্য এড করার ফর্ম সাবমিট (Multipart/FormData)
+  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট (JSON payload with base64 converted images)
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const memberId = form.dataset.id; // এডিট মোড হলে থাকবে, নতুন তৈরিতে খালি থাকবে
     
-    // রেজিস্ট্রেশন ডেট হিসেবে আজকের ডেট বাইন্ড করা
-    const today = new Date().toISOString();
-    formData.append('joiningDate', today);
-    formData.append('status', 'Active');
+    // ফর্ম ডেটা অবজেক্ট তৈরি
+    const formFields = new FormData(form);
+    const data = Object.fromEntries(formFields.entries());
+
+    // ফাইলগুলোকে Base64 টেক্সটে কনভার্ট করা
+    const profileFileInput = form.querySelector('input[name="profilePhoto"]');
+    const degreeFileInput = form.querySelector('input[name="degreePhoto"]');
+    const nidFileInput = form.querySelector('input[name="nidPhoto"]');
 
     try {
-      const res = await fetch(`${window.API_BASE}/members`, {
-        method: 'POST',
-        headers: authHeaders(true),
-        body: formData
+      // ছবি সিলেক্ট করা থাকলে Base64-এ রূপান্তর
+      if (profileFileInput && profileFileInput.files[0]) {
+        data.profilePhoto = await fileToBase64(profileFileInput.files[0]);
+      } else {
+        delete data.profilePhoto; // এডিটের সময় নতুন ছবি না দিলে পূর্বের ছবি ডিলিট হওয়া রোধ করবে
+      }
+
+      if (degreeFileInput && degreeFileInput.files[0]) {
+        data.degreePhoto = await fileToBase64(degreeFileInput.files[0]);
+      } else {
+        delete data.degreePhoto;
+      }
+
+      if (nidFileInput && nidFileInput.files[0]) {
+        data.nidPhoto = await fileToBase64(nidFileInput.files[0]);
+      } else {
+        delete data.nidPhoto;
+      }
+
+      // এক্সপেরিয়েন্সকে সংখ্যায় রূপান্তর
+      if (data.experience) {
+        data.experience = Number(data.experience);
+      }
+
+      // এডিট নাকি ক্রিয়েট—অনুরূপ ইউআরএল ও মেথড নির্ধারণ
+      const url = memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`;
+      const method = memberId ? 'PUT' : 'POST';
+
+      if (!memberId) {
+        const today = new Date().toISOString();
+        data.joiningDate = today;
+        data.status = 'Active';
+      }
+
+      const res = await fetch(url, {
+        method: method,
+        headers: authHeaders(false), // Base64 কোডেড JSON হিসেবে যাবে, Multipart নয়
+        body: JSON.stringify(data)
       });
       const resData = await res.json();
+      
       if (resData.success) {
-        window.showToast('সদস্য সফলভাবে নিবন্ধিত হয়েছে।', 'success');
+        window.showToast(memberId ? 'সদস্য তথ্য সফলভাবে আপডেট হয়েছে।' : 'সদস্য সফলভাবে নিবন্ধিত হয়েছে।', 'success');
         
-        // অটোমেটেড মোবাইল এসএমএস ও ইমেইল নোটিফিকেশন সার্ভিস ফায়ার করা
-        if (resData.data && resData.data.phone) {
+        // অটোমেটেড মোবাইল এসএমএস ও ইমেইল নোটিফিকেশন (শুধুমাত্র নতুন এন্ট্রির ক্ষেত্রে)
+        if (!memberId && resData.data && resData.data.phone) {
           NotificationService.sendSMS(resData.data.phone, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
           NotificationService.sendEmail(resData.data.email, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
         }
         
-        window.location.hash = '#/admin/dashboard?tab=home';
+        window.location.hash = '#/admin/dashboard?tab=members';
       } else {
-        window.showToast(resData.message || 'সদস্য নিবন্ধন ব্যর্থ হয়েছে।', 'error');
+        window.showToast(resData.message || 'অপারেশন ব্যর্থ হয়েছে।', 'error');
       }
     } catch (err) {
       console.error(err);
@@ -831,21 +893,31 @@ document.addEventListener('submit', async (e) => {
     }
   }
 
-  // ৩. নতুন নোটিশ প্রকাশ করার ফর্ম সাবমিট
+  // ৩. নতুন নোটিশ প্রকাশ বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-notice-form') {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const formFields = new FormData(form);
+    const data = Object.fromEntries(formFields.entries());
+
+    const noticeFileInput = form.querySelector('input[name="noticeImage"]');
 
     try {
+      if (noticeFileInput && noticeFileInput.files[0]) {
+        data.noticeImage = await fileToBase64(noticeFileInput.files[0]);
+      } else {
+        delete data.noticeImage;
+      }
+
       const res = await fetch(`${window.API_BASE}/notices`, {
         method: 'POST',
-        headers: authHeaders(true),
-        body: formData
+        headers: authHeaders(false),
+        body: JSON.stringify(data)
       });
       const resData = await res.json();
       if (resData.success) {
         window.showToast('নোটিশ সফলভাবে প্রকাশিত হয়েছে।', 'success');
-        window.location.hash = '#/admin/dashboard?tab=home';
+        window.location.hash = '#/admin/dashboard?tab=notices';
       } else {
         window.showToast(resData.message || 'নোটিশ প্রকাশ ব্যর্থ হয়েছে।', 'error');
       }
@@ -870,7 +942,7 @@ document.addEventListener('submit', async (e) => {
       const resData = await res.json();
       if (resData.success) {
         window.showToast('ইভেন্ট সফলভাবে তৈরি হয়েছে।', 'success');
-        window.location.hash = '#/admin/dashboard?tab=home';
+        window.location.hash = '#/admin/dashboard?tab=events';
       } else {
         window.showToast('ইভেন্ট তৈরি ব্যর্থ হয়েছে।', 'error');
       }
