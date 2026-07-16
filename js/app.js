@@ -86,6 +86,114 @@ const seoEngine = {
   }
 };
 
+/* ================= DYNAMIC UI COMPONENTS OVERRIDES ================= */
+if (window.UIComponents) {
+  // ১. ড্যাশবোর্ড শেলে নতুন "সদস্য আবেদন" ট্যাব যুক্ত করা
+  UIComponents.AdminDashboardShell = (active = 'home', content = '') => {
+    const nav = [
+      ['home',       'home',       'ওভারভিউ'],
+      ['users',      'members',    'সদস্য তালিকা'],
+      ['user-plus',  'requests',   'সদস্য আবেদন'], // নতুন ট্যাব
+      ['megaphone',  'notices',    'নোটিশ বোর্ড'],
+      ['calendar',   'events',     'ইভেন্টস'],
+      ['sliders',    'leadership', 'সম্মানিত নেতৃত্ব'],
+    ];
+    const user = window.appState?.user || {};
+    return `
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid lg:grid-cols-[260px_1fr] gap-6">
+        <aside class="card p-4 h-max lg:sticky lg:top-28">
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-medical text-white mb-4">
+            <div class="w-10 h-10 rounded-lg bg-white/15 grid place-items-center font-bold">${_initials(user.name || 'AD')}</div>
+            <div class="min-w-0">
+              <div class="text-sm font-bold truncate">${_esc(user.name || 'Admin')}</div>
+              <div class="text-[11px] text-teal-100 truncate font-latin">${_esc(user.role || 'Editor')}</div>
+            </div>
+          </div>
+          <nav class="space-y-1 text-sm font-medium">
+            ${nav.map(([ic, key, label]) => `
+              <a href="#/admin/dashboard?tab=${key}" data-admin-tab="${key}" class="drawer-link ${active === key ? 'is-active' : ''}">
+                ${_icon(ic, 'w-4 h-4')}<span>${label}</span>
+              </a>`).join('')}
+          </nav>
+          <div class="mt-4 pt-4 border-t border-ink-100">
+            <button onclick="window.appAuth.logout()" class="drawer-link w-full text-red-600 hover:bg-red-50">${_icon('log-out','w-4 h-4')}<span>লগআউট</span></button>
+          </div>
+        </aside>
+
+        <section class="min-w-0 space-y-6">
+          <header class="card p-5 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p class="text-[11px] uppercase tracking-widest text-teal-600 font-latin font-bold">Dashboard</p>
+              <h1 class="h-section text-xl mt-1">স্বাগতম, ${_esc((user.name || 'Admin').split(' ')[0])}</h1>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="#/" class="btn-outline">${_icon('external-link','w-4 h-4')}<span class="hidden sm:inline">সাইট দেখুন</span></a>
+              <button onclick="window.appAdmin.loadAddMemberForm()" class="btn-primary">${_icon('plus','w-4 h-4')}<span>নতুন সদস্য</span></button>
+            </div>
+          </header>
+          <div id="dashboard-content-area">${content}</div>
+        </section>
+      </div>
+    </div>`;
+  };
+
+  // ২. হোমপেজ হিরো সেকশনে ডাইরেক্ট আবেদন বাটন সেট করা
+  UIComponents.HomeHero = () => `
+    <section class="relative hero-bg">
+      <div class="hero-blob bg-teal-500/60" style="top:-4rem; left:-4rem;"></div>
+      <div class="hero-blob bg-emerald-500/40" style="bottom:-6rem; right:-4rem;"></div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:pt-24 lg:pb-32 text-center lg:text-left">
+        <div class="max-w-4xl mx-auto space-y-7 animate-fade-in-up flex flex-col items-center">
+          <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur text-[11px] font-semibold text-teal-100 tracking-wide">
+            ${_icon('shield-check', 'w-3.5 h-3.5')}
+            <span>Bhola District · Official Verified Directory</span>
+          </span>
+          <h1 class="text-[34px] sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
+            ভোলা জেলার <br class="hidden sm:block"/>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-teal-100 to-emerald-200">অনুমোদিত ডেন্টাল</span>
+            <br class="hidden sm:block"/> চিকিৎসকদের অফিসিয়াল প্ল্যাটফর্ম
+          </h1>
+          <p class="text-base sm:text-lg text-ink-200/90 max-w-2xl leading-relaxed text-center">
+            রেজিস্টার্ড সদস্য, প্রকাশিত নোটিশ ও ইভেন্টসহ ভোলা জেলার সকল ভেরিফাইড দন্ত চিকিৎসকদের একটি নিরাপদ, স্বচ্ছ ও পেশাদার ডিজিটাল রেজিস্ট্রি।
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <a href="#/register" class="btn-primary btn-lg" style="background:linear-gradient(135deg,#0891b2,#10b981);">${_icon('user-plus', 'w-4 h-4')}<span>আবেদন করুন (অনলাইন রেজিস্ট্রেশন)</span></a>
+            <a href="#/members" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm backdrop-blur transition">
+              ${_icon('users', 'w-4 h-4')}<span>সদস্য তালিকা দেখুন</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-b from-transparent to-white pointer-events-none"></div>
+    </section>
+  `;
+
+  // ৩. হোমপেজ CTA সেকশনকে অনলাইন রেজিস্ট্রেশনের সাথে ম্যাপ করা
+  UIComponents.HomeCTA = () => `
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div class="relative overflow-hidden rounded-[2rem] bg-gradient-medical p-8 sm:p-12 lg:p-16 text-white shadow-elevated">
+        <div class="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>
+        <div class="absolute -bottom-10 -left-10 w-72 h-72 rounded-full bg-emerald-400/20 blur-3xl"></div>
+        <div class="relative grid lg:grid-cols-3 gap-8 items-center">
+          <div class="lg:col-span-2 space-y-4">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] font-semibold tracking-widest uppercase font-latin">${_icon('shield-check', 'w-3.5 h-3.5')}Apply for Membership</span>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">ভোলা জেলার ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনে যোগ দিন</h2>
+            <p class="text-white/80 max-w-2xl">ভোলা জেলার ডেন্টাল চিকিৎসকদের পেশাদার অ্যাসোসিয়েশনে মেম্বারশিপের জন্য এখনই অনলাইনে আবেদন ফরম পূরণ করুন।</p>
+          </div>
+          <div class="flex lg:justify-end">
+            <a href="#/register" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-4 bg-white text-navy-900 font-bold shadow-card hover:shadow-elevated transition">
+              ${_icon('user-plus', 'w-5 h-5')}<span>অনলাইন রেজিস্ট্রেশন ফরম</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 /* ================= ROUTES ================= */
 const routerConfig = {
   '/': {
@@ -259,10 +367,10 @@ const routerConfig = {
                     <div class="mt-4 max-w-lg rounded-xl overflow-hidden border border-ink-100 bg-ink-50 relative group">
                       <img src="${_esc(n.pdfUrl)}" alt="${_esc(n.title)}" class="w-full h-auto max-h-[400px] object-contain" loading="lazy" />
                       <div class="p-3 bg-white border-t flex justify-end">
-                        <a href="${_esc(n.pdfUrl)}" target="_blank" rel="noopener" class="btn-outline text-xs inline-flex items-center gap-1.5">
-                          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        <button onclick="window.viewLargeImage('${_esc(n.pdfUrl)}')" class="btn-outline text-xs inline-flex items-center gap-1.5 cursor-pointer">
+                          <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
                           <span>বড় করে দেখুন</span>
-                        </a>
+                        </button>
                       </div>
                     </div>` : ''}
                 </div>
@@ -484,10 +592,10 @@ window.appPublic = {
               ${n.pdfUrl ? `
                 <div class="mt-4 rounded-xl overflow-hidden border border-ink-100 aspect-[16/9] bg-ink-50 relative group">
                   <img src="${_esc(n.pdfUrl)}" alt="${_esc(n.title)}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
-                  <a href="${_esc(n.pdfUrl)}" target="_blank" rel="noopener" class="absolute inset-0 bg-navy-900/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-sm">
-                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                  <button onclick="window.viewLargeImage('${_esc(n.pdfUrl)}')" class="absolute inset-0 w-full h-full bg-navy-900/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-sm border-none cursor-pointer">
+                    <i data-lucide="maximize-2" class="w-4 h-4"></i>
                     <span>বড় করে দেখুন</span>
-                  </a>
+                  </button>
                 </div>` : ''}
             </article>`).join('');
         } else {
@@ -956,7 +1064,7 @@ class PublicClientRouter {
   }
 }
 
-/* ================= HELPERS ================= */
+/* ================= HELPERS & OVERLAY VIEWER ================= */
 function refreshLucide() {
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
@@ -970,21 +1078,38 @@ function highlightActiveNav(path) {
   });
 }
 
-/* ================= MOBILE DRAWER + STICKY HEADER ================= */
-function initChrome() {
-  const drawer = document.getElementById('mobile-drawer');
-  const btn = document.getElementById('mobile-menu-btn');
-  const open = () => { drawer.classList.remove('hidden'); document.body.style.overflow = 'hidden'; };
-  const close = () => { drawer.classList.add('hidden'); document.body.style.overflow = ''; };
-  btn?.addEventListener('click', open);
-  drawer?.querySelectorAll('[data-drawer-close]').forEach(el => el.addEventListener('click', close));
-  drawer?.querySelectorAll('[data-drawer-link]').forEach(el => el.addEventListener('click', close));
-
-  const header = document.getElementById('site-header');
-  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-}
+// বড় ছবির ইন্টারেক্টিভ অন-পেজ লাইটবক্স প্রিভিউ (নতুন ফিচার)
+window.viewLargeImage = (src) => {
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 z-[100] bg-navy-950/85 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-fade-in no-print';
+  modal.innerHTML = `
+    <div class="absolute top-4 right-4 flex gap-2 z-10">
+      <button onclick="window.print()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="প্রিন্ট করুন">
+        <i data-lucide="printer" class="w-5 h-5"></i>
+      </button>
+      <button id="close-lightbox-btn" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="বন্ধ করুন">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="relative max-w-full max-h-[85vh] overflow-auto flex items-center justify-center rounded-2xl border border-white/10 bg-black/40 shadow-elevated p-2 animate-scale-in">
+      <img src="${src}" class="max-w-full max-h-[80vh] object-contain rounded-xl" alt="Notice Attachment" />
+    </div>
+  `;
+  
+  const close = () => {
+    modal.remove();
+    document.body.style.overflow = '';
+  };
+  
+  modal.querySelector('#close-lightbox-btn').addEventListener('click', close);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close();
+  });
+  
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+  refreshLucide();
+};
 
 // ন্যাভবারে রেজিস্ট্রেশন অপশন ইনজেক্ট করার হেল্পার
 function patchNavbar() {
