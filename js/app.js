@@ -858,7 +858,7 @@ document.addEventListener('submit', async (e) => {
     window.appAuth.login(email, password);
   }
 
-  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট (JSON payload with base64 converted images)
+  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
     const form = e.target;
@@ -868,49 +868,32 @@ document.addEventListener('submit', async (e) => {
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
 
-    // ফাইলগুলোকে Base64 টেক্সটে কনভার্ট করা
-    const profileFileInput = form.querySelector('input[name="profilePhoto"]');
-    const degreeFileInput = form.querySelector('input[name="degreePhoto"]');
-    const nidFileInput = form.querySelector('input[name="nidPhoto"]');
+    // chamberAddress কে address-এ ম্যাপ করা ব্যাকএন্ড ডেটাবেজ স্কিমার সাথে সামঞ্জস্যের জন্য
+    if (data.chamberAddress) {
+      data.address = data.chamberAddress;
+    }
+
+    // এক্সপেরিয়েন্সকে সংখ্যায় রূপান্তর
+    if (data.experience) {
+      data.experience = Number(data.experience);
+    } else {
+      delete data.experience;
+    }
+
+    // এডিট নাকি ক্রিয়েট—অনুরূপ ইউআরএল ও মেথড নির্ধারণ
+    const url = memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`;
+    const method = memberId ? 'PUT' : 'POST';
+
+    if (!memberId) {
+      const today = new Date().toISOString();
+      data.joiningDate = today;
+      data.status = 'Active';
+    }
 
     try {
-      // ছবি সিলেক্ট করা থাকলে Base64-এ রূপান্তর
-      if (profileFileInput && profileFileInput.files[0]) {
-        data.profilePhoto = await fileToBase64(profileFileInput.files[0]);
-      } else {
-        delete data.profilePhoto; // এডিটের সময় নতুন ছবি না দিলে পূর্বের ছবি ডিলিট হওয়া রোধ করবে
-      }
-
-      if (degreeFileInput && degreeFileInput.files[0]) {
-        data.degreePhoto = await fileToBase64(degreeFileInput.files[0]);
-      } else {
-        delete data.degreePhoto;
-      }
-
-      if (nidFileInput && nidFileInput.files[0]) {
-        data.nidPhoto = await fileToBase64(nidFileInput.files[0]);
-      } else {
-        delete data.nidPhoto;
-      }
-
-      // এক্সপেরিয়েন্সকে সংখ্যায় রূপান্তর
-      if (data.experience) {
-        data.experience = Number(data.experience);
-      }
-
-      // এডিট নাকি ক্রিয়েট—অনুরূপ ইউআরএল ও মেথড নির্ধারণ
-      const url = memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`;
-      const method = memberId ? 'PUT' : 'POST';
-
-      if (!memberId) {
-        const today = new Date().toISOString();
-        data.joiningDate = today;
-        data.status = 'Active';
-      }
-
       const res = await fetch(url, {
         method: method,
-        headers: authHeaders(false), // Base64 কোডেড JSON হিসেবে যাবে, Multipart নয়
+        headers: authHeaders(false), // সরাসরি ইমেজ URL টেক্সট ফিল্ড ব্যবহার করার কারণে JSON যাবে
         body: JSON.stringify(data)
       });
       const resData = await res.json();
@@ -942,15 +925,7 @@ document.addEventListener('submit', async (e) => {
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
 
-    const noticeFileInput = form.querySelector('input[name="pdfUrl"]');
-
     try {
-      if (noticeFileInput && noticeFileInput.files[0]) {
-        data.pdfUrl = await fileToBase64(noticeFileInput.files[0]);
-      } else {
-        delete data.pdfUrl;
-      }
-
       const url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
       const method = noticeId ? 'PUT' : 'POST';
 
@@ -991,7 +966,7 @@ document.addEventListener('submit', async (e) => {
       });
       const resData = await res.json();
       if (resData.success) {
-        window.showToast(eventId ? 'イভেন্ট সফলভাবে আপডেট হয়েছে।' : 'ইভেন্ট সফলভাবে তৈরি হয়েছে।', 'success');
+        window.showToast(eventId ? 'ইভেন্ট সফলভাবে আপডেট হয়েছে।' : 'ইভেন্ট সফলভাবে তৈরি হয়েছে।', 'success');
         window.location.hash = '#/admin/dashboard?tab=events';
       } else {
         window.showToast('ইভেন্ট তৈরি ব্যর্থ হয়েছে।', 'error');
