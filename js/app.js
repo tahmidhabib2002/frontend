@@ -36,6 +36,7 @@ window.showToast = (message, type = 'success') => {
 
 /* ================= AUTOMATED NOTIFICATION SERVICE ================= */
 const NotificationService = {
+  // এসএমএস পাঠানোর গেটওয়ে হ্যান্ডলার
   sendSMS: async (phone, name, memberId) => {
     try {
       const message = `অভিনন্দন ডাঃ ${name}, BDDPA-তে আপনার সদস্যপদ সফলভাবে নিবন্ধিত হয়েছে। আপনার মেম্বার আইডি: ${memberId}। মেয়াদ ২ বছর।`;
@@ -110,7 +111,9 @@ const routerConfig = {
   '/register': {
     title: 'অনলাইন রেজিস্ট্রেশন | BDDPA ভোলা',
     description: 'ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনের সদস্যপদের জন্য আবেদন ফরম।',
-    render: () => UIComponents.PublicRegistrationForm()
+    render: () => {
+      return UIComponents.PublicRegistrationForm();
+    }
   },
 
   '/about': {
@@ -186,7 +189,7 @@ const routerConfig = {
             const remains = new Date(e.eventDate) - new Date();
             const days = Math.ceil(remains / 86400000);
             const dateStr = new Date(e.eventDate).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
-            const _escLocal = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
+            const _esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
             return `
               <article class="timeline-item pb-10">
                 <div class="card p-6 sm:p-7">
@@ -195,17 +198,17 @@ const routerConfig = {
                     ${days > 0
                       ? `<span class="chip chip-emerald"><i data-lucide="timer" class="w-3 h-3"></i>${days} দিন বাকি</span>`
                       : `<span class="chip"><i data-lucide="check" class="w-3 h-3"></i>সম্পন্ন</span>`}
-                    ${e.startTime ? `<span class="chip"><i data-lucide="clock" class="w-3 h-3"></i>${_escLocal(e.startTime)}${e.endTime ? ' – ' + _escLocal(e.endTime) : ''}</span>` : ''}
+                    ${e.startTime ? `<span class="chip"><i data-lucide="clock" class="w-3 h-3"></i>${_esc(e.startTime)}${e.endTime ? ' – ' + _esc(e.endTime) : ''}</span>` : ''}
                   </div>
-                  <h3 class="text-xl font-bold text-navy-900">${_escLocal(e.title)}</h3>
-                  <p class="mt-2 text-sm text-ink-500 leading-relaxed">${_escLocal(e.description)}</p>
+                  <h3 class="text-xl font-bold text-navy-900">${_esc(e.title)}</h3>
+                  <p class="mt-2 text-sm text-ink-500 leading-relaxed">${_esc(e.description)}</p>
                   <div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-ink-500">
-                    <span class="inline-flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-600"></i>${_escLocal(e.location)}</span>
-                    ${e.mapLink ? `<a href="${_escLocal(e.mapLink)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-teal-600 font-semibold hover:underline"><i data-lucide="external-link" class="w-3.5 h-3.5"></i>ম্যাপে দেখুন</a>` : ''}
+                    <span class="inline-flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-600"></i>${_esc(e.location)}</span>
+                    ${e.mapLink ? `<a href="${_esc(e.mapLink)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-teal-600 font-semibold hover:underline"><i data-lucide="external-link" class="w-3.5 h-3.5"></i>ম্যাপে দেখুন</a>` : ''}
                   </div>
                   ${e.registrationLink ? `
                     <div class="mt-5">
-                      <a href="${_escLocal(e.registrationLink)}" target="_blank" rel="noopener" class="btn-primary">
+                      <a href="${_esc(e.registrationLink)}" target="_blank" rel="noopener" class="btn-primary">
                         <i data-lucide="ticket" class="w-4 h-4"></i><span>রেজিস্ট্রেশন</span>
                       </a>
                     </div>` : ''}
@@ -241,18 +244,27 @@ const routerConfig = {
           const area = document.getElementById('notice-list-view');
           if (!area) return;
           if (res.success && res.data.length) {
-            const _escLocal = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
+            const _esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
             const catChip = c => ({ Urgent: 'chip-red', Meeting: 'chip-teal', Seminar: 'chip-gold' })[c] || 'chip';
             area.innerHTML = res.data.map(n => `
               <article class="timeline-item pb-10">
-                <div class="card p-6 sm:p-7">
-                  <div class="flex flex-wrap items-center gap-2 mb-3">
-                    <span class="chip ${catChip(n.category)}"><i data-lucide="tag" class="w-3 h-3"></i>${_escLocal(n.category)}</span>
+                <div class="card p-6 sm:p-7 space-y-4">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="chip ${catChip(n.category)}"><i data-lucide="tag" class="w-3 h-3"></i>${_esc(n.category)}</span>
                     <span class="text-[11px] text-ink-400 font-latin">${new Date(n.createdAt).toLocaleDateString('bn-BD', { year:'numeric', month:'short', day:'numeric' })}</span>
                   </div>
-                  <h3 class="text-lg sm:text-xl font-bold text-navy-900">${_escLocal(n.title)}</h3>
-                  <p class="mt-2 text-sm text-ink-500 leading-relaxed">${_escLocal(n.content)}</p>
-                  ${n.pdfUrl ? `<a href="${_escLocal(n.pdfUrl)}" target="_blank" rel="noopener" class="btn-outline mt-4 text-xs"><i data-lucide="image" class="w-3.5 h-3.5"></i>ছবি দেখুন</a>` : ''}
+                  <h3 class="text-lg sm:text-xl font-bold text-navy-900">${_esc(n.title)}</h3>
+                  <p class="text-sm text-ink-500 leading-relaxed">${_esc(n.content)}</p>
+                  ${n.pdfUrl ? `
+                    <div class="mt-4 max-w-lg rounded-xl overflow-hidden border border-ink-100 bg-ink-50 relative group">
+                      <img src="${_esc(n.pdfUrl)}" alt="${_esc(n.title)}" class="w-full h-auto max-h-[400px] object-contain" loading="lazy" />
+                      <div class="p-3 bg-white border-t flex justify-end">
+                        <a href="${_esc(n.pdfUrl)}" target="_blank" rel="noopener" class="btn-outline text-xs inline-flex items-center gap-1.5">
+                          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                          <span>বড় করে দেখুন</span>
+                        </a>
+                      </div>
+                    </div>` : ''}
                 </div>
               </article>`).join('');
           } else {
@@ -335,7 +347,7 @@ const routerConfig = {
           window.appAdmin.loadOverview();
         } else if (tab === 'members') {
           window.appAdmin.loadMemberList();
-        } else if (tab === 'requests') {
+        } else if (tab === 'requests') { // সদস্য আবেদন রাউট হ্যান্ডলিং
           window.appAdmin.loadRequestList();
         } else if (tab === 'notices') {
           window.appAdmin.loadNoticeList();
@@ -458,15 +470,25 @@ window.appPublic = {
         const box = document.getElementById('home-notice-list');
         if (!box) return;
         if (res.success && res.data.length) {
-          const _escLocal = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
+          const _esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
           box.innerHTML = res.data.slice(0, 4).map(n => `
-            <article class="card p-6">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="chip chip-teal"><i data-lucide="tag" class="w-3 h-3"></i>${_escLocal(n.category)}</span>
-                <span class="text-[11px] text-ink-400 font-latin">${new Date(n.createdAt).toLocaleDateString('bn-BD',{year:'numeric',month:'short',day:'numeric'})}</span>
+            <article class="card p-6 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="chip chip-teal"><i data-lucide="tag" class="w-3 h-3"></i>${_esc(n.category)}</span>
+                  <span class="text-[11px] text-ink-400 font-latin">${new Date(n.createdAt).toLocaleDateString('bn-BD',{year:'numeric',month:'short',day:'numeric'})}</span>
+                </div>
+                <h3 class="font-bold text-navy-900 text-base">${_esc(n.title)}</h3>
+                <p class="text-sm text-ink-500 mt-2 line-clamp-3">${_esc(n.content)}</p>
               </div>
-              <h3 class="font-bold text-navy-900 text-base">${_escLocal(n.title)}</h3>
-              <p class="text-sm text-ink-500 mt-2 line-clamp-3">${_escLocal(n.content)}</p>
+              ${n.pdfUrl ? `
+                <div class="mt-4 rounded-xl overflow-hidden border border-ink-100 aspect-[16/9] bg-ink-50 relative group">
+                  <img src="${_esc(n.pdfUrl)}" alt="${_esc(n.title)}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
+                  <a href="${_esc(n.pdfUrl)}" target="_blank" rel="noopener" class="absolute inset-0 bg-navy-900/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-sm">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    <span>বড় করে দেখুন</span>
+                  </a>
+                </div>` : ''}
             </article>`).join('');
         } else {
           box.innerHTML = UIComponents.EmptyState('এখনো কোনো নোটিশ প্রকাশিত হয়নি।', 'megaphone');
@@ -758,6 +780,7 @@ window.appAdmin = {
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
     try {
+      // রাউট কনফিগারেশনের ভিত্তিতে standard বা cms রাউটের জন্য ট্রাই করা হবে
       let res = await fetch(`${window.API_BASE}/notices/${id}`, { headers: authHeaders() });
       let data = await res.json();
 
@@ -846,9 +869,11 @@ window.appAdmin = {
   deleteNotice: async (id) => {
     if (!confirm('আপনি কি এই নোটিশটি মুছে ফেলতে চান?')) return;
     try {
+      // standard রাউটে রিকোয়েস্ট পাঠানো হবে
       let res = await fetch(`${window.API_BASE}/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
       let data = await res.json();
       
+      // standard রাউটে রিকোয়েস্ট ফেইল করলে cms রাউটে ট্রাই করা হবে
       if (!data.success || res.status === 404) {
         res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
         data = await res.json();
@@ -961,7 +986,9 @@ function initChrome() {
   onScroll();
 }
 
+// ন্যাভবারে রেজিস্ট্রেশন অপশন ইনজেক্ট করার হেল্পার
 function patchNavbar() {
+  // ডেস্কটপ ন্যাভবার
   const nav = document.querySelector('nav.hidden.lg\\:flex');
   if (nav && !nav.querySelector('a[href="#/register"]')) {
     const regLink = document.createElement('a');
@@ -972,6 +999,7 @@ function patchNavbar() {
     nav.appendChild(regLink);
   }
 
+  // মোবাইল ড্রয়ার ন্যাভবার
   const drawerNav = document.querySelector('#mobile-drawer nav');
   if (drawerNav && !drawerNav.querySelector('a[href="#/register"]')) {
     const regLink = document.createElement('a');
@@ -983,6 +1011,7 @@ function patchNavbar() {
   }
 }
 
+// গ্লোবাল ক্লিক ডেলিগেশন হ্যান্ডলার (ফিরে যান/বাতিল বাটন বাগের সমাধান)
 document.addEventListener('click', (e) => {
   const backBtn = e.target.closest('button[onclick*="dashboard?tab="]');
   if (backBtn) {
@@ -993,7 +1022,7 @@ document.addEventListener('click', (e) => {
       e.stopPropagation();
       const tab = match[1];
       if (tab === 'members') window.appAdmin.loadMemberList();
-      else if (tab === 'requests') window.appAdmin.loadRequestList();
+      else if (tab === 'requests') window.appAdmin.loadRequestList(); // নতুন আবেদনের ব্যাক বাটন
       else if (tab === 'notices') window.appAdmin.loadNoticeList();
       else if (tab === 'events') window.appAdmin.loadEventList();
       else if (tab === 'leadership') window.appAdmin.loadLeadershipForm();
@@ -1005,6 +1034,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('submit', async (e) => {
   if (!e.target) return;
 
+  // ফাইলকে Base64-এ রূপান্তর করার গ্লোবাল হেল্পার ফাংশন
   const fileToBase64 = (file) => {
     return new Promise((resolve) => {
       if (!file || !(file instanceof File) || file.size === 0) {
@@ -1018,7 +1048,7 @@ document.addEventListener('submit', async (e) => {
     });
   };
 
-  // 1. Admin Login
+  // ১. অ্যাডমিন লগইন
   if (e.target.id === 'admin-local-login') {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
@@ -1026,23 +1056,27 @@ document.addEventListener('submit', async (e) => {
     window.appAuth.login(email, password);
   }
 
-  // 2. Add/Edit Member Form
+  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
     const form = e.target;
-    const memberId = form.dataset.id;
+    const memberId = form.dataset.id; // এডিট মোড হলে থাকবে
     
+    // ফর্ম ইনপুট থেকে ফাইল অবজেক্টগুলো নেওয়া
     const profilePhotoFile = form.querySelector('input[name="profilePhoto"]')?.files[0];
     const degreePhotoFile = form.querySelector('input[name="degreePhoto"]')?.files[0];
     const nidPhotoFile = form.querySelector('input[name="nidPhoto"]')?.files[0];
 
+    // ফাইলগুলোকে Base64-এ রূপান্তর করা
     const profilePhotoBase64 = await fileToBase64(profilePhotoFile);
     const degreePhotoBase64 = await fileToBase64(degreePhotoFile);
     const nidPhotoBase64 = await fileToBase64(nidPhotoFile);
 
+    // Form data তৈরি
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
 
+    // ব্যাকএন্ড স্কিমার রিকোয়ার্ড ফিল্ড এরর এড়াতে ডিফেন্সিভ ডেটা ম্যাপিং (ডিফল্ট ভ্যালু প্রদান)
     data.nameBn = data.nameBn || "";
     data.nameEn = data.nameEn || "";
     data.phone = data.phone || "";
@@ -1055,13 +1089,15 @@ document.addEventListener('submit', async (e) => {
     data.email = data.email || "";
     data.chamberName = data.chamberName || "";
     data.chamberAddress = data.chamberAddress || "";
-    data.address = data.chamberAddress || "";
+    data.address = data.chamberAddress || ""; // chamberAddress কে address-এ ম্যাপ করা
     data.personalAddress = data.personalAddress || "";
     data.upazila = data.upazila || "Bhola Sadar";
     data.biography = data.biography || "";
     data.roleType = data.roleType || "General Member";
     data.executivePost = data.executivePost || "";
 
+    // কনভার্ট করা Base64 ডাটা অ্যাসাইন করা
+    // এডিট মুডে যদি ব্যবহারকারী নতুন ছবি আপলোড না করে থাকেন, তবে বডি থেকে সংশ্লিষ্ট প্রোপার্টিগুলো মুছে ফেলা হবে
     if (profilePhotoBase64) {
       data.profilePhoto = profilePhotoBase64;
     } else {
@@ -1083,6 +1119,7 @@ document.addEventListener('submit', async (e) => {
       else data.nidPhoto = "";
     }
 
+    // এডিট নাকি ক্রিয়েট—অনুরূপ ইউআরএল ও মেথড নির্ধারণ
     const url = memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`;
     const method = memberId ? 'PUT' : 'POST';
 
@@ -1095,7 +1132,7 @@ document.addEventListener('submit', async (e) => {
     try {
       const res = await fetch(url, {
         method: method,
-        headers: authHeaders(false),
+        headers: authHeaders(false), // JSON ট্রান্সমিশনের জন্য application/json ব্যবহার করা হবে
         body: JSON.stringify(data)
       });
       const resData = await res.json();
@@ -1103,6 +1140,7 @@ document.addEventListener('submit', async (e) => {
       if (resData.success) {
         window.showToast(memberId ? 'সদস্য তথ্য সফলভাবে আপডেট হয়েছে।' : 'সদস্য সফলভাবে নিবন্ধিত হয়েছে।', 'success');
         
+        // অটোমেটেড মোবাইল এসএমএস ও ইমেইল নোটিফিকেশন (শুধুমাত্র নতুন এন্ট্রির ক্ষেত্রে)
         if (!memberId && resData.data && resData.data.phone) {
           NotificationService.sendSMS(resData.data.phone, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
           NotificationService.sendEmail(resData.data.email, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
@@ -1118,12 +1156,13 @@ document.addEventListener('submit', async (e) => {
     }
   }
 
-  // 3. Add/Edit Notice Form
+  // ৩. নতুন নোটিশ প্রকাশ বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-notice-form') {
     e.preventDefault();
     const form = e.target;
     const noticeId = form.dataset.id;
 
+    // নোটিশের ছবি ইনপুট নেওয়া ও রূপান্তর করা
     const pdfUrlFile = form.querySelector('input[name="pdfUrl"]')?.files[0];
     const pdfUrlBase64 = await fileToBase64(pdfUrlFile);
 
@@ -1174,7 +1213,7 @@ document.addEventListener('submit', async (e) => {
     }
   }
 
-  // 4. Add/Edit Event Form
+  // ৪. ইভেন্ট এড বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-event-form') {
     e.preventDefault();
     const form = e.target;
@@ -1201,7 +1240,7 @@ document.addEventListener('submit', async (e) => {
     } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 
-  // 5. Leadership Form
+  // ৫. হোমপেজ সম্মানিত নেতৃত্ব মডিউল আপডেট
   if (e.target.id === 'edit-leadership-form') {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -1223,15 +1262,17 @@ document.addEventListener('submit', async (e) => {
     } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 
-  // 6. Public Registration Form
+  // ৬. পাবলিক রেজিস্ট্রেশন ফর্ম সাবমিট
   if (e.target.id === 'public-register-form') {
     e.preventDefault();
     const form = e.target;
     
+    // ফর্ম ইনপুট থেকে ফাইল অবজেক্টগুলো নেওয়া
     const profilePhotoFile = form.querySelector('input[name="profilePhoto"]')?.files[0];
     const degreePhotoFile = form.querySelector('input[name="degreePhoto"]')?.files[0];
     const nidPhotoFile = form.querySelector('input[name="nidPhoto"]')?.files[0];
 
+    // বাধ্যতামূলক ফাইল চেকিং ভ্যালিডেশন
     if (!profilePhotoFile || profilePhotoFile.size === 0) {
       window.showToast('দয়া করে আপনার ছবি সিলেক্ট করুন।', 'error');
       return;
@@ -1245,18 +1286,22 @@ document.addEventListener('submit', async (e) => {
       return;
     }
 
+    // বাটন লোডিং স্টেট পরিবর্তন
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalBtnHtml = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<span>প্রসেস হচ্ছে...</span>`;
 
+    // ফাইলগুলোকে Base64-এ রূপান্তর করা
     const profilePhotoBase64 = await fileToBase64(profilePhotoFile);
     const degreePhotoBase64 = await fileToBase64(degreePhotoFile);
     const nidPhotoBase64 = await fileToBase64(nidPhotoFile);
 
+    // ফর্ম ডাটা তৈরি
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
 
+    // মেন্ডেটরি ও ডিফেন্সিভ অবজেক্ট ম্যাপিং
     data.nameBn = data.nameBn || "";
     data.nameEn = data.nameEn || "";
     data.phone = data.phone || "";
@@ -1276,6 +1321,7 @@ document.addEventListener('submit', async (e) => {
     data.roleType = "General Member"; 
     data.executivePost = "";
     
+    // আবেদন অবশ্যই 'Pending' স্ট্যাটাসে ডাটাবেজে যাবে এবং এপ্রুভালের অপেক্ষায় থাকবে
     data.status = 'Pending';
     data.joiningDate = new Date().toISOString();
 
@@ -1286,7 +1332,7 @@ document.addEventListener('submit', async (e) => {
     try {
       const res = await fetch(`${window.API_BASE}/members`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }, // টোকেন ছাড়া পাবলিক এপিআই হিসেবে সাবমিট হবে
         body: JSON.stringify(data)
       });
       const resData = await res.json();
