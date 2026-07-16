@@ -842,6 +842,20 @@ function initChrome() {
 document.addEventListener('submit', async (e) => {
   if (!e.target) return;
 
+  // ফাইলকে Base64-এ রূপান্তর করার গ্লোবাল হেল্পার ফাংশন
+  const fileToBase64 = (file) => {
+    return new Promise((resolve) => {
+      if (!file || !(file instanceof File) || file.size === 0) {
+        resolve("");
+        return;
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => resolve("");
+    });
+  };
+
   // ১. অ্যাডমিন লগইন
   if (e.target.id === 'admin-local-login') {
     e.preventDefault();
@@ -850,12 +864,22 @@ document.addEventListener('submit', async (e) => {
     window.appAuth.login(email, password);
   }
 
-  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট (JSON payload with text inputs)
+  // ২. নতুন সদস্য এড বা এডিট ফর্ম সাবমিট
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
     const form = e.target;
     const memberId = form.dataset.id; // এডিট মোড হলে থাকবে
     
+    // ফর্ম ইনপুট থেকে ফাইল অবজেক্টগুলো নেওয়া
+    const profilePhotoFile = form.querySelector('input[name="profilePhoto"]')?.files[0];
+    const degreePhotoFile = form.querySelector('input[name="degreePhoto"]')?.files[0];
+    const nidPhotoFile = form.querySelector('input[name="nidPhoto"]')?.files[0];
+
+    // ফাইলগুলোকে Base64-এ রূপান্তর করা
+    const profilePhotoBase64 = await fileToBase64(profilePhotoFile);
+    const degreePhotoBase64 = await fileToBase64(degreePhotoFile);
+    const nidPhotoBase64 = await fileToBase64(nidPhotoFile);
+
     // ফর্ম ডেটা অবজেক্ট তৈরি
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
@@ -879,9 +903,29 @@ document.addEventListener('submit', async (e) => {
     data.biography = data.biography || "";
     data.roleType = data.roleType || "General Member";
     data.executivePost = data.executivePost || "";
-    data.profilePhoto = data.profilePhoto || "";
-    data.degreePhoto = data.degreePhoto || "";
-    data.nidPhoto = data.nidPhoto || "";
+
+    // কনভার্ট করা Base64 ডাটা অ্যাসাইন করা
+    // এডিট মুডে যদি ব্যবহারকারী নতুন ছবি আপলোড না করে থাকেন, তবে বডি থেকে সংশ্লিষ্ট প্রোপার্টিগুলো মুছে ফেলা হবে
+    if (profilePhotoBase64) {
+      data.profilePhoto = profilePhotoBase64;
+    } else {
+      if (memberId) delete data.profilePhoto;
+      else data.profilePhoto = "";
+    }
+
+    if (degreePhotoBase64) {
+      data.degreePhoto = degreePhotoBase64;
+    } else {
+      if (memberId) delete data.degreePhoto;
+      else data.degreePhoto = "";
+    }
+
+    if (nidPhotoBase64) {
+      data.nidPhoto = nidPhotoBase64;
+    } else {
+      if (memberId) delete data.nidPhoto;
+      else data.nidPhoto = "";
+    }
 
     // এডিট নাকি ক্রিয়েট—অনুরূপ ইউআরএল ও মেথড নির্ধারণ
     const url = memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`;
@@ -896,7 +940,7 @@ document.addEventListener('submit', async (e) => {
     try {
       const res = await fetch(url, {
         method: method,
-        headers: authHeaders(false), // সরাসরি ইমেজ URL টেক্সট ফিল্ড ব্যবহার করার কারণে JSON যাবে
+        headers: authHeaders(false), // JSON ট্রান্সমিশনের জন্য application/json ব্যবহার করা হবে
         body: JSON.stringify(data)
       });
       const resData = await res.json();
@@ -925,13 +969,24 @@ document.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
     const noticeId = form.dataset.id;
+
+    // নোটিশের ছবি ইনপুট নেওয়া ও রূপান্তর করা
+    const pdfUrlFile = form.querySelector('input[name="pdfUrl"]')?.files[0];
+    const pdfUrlBase64 = await fileToBase64(pdfUrlFile);
+
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
 
     data.title = data.title || "";
     data.category = data.category || "General";
     data.content = data.content || "";
-    data.pdfUrl = data.pdfUrl || "";
+
+    if (pdfUrlBase64) {
+      data.pdfUrl = pdfUrlBase64;
+    } else {
+      if (noticeId) delete data.pdfUrl;
+      else data.pdfUrl = "";
+    }
 
     try {
       const url = noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`;
