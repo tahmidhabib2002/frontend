@@ -1,15 +1,10 @@
 /* ============================================================
  * BDDPA UIComponents — Premium Medical Association Design
- *
- * IMPORTANT: This module is a pure presentation layer.
- * app.js drives all fetch calls, routing, auth, and state.
- * Every function here is called by app.js — do not rename.
  * ============================================================ */
 
 const _icon = (name, cls = 'w-4 h-4') =>
   `<i data-lucide="${name}" class="${cls}"></i>`;
 
-// Escape user-controlled strings when injecting into innerHTML.
 const _esc = (v) => (v == null ? '' : String(v)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;'));
@@ -21,6 +16,21 @@ const _fmtDateBn = (d) => {
 };
 
 const _initials = (name = '') => name.trim().split(/\s+/).slice(0, 2).map(s => s[0] || '').join('').toUpperCase() || 'BD';
+
+const _checkExpiry = (joiningDate) => {
+  if (!joiningDate) return { expired: false, diffText: '' };
+  const jDate = new Date(joiningDate);
+  const expDate = new Date(jDate.setFullYear(jDate.getFullYear() + 2));
+  const today = new Date();
+  
+  if (today > expDate) {
+    return { expired: true, diffText: 'মেয়াদোত্তীর্ণ (Expired)' };
+  }
+  
+  const diffTime = Math.abs(expDate - today);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return { expired: false, diffText: `${diffDays} দিন বাকি` };
+};
 
 const UIComponents = {
 
@@ -89,80 +99,31 @@ const UIComponents = {
       </div>
     </section>`,
 
-  Modal: (id, title, content) => `
-    <div id="${id}" class="fixed inset-0 z-[80] hidden items-center justify-center p-4 bg-navy-900/50 backdrop-blur-sm">
-      <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-elevated border border-white/60 animate-scale-in">
-        <div class="p-5 border-b border-ink-100 flex items-center justify-between bg-ink-50/40">
-          <h3 class="font-bold text-navy-900">${_esc(title)}</h3>
-          <button onclick="document.getElementById('${id}').classList.add('hidden'); document.getElementById('${id}').classList.remove('flex')" class="w-9 h-9 grid place-items-center rounded-lg hover:bg-ink-100 text-ink-500">${_icon('x')}</button>
-        </div>
-        <div class="p-6 space-y-4">${content}</div>
-      </div>
-    </div>`,
-
   /* ================= HERO ================= */
   HomeHero: () => `
     <section class="relative hero-bg">
       <div class="hero-blob bg-teal-500/60" style="top:-4rem; left:-4rem;"></div>
       <div class="hero-blob bg-emerald-500/40" style="bottom:-6rem; right:-4rem;"></div>
 
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:pt-24 lg:pb-32">
-        <div class="grid lg:grid-cols-12 gap-10 items-center">
-          <div class="lg:col-span-7 space-y-7 animate-fade-in-up">
-            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur text-[11px] font-semibold text-teal-100 tracking-wide">
-              ${_icon('shield-check', 'w-3.5 h-3.5')}
-              <span>Bhola District · Official Verified Directory</span>
-            </span>
-            <h1 class="text-[34px] sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
-              ভোলা জেলার <br class="hidden sm:block"/>
-              <span class="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-teal-100 to-emerald-200">অনুমোদিত ডেন্টাল</span>
-              <br class="hidden sm:block"/> চিকিৎসকদের অফিসিয়াল প্ল্যাটফর্ম
-            </h1>
-            <p class="text-base sm:text-lg text-ink-200/90 max-w-2xl leading-relaxed">
-              রেজিস্টার্ড সদস্য, প্রকাশিত নোটিশ ও ইভেন্টসহ ভোলা জেলার সকল ভেরিভাইড দন্ত চিকিৎসকদের একটি নিরাপদ, স্বচ্ছ ও পেশাদার ডিজিটাল রেজিস্ট্রি।
-            </p>
-            <div class="flex flex-wrap items-center gap-3 pt-2">
-              <a href="#/members" class="btn-primary btn-lg" style="background:linear-gradient(135deg,#0891b2,#10b981);">${_icon('users', 'w-4 h-4')}<span>সদস্য তালিকা দেখুন</span></a>
-              <a href="#/verification" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm backdrop-blur transition">
-                ${_icon('badge-check', 'w-4 h-4')}<span>সদস্য যাচাই করুন</span>
-              </a>
-            </div>
-            <dl class="grid grid-cols-3 gap-4 sm:gap-6 pt-8 max-w-xl">
-              <div><dt class="text-[11px] uppercase tracking-widest text-teal-300 font-latin font-semibold">Members</dt><dd class="mt-1 text-2xl sm:text-3xl font-bold text-white" data-hero-count="members">—</dd></div>
-              <div><dt class="text-[11px] uppercase tracking-widest text-teal-300 font-latin font-semibold">Notices</dt><dd class="mt-1 text-2xl sm:text-3xl font-bold text-white" data-hero-count="notices">—</dd></div>
-              <div><dt class="text-[11px] uppercase tracking-widest text-teal-300 font-latin font-semibold">Events</dt><dd class="mt-1 text-2xl sm:text-3xl font-bold text-white" data-hero-count="events">—</dd></div>
-            </dl>
-          </div>
-
-          <div class="lg:col-span-5 relative">
-            <div class="relative mx-auto max-w-md">
-              <div class="absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-teal-400/30 to-emerald-400/20 blur-2xl"></div>
-              <div class="relative rounded-[2rem] bg-white/10 border border-white/20 backdrop-blur-xl p-6 shadow-elevated">
-                <div class="flex items-center gap-3 mb-6">
-                  <div class="w-11 h-11 rounded-xl bg-white/15 grid place-items-center text-teal-200">${_icon('id-card', 'w-5 h-5')}</div>
-                  <div>
-                    <div class="text-xs text-teal-200 tracking-widest font-latin font-semibold uppercase">Digital Membership Card</div>
-                    <div class="text-white font-bold">BDPA-0001</div>
-                  </div>
-                  <span class="ml-auto verified-badge">${_icon('check', 'w-3 h-3')}<span>Verified</span></span>
-                </div>
-                <div class="grid grid-cols-3 gap-4">
-                  <div class="col-span-1">
-                    <div class="aspect-square rounded-2xl bg-gradient-to-br from-white/20 to-white/5 grid place-items-center text-teal-200">${_icon('user', 'w-8 h-8')}</div>
-                  </div>
-                  <div class="col-span-2 space-y-2">
-                    <div class="h-2.5 w-3/4 rounded bg-white/25"></div>
-                    <div class="h-2 w-2/3 rounded bg-white/15"></div>
-                    <div class="h-2 w-1/2 rounded bg-white/15"></div>
-                    <div class="pt-3 flex items-center gap-2 text-[11px] text-teal-100"><span class="chip chip-teal">BDS</span><span class="chip">Bhola Sadar</span></div>
-                  </div>
-                </div>
-                <div class="mt-5 pt-5 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-100 font-latin">
-                  <span>Issued · 2026</span>
-                  <span class="inline-flex items-center gap-1">${_icon('lock', 'w-3 h-3')}<span>Cryptographically Signed</span></span>
-                </div>
-              </div>
-            </div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:pt-24 lg:pb-32 text-center lg:text-left">
+        <div class="max-w-4xl mx-auto space-y-7 animate-fade-in-up flex flex-col items-center">
+          <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur text-[11px] font-semibold text-teal-100 tracking-wide">
+            ${_icon('shield-check', 'w-3.5 h-3.5')}
+            <span>Bhola District · Official Verified Directory</span>
+          </span>
+          <h1 class="text-[34px] sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
+            ভোলা জেলার <br class="hidden sm:block"/>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-teal-100 to-emerald-200">অনুমোদিত ডেন্টাল</span>
+            <br class="hidden sm:block"/> চিকিৎসকদের অফিসিয়াল প্ল্যাটফর্ম
+          </h1>
+          <p class="text-base sm:text-lg text-ink-200/90 max-w-2xl leading-relaxed">
+            রেজিস্টার্ড সদস্য, প্রকাশিত নোটিশ ও ইভেন্টসহ ভোলা জেলার সকল ভেরিফাইড দন্ত চিকিৎসকদের একটি নিরাপদ, স্বচ্ছ ও পেশাদার ডিজিটাল রেজিস্ট্রি।
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <a href="#/members" class="btn-primary btn-lg" style="background:linear-gradient(135deg,#0891b2,#10b981);">${_icon('users', 'w-4 h-4')}<span>সদস্য তালিকা দেখুন</span></a>
+            <a href="#/verification" class="btn-lg inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm backdrop-blur transition">
+              ${_icon('badge-check', 'w-4 h-4')}<span>সদস্য যাচাই করুন</span>
+            </a>
           </div>
         </div>
       </div>
@@ -188,7 +149,7 @@ const UIComponents = {
         <div class="lg:col-span-7 grid sm:grid-cols-2 gap-5">
           ${[
             ['target',   'আমাদের মিশন',   'ভোলার সাধারণ মানুষের কাছে আধুনিক ও নিরাপদ দন্ত চিকিৎসা পৌঁছে দেওয়া এবং প্রতিটি চিকিৎসকের পেশাদার মান বজায় রাখা।'],
-            ['eye',      'আমাদের ভিশন',   'ভোলার প্রতিটি দন্ত চিকিৎসকের মান উন্নয়ন এবং জেলার জনগণের জন্য একটি স্বচ্ছ, ভেরিভাইড রেজিস্ট্রি প্রতিষ্ঠা।'],
+            ['eye',      'আমাদের ভিশন',   'ভোলার প্রতিটি দন্ত চিকিৎসকের মান উন্নয়ন এবং জেলার জনগণের জন্য একটি স্বচ্ছ, ভেরিফাইড রেজিস্ট্রি প্রতিষ্ঠা।'],
             ['heart-handshake', 'পেশাগত অঙ্গীকার', 'নৈতিকতা, স্বচ্ছতা ও রোগীর অধিকারকে সর্বোচ্চ অগ্রাধিকার দিয়ে সেবা প্রদান।'],
             ['graduation-cap',  'ধারাবাহিক শিক্ষা', 'সেমিনার, ওয়ার্কশপ ও ট্রেনিং-এর মাধ্যমে সদস্যদের ধারাবাহিক পেশাগত উন্নয়ন।']
           ].map(([ic, t, d]) => `
@@ -226,18 +187,18 @@ const UIComponents = {
     </section>`;
   },
 
-  /* ================= HOMEPAGE COMPOSITION HELPERS ================= */
+  /* ================= HOMEPAGE LEADERSHIP ================= */
   LeadershipStrip: (data = {}) => `
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
       <div class="text-center max-w-2xl mx-auto space-y-3 mb-14">
         <span class="eyebrow">Leadership</span>
         <h2 class="h-section text-3xl sm:text-4xl">সম্মানিত নেতৃত্ব</h2>
-        <p class="text-sm text-ink-500">সংগঠনের নেতৃস্থানীয় দুইজন কর্মকর্তার বার্তা।</p>
+        <p class="text-sm text-ink-500">সংগঠনের সম্মানিত সভাপতি ও সাধারণ সম্পাদকের সর্বশেষ আপডেট বার্তা।</p>
       </div>
       <div class="grid md:grid-cols-2 gap-6">
         ${[
           ['সভাপতির বার্তা', data.presidentName || 'সভাপতি', data.presidentPost || 'সভাপতি, বিডিডিপিএ ভোলা', data.presidentMsg || 'ভোলার জনগণের দন্ত চিকিৎসা সেবা নিশ্চিত করতে আমাদের সংগঠন প্রতিশ্রুতিবদ্ধ।'],
-          ['সাধারণ সম্পাদকের বার্তা', 'সাধারণ সম্পাদক', 'সাধারণ সম্পাদক, বিডিডিপিএ ভোলা', 'পেশাদার মান, স্বচ্ছতা ও ধারাবাহিক প্রশিক্ষণের মাধ্যমে ভোলা জেলার প্রতিটি দন্ত চিকিৎসকের অগ্রযাত্রা নিশ্চিত করাই আমাদের অগ্রাধিকার।']
+          ['সাধারণ সম্পাদকের বার্তা', data.secretaryName || 'সাধারণ সম্পাদক', data.secretaryPost || 'সাধারণ সম্পাদক, বিডিডিপিএ ভোলা', data.secretaryMsg || 'পেশাদার মান, স্বচ্ছতা ও ধারাবাহিক প্রশিক্ষণের মাধ্যমে ভোলা জেলার প্রতিটি দন্ত চিকিৎসকের অগ্রযাত্রা নিশ্চিত করাই আমাদের অগ্রাধিকার।']
         ].map(([title, name, post, msg]) => `
           <article class="card p-7 sm:p-9 relative overflow-hidden">
             <div class="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-teal-50 opacity-60"></div>
@@ -256,6 +217,65 @@ const UIComponents = {
           </article>`).join('')}
       </div>
     </section>`,
+
+  /* ================= HOME DYNAMIC MEMBERSHIP CARD ================= */
+  DynamicMembershipCardSection: (m) => {
+    if (!m) {
+      return `
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="eyebrow">Digital Membership ID Card</span>
+        <h2 class="h-section text-2xl sm:text-3xl mt-2 mb-8">ডিজিটাল সদস্য পরিচিতি কার্ড</h2>
+        <div class="card p-8 text-center text-ink-500">
+          <p>বর্তমানে কোন সক্রিয় সদস্য পাওয়া যায়নি।</p>
+        </div>
+      </div>`;
+    }
+    const expiry = _checkExpiry(m.joiningDate);
+    return `
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <span class="eyebrow">Digital Membership ID Card</span>
+      <h2 class="h-section text-2xl sm:text-3xl mt-2 mb-8">ডিজিটাল সদস্য পরিচিতি কার্ড</h2>
+      
+      <div class="relative mx-auto max-w-md rounded-[2rem] bg-navy-900 border border-white/10 p-6 sm:p-8 shadow-elevated text-left">
+        <div class="absolute inset-0 bg-grid-pattern opacity-10" style="background-size:24px 24px"></div>
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+          <div class="w-11 h-11 rounded-xl bg-white/15 grid place-items-center text-teal-200">${_icon('id-card', 'w-5 h-5')}</div>
+          <div>
+            <div class="text-xs text-teal-200 tracking-widest font-latin font-semibold uppercase">Digital ID card</div>
+            <div class="text-white font-bold font-latin">${_esc(m.memberId || 'BDPA-XXXX')}</div>
+          </div>
+          <span class="ml-auto verified-badge ${expiry.expired ? 'bg-red-600' : 'bg-emerald-600'}">
+            ${_icon('check', 'w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span>
+          </span>
+        </div>
+        <div class="grid grid-cols-3 gap-5 relative z-10">
+          <div class="col-span-1">
+            <div class="aspect-square rounded-2xl bg-white/10 overflow-hidden">
+              ${m.profilePhoto 
+                ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover"/>`
+                : `<div class="w-full h-full grid place-items-center text-white font-bold">${_initials(m.nameEn)}</div>`}
+            </div>
+          </div>
+          <div class="col-span-2 space-y-1.5 text-white">
+            <h4 class="font-bold text-base leading-tight">${_esc(m.nameBn || m.nameEn)}</h4>
+            <p class="text-xs text-teal-200 font-latin">${_esc(m.nameEn)}</p>
+            <p class="text-xs text-ink-300 font-latin">${_esc(m.qualification || 'BDS')}</p>
+            <div class="pt-2 flex items-center gap-1.5 text-[10px]">
+              <span class="chip bg-white/10 text-white border-none font-latin">${_esc(m.bloodGroup || 'O+')}</span>
+              <span class="chip bg-white/10 text-white border-none">${_esc(m.upazila || 'Bhola Sadar')}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 pt-5 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-100 font-latin relative z-10">
+          <span>Joined · ${_fmtDateBn(m.joiningDate)}</span>
+          <span class="inline-flex items-center gap-1 ${expiry.expired ? 'text-red-400' : 'text-emerald-400'}">
+            ${_icon(expiry.expired ? 'alert-triangle' : 'shield-check', 'w-3.5 h-3.5')}
+            <span>${expiry.diffText}</span>
+          </span>
+        </div>
+      </div>
+    </div>`;
+  },
 
   HomeCTA: () => `
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -345,7 +365,6 @@ const UIComponents = {
       </a>
 
       <div class="grid lg:grid-cols-12 gap-6">
-        <!-- Identity card -->
         <div class="lg:col-span-4">
           <div class="card overflow-hidden">
             <div class="h-24 bg-gradient-medical relative">
@@ -380,7 +399,6 @@ const UIComponents = {
           </div>
         </div>
 
-        <!-- Details -->
         <div class="lg:col-span-8 space-y-6">
           <div class="card p-7 sm:p-8">
             <div class="flex items-center justify-between gap-4 mb-6">
@@ -398,6 +416,8 @@ const UIComponents = {
                 ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
                 ['briefcase',      'চেম্বার',      m.chamberName],
                 ['map-pin',        'ঠিকানা',       m.chamberAddress || m.address],
+                ['heart',          'ব্লাড গ্রুপ',    m.bloodGroup],
+                ['credit-card',    'এনআইডি নম্বর',  m.nidNumber],
               ].filter(([,,v]) => v).map(([ic,l,v]) => `
                 <div class="flex items-start gap-3">
                   <div class="w-9 h-9 rounded-lg bg-teal-50 grid place-items-center text-teal-600 shrink-0">${_icon(ic, 'w-4 h-4')}</div>
@@ -417,24 +437,17 @@ const UIComponents = {
                 ['phone', 'মোবাইল', m.phone],
                 ['phone-call', 'বিকল্প', m.alternatePhone],
                 ['mail',  'ইমেইল', m.email],
-                ['globe', 'ওয়েবসাইট', m.website]
+                ['home',  'ব্যক্তিগত ঠিকানা', m.personalAddress]
               ].filter(([,,v]) => v).map(([ic,l,v]) => `
                 <div class="flex items-start gap-3">
                   <div class="w-9 h-9 rounded-lg bg-ink-50 grid place-items-center text-navy-900 shrink-0">${_icon(ic, 'w-4 h-4')}</div>
                   <div class="min-w-0">
                     <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-400 font-latin">${l}</dt>
-                    <dd class="mt-0.5 text-sm font-semibold text-navy-900 truncate font-latin" dir="ltr">${_esc(v)}</dd>
+                    <dd class="mt-0.5 text-sm font-semibold text-navy-900 break-words font-latin">${_esc(v)}</dd>
                   </div>
                 </div>`).join('')}
             </dl>
           </div>
-
-          ${m.biography ? `
-            <div class="card p-7 sm:p-8">
-              <span class="eyebrow">Biography</span>
-              <h2 class="h-section text-xl mt-2 mb-4">সংक्षिप्त পরিচিতি</h2>
-              <div class="prose-bn">${_esc(m.biography).split('\n').map(p => `<p>${p}</p>`).join('')}</div>
-            </div>` : ''}
         </div>
       </div>
     </section>`,
@@ -445,7 +458,7 @@ const UIComponents = {
       <div class="text-center max-w-2xl mx-auto space-y-3 mb-10">
         <span class="eyebrow">Official Verification</span>
         <h1 class="h-section text-3xl sm:text-4xl">সদস্য যাচাইকরণ পোর্টাল</h1>
-        <p class="text-sm sm:text-base text-ink-500">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি অফিসিয়াল রেকর্ড থেকে সদস্যের সত্যতা নিশ্চিত করুন।</p>
+        <p class="text-sm sm:text-base text-ink-500">মেম্বারশিপ আইডি অথবা মোবাইল নম্বর দিয়ে সরাসরি রেকর্ড থেকে সদস্যপদ যাচাই করুন।</p>
       </div>
       <div class="card p-6 sm:p-10">
         <form onsubmit="event.preventDefault(); window.appVerify.check();" class="grid sm:grid-cols-[1fr_auto] gap-3">
@@ -463,9 +476,10 @@ const UIComponents = {
     if (!verified) return `
       <div class="p-6 rounded-2xl bg-red-50 border border-red-100 text-red-800 flex items-start gap-3">
         ${_icon('alert-octagon','w-5 h-5 mt-0.5 shrink-0')}
-        <div><h4 class="font-bold">রেকর্ড পাওয়া যায়নি</h4><p class="text-sm mt-1">প্রদত্ত তথ্যের সাথে অ্যাসোসিয়েশনের রেকর্ডে কোনো সদস্য মেলেনি।</p></div>
+        <div><h4 class="font-bold">রেকর্ড পাওয়া যায়নি</h4><p class="text-sm mt-1">প্রদত্ত তথ্যের সাথে মিল পাওয়া যায়নি।</p></div>
       </div>`;
     const m = res.data || {};
+    const expiry = _checkExpiry(m.joiningDate);
     return `
       <div class="p-6 sm:p-8 rounded-2xl bg-emerald-50/60 border border-emerald-100">
         <div class="flex items-start gap-4">
@@ -477,12 +491,14 @@ const UIComponents = {
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2">
               <h4 class="font-bold text-navy-900 text-lg">${_esc(m.nameBn || m.nameEn)}</h4>
-              <span class="verified-badge">${_icon('check','w-3 h-3')}<span>Verified</span></span>
+              <span class="verified-badge ${expiry.expired ? 'bg-red-600' : 'bg-emerald-600'}">
+                ${_icon('check','w-3 h-3')}<span>${expiry.expired ? 'Expired' : 'Verified'}</span>
+              </span>
             </div>
             <p class="text-sm text-ink-500 font-latin mt-0.5">${_esc(m.nameEn || '')} · ${_esc(m.memberId || '')}</p>
             <div class="mt-3 flex flex-wrap gap-1.5">
               <span class="chip chip-teal">${_esc(m.qualification || '')}</span>
-              <span class="chip">${_esc(m.status || '')}</span>
+              <span class="chip">${expiry.diffText}</span>
               <span class="chip">Joined · ${_fmtDateBn(m.joiningDate)}</span>
             </div>
           </div>
@@ -515,7 +531,6 @@ const UIComponents = {
             </div>
           </div>
           <button type="submit" class="btn-primary btn-lg w-full">${_icon('log-in','w-4 h-4')}<span>লগইন করুন</span></button>
-          <p class="text-[11px] text-ink-400 text-center">সিস্টেমটি JWT ও bcrypt দ্বারা সুরক্ষিত। সমস্ত কার্যক্রম লগ করা হয়।</p>
         </form>
       </div>
     </section>`,
@@ -523,9 +538,11 @@ const UIComponents = {
   /* ================= ADMIN DASHBOARD SHELL ================= */
   AdminDashboardShell: (active = 'home', content = '') => {
     const nav = [
-      ['home',       'home',     'ওভারভিউ'],
-      ['users',      'members',  'সদস্য ফর্ম'],
-      ['megaphone',  'notices',  'নোটিশ ফর্ম'],
+      ['home',       'home',       'ওভারভিউ'],
+      ['users',      'members',    'সদস্য তালিকা'],
+      ['megaphone',  'notices',    'নোটিশ বোর্ড'],
+      ['calendar',   'events',     'ইভেন্টস'],
+      ['sliders',    'leadership', 'সম্মানিত নেতৃত্ব'],
     ];
     const user = window.appState?.user || {};
     return `
@@ -561,7 +578,7 @@ const UIComponents = {
               <button onclick="window.appAdmin.loadAddMemberForm()" class="btn-primary">${_icon('plus','w-4 h-4')}<span>নতুন সদস্য</span></button>
             </div>
           </header>
-          ${content}
+          <div id="dashboard-content-area">${content}</div>
         </section>
       </div>
     </div>`;
@@ -575,7 +592,7 @@ const UIComponents = {
       ['megaphone', 'নোটিশ',       a.notices || 0,          'from-teal-500 to-navy-800']
     ];
     return `
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
         ${kpis.map(([ic, l, v, g]) => `
           <div class="card p-5">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${g} grid place-items-center text-white mb-4">${_icon(ic,'w-5 h-5')}</div>
@@ -595,14 +612,14 @@ const UIComponents = {
         </div>
         <div class="card p-6">
           <div class="flex items-center justify-between mb-4">
-            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুট কাজ</h3></div>
+            <div><span class="eyebrow">Quick Actions</span><h3 class="h-section text-lg mt-1.5">দ্রুত কাজ</h3></div>
           </div>
           <div class="space-y-2.5">
             ${[
               ['user-plus', 'নতুন সদস্য যোগ করুন', 'window.appAdmin.loadAddMemberForm()'],
               ['megaphone', 'নোটিশ প্রকাশ করুন', 'window.appAdmin.loadAddNoticeForm()'],
-              ['calendar-plus', 'ইভেন্ট তৈরি করুন', ''],
-              ['mail-plus', 'ব্রডকাস্ট ইমেইল', ''],
+              ['calendar-plus', 'ইভেন্ট তৈরি করুন', 'window.appAdmin.loadAddEventForm()'],
+              ['sliders', 'নেতৃত্বের বার্তা পরিবর্তন', "window.location.hash = '#/admin/dashboard?tab=leadership'"],
             ].map(([ic, t, clickAction]) => `
               <button onclick="${_esc(clickAction)}" class="w-full text-left drawer-link">
                 ${_icon(ic,'w-4 h-4 text-teal-600')}<span>${t}</span>
@@ -614,39 +631,177 @@ const UIComponents = {
       </div>`;
   },
 
-  /* ================= NEW FORMS ================= */
+  /* ================= LIST PAGES ================= */
+  AdminMemberList: (list = []) => `
+    <div class="card p-6 space-y-6 animate-fade-in">
+      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
+        <h2 class="h-section text-xl">সদস্য তালিকা ব্যবস্থাপনা</h2>
+        <button onclick="window.appAdmin.loadAddMemberForm()" class="btn-primary text-xs">${_icon('plus','w-3.5 h-3.5')}নতুন সদস্য এড করুন</button>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-ink-100">
+        <table>
+          <thead>
+            <tr>
+              <th>নাম (বাংলা)</th>
+              <th>মেম্বার আইডি</th>
+              <th>মোবাইল নম্বর</th>
+              <th>অবস্থা/স্ট্যাটাস</th>
+              <th class="text-right">অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map(m => {
+              const expiry = _checkExpiry(m.joiningDate);
+              return `
+              <tr>
+                <td class="font-bold text-navy-900">${_esc(m.nameBn || m.nameEn)}</td>
+                <td class="font-latin font-bold text-teal-600">${_esc(m.memberId || '—')}</td>
+                <td class="font-latin">${_esc(m.phone || '—')}</td>
+                <td>
+                  <span class="chip ${expiry.expired ? 'chip-red' : 'chip-emerald'}">
+                    ${_esc(expiry.diffText)}
+                  </span>
+                </td>
+                <td class="text-right space-x-1">
+                  ${expiry.expired ? `<button onclick="window.appAdmin.renewMember('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-emerald-600 border-emerald-300">${_icon('refresh-cw','w-3 h-3')} নবায়ন</button>` : ''}
+                  <button onclick="window.appAdmin.deleteMember('${m.slug}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`,
+
+  AdminNoticeList: (list = []) => `
+    <div class="card p-6 space-y-6 animate-fade-in">
+      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
+        <h2 class="h-section text-xl">নোটিশ ব্যবস্থাপনা</h2>
+        <button onclick="window.appAdmin.loadAddNoticeForm()" class="btn-primary text-xs">${_icon('plus','w-3.5 h-3.5')}নতুন নোটিশ</button>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-ink-100">
+        <table>
+          <thead>
+            <tr>
+              <th>শিরোনাম</th>
+              <th>ক্যাটাগরি</th>
+              <th>তারিখ</th>
+              <th class="text-right">অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map(n => `
+              <tr>
+                <td class="font-bold text-navy-900">${_esc(n.title)}</td>
+                <td><span class="chip">${_esc(n.category)}</span></td>
+                <td>${_fmtDateBn(n.createdAt)}</td>
+                <td class="text-right">
+                  <button onclick="window.appAdmin.deleteNotice('${n._id}')" class="btn-outline px-2 py-1 text-xs text-red-600">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`,
+
+  AdminEventList: (list = []) => `
+    <div class="card p-6 space-y-6 animate-fade-in">
+      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
+        <h2 class="h-section text-xl">ইভেন্ট ব্যবস্থাপনা</h2>
+        <button onclick="window.appAdmin.loadAddEventForm()" class="btn-primary text-xs">${_icon('plus','w-3.5 h-3.5')}নতুন ইভেন্ট</button>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-ink-100">
+        <table>
+          <thead>
+            <tr>
+              <th>ইভেন্ট শিরোনাম</th>
+              <th>তারিখ</th>
+              <th>লোকেশন</th>
+              <th class="text-right">অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map(e => `
+              <tr>
+                <td class="font-bold text-navy-900">${_esc(e.title)}</td>
+                <td>${_fmtDateBn(e.eventDate)}</td>
+                <td>${_esc(e.location)}</td>
+                <td class="text-right">
+                  <button onclick="window.appAdmin.deleteEvent('${e._id}')" class="btn-outline px-2 py-1 text-xs text-red-600">${_icon('trash','w-3 h-3')} ডিলিট</button>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`,
+
+  /* ================= CREATION FORMS ================= */
   AdminMemberForm: () => `
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
         <h2 class="h-section text-xl">নতুন সদস্য নিবন্ধন করুন</h2>
-        <button onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline text-xs">
+        <button onclick="window.location.hash = '#/admin/dashboard?tab=members'" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-member-form" class="space-y-6">
+      <form id="add-member-form" class="space-y-6" enctype="multipart/form-data">
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
-            <label class="label" for="m-nameBn">নাম (বাংলা)</label>
+            <label class="label" for="m-nameBn">নাম (বাংলা) <span class="text-red-500">*</span></label>
             <input id="m-nameBn" name="nameBn" required class="input" placeholder="ডাঃ মোঃ আবদুর রহমান">
           </div>
           <div>
-            <label class="label" for="m-nameEn">Name (English)</label>
+            <label class="label" for="m-nameEn">Name (English) <span class="text-red-500">*</span></label>
             <input id="m-nameEn" name="nameEn" required class="input" placeholder="Dr. Md. Abdur Rahman">
           </div>
           <div>
-            <label class="label" for="m-qualification">যোগ্যতা/ডিগ্রি</label>
-            <input id="m-qualification" name="qualification" required class="input" placeholder="BDS, PGT">
+            <label class="label" for="m-qualification">যোগ্যতা/ডিগ্রি <span class="text-red-500">*</span></label>
+            <input id="m-qualification" name="qualification" required class="input" placeholder="BDS, PGT (Dental)">
           </div>
           <div>
-            <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর</label>
-            <input id="m-bmdcReg" name="bmdcReg" class="input" placeholder="D-1234">
+            <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর <span class="text-red-500">*</span></label>
+            <input id="m-bmdcReg" name="bmdcReg" required class="input" placeholder="D-1234">
           </div>
           <div>
-            <label class="label" for="m-chamberName">চেম্বারের নাম</label>
-            <input id="m-chamberName" name="chamberName" class="input" placeholder="রহমান ডেন্টাল কেয়ার">
+            <label class="label" for="m-nidNumber">ন্যাশনাল আইডি কার্ড নম্বর <span class="text-red-500">*</span></label>
+            <input id="m-nidNumber" name="nidNumber" required class="input" placeholder="199XXXXXXXXXXXX">
           </div>
           <div>
-            <label class="label" for="m-upazila">উপজেলা</label>
+            <label class="label" for="m-bloodGroup">ব্লাড গ্রুপ <span class="text-red-500">*</span></label>
+            <select id="m-bloodGroup" name="bloodGroup" required class="select">
+              <option value="">সিলেক্ট করুন</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="m-phone">মোবাইল নম্বর <span class="text-red-500">*</span></label>
+            <input id="m-phone" name="phone" required class="input" placeholder="017XXXXXXXX">
+          </div>
+          <div>
+            <label class="label" for="m-email">ইমেল অ্যাড্রেস <span class="text-red-500">*</span></label>
+            <input id="m-email" name="email" required type="email" class="input" placeholder="member@email.com">
+          </div>
+          <div>
+            <label class="label" for="m-chamberName">চেম্বারের নাম <span class="text-red-500">*</span></label>
+            <input id="m-chamberName" name="chamberName" required class="input" placeholder="রহমান ডেন্টাল কেয়ার">
+          </div>
+          <div>
+            <label class="label" for="m-chamberAddress">চেম্বারের ঠিকানা <span class="text-red-500">*</span></label>
+            <input id="m-chamberAddress" name="chamberAddress" required class="input" placeholder="সদর রোড, ভোলা সদর">
+          </div>
+          <div>
+            <label class="label" for="m-personalAddress">নিজের স্থায়ী ঠিকানা <span class="text-red-500">*</span></label>
+            <input id="m-personalAddress" name="personalAddress" required class="input" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
+          </div>
+          <div>
+            <label class="label" for="m-upazila">উপজেলা (ভোলা জেলা)</label>
             <select id="m-upazila" name="upazila" class="select">
               <option value="Bhola Sadar">ভোলা সদর</option>
               <option value="Borhanuddin">বোরহানউদ্দিন</option>
@@ -656,18 +811,6 @@ const UIComponents = {
               <option value="Manpura">মনপুরা</option>
               <option value="Tazumuddin">তজুমদ্দিন</option>
             </select>
-          </div>
-          <div>
-            <label class="label" for="m-phone">মোবাইল নম্বর</label>
-            <input id="m-phone" name="phone" required class="input" placeholder="017XXXXXXXX">
-          </div>
-          <div>
-            <label class="label" for="m-email">ইমেল অ্যাড্রেস</label>
-            <input id="m-email" name="email" type="email" class="input" placeholder="member@email.com">
-          </div>
-          <div>
-            <label class="label" for="m-profilePhoto">প্রোফাইল ছবি ইউআরএল (Cloudinary)</label>
-            <input id="m-profilePhoto" name="profilePhoto" class="input" placeholder="https://res.cloudinary.com/...">
           </div>
           <div>
             <label class="label" for="m-roleType">সদস্যের ক্যাটাগরি</label>
@@ -681,13 +824,28 @@ const UIComponents = {
             <input id="m-executivePost" name="executivePost" class="input" placeholder="সহ-সভাপতি / সাধারণ সম্পাদক">
           </div>
         </div>
-        <div>
-          <label class="label" for="m-biography">সংক্ষিপ্ত পরিচিতি (বায়োগ্রাফি)</label>
-          <textarea id="m-biography" name="biography" class="textarea h-24" placeholder="সদস্যের সংক্ষিপ্ত বিবরণ..."></textarea>
+
+        <div class="divider-grad"></div>
+
+        <!-- File Upload Section -->
+        <div class="grid sm:grid-cols-3 gap-5">
+          <div>
+            <label class="label">ওই ব্যক্তির ছবি <span class="text-red-500">*</span></label>
+            <input type="file" name="profilePhoto" required accept="image/*" class="input py-2">
+          </div>
+          <div>
+            <label class="label">ডিগ্রির সার্টিফিকেট ছবি <span class="text-red-500">*</span></label>
+            <input type="file" name="degreePhoto" required accept="image/*" class="input py-2">
+          </div>
+          <div>
+            <label class="label">ন্যাশনাল আইডি কার্ড ছবি <span class="text-red-500">*</span></label>
+            <input type="file" name="nidPhoto" required accept="image/*" class="input py-2">
+          </div>
         </div>
+
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>সংরক্ষণ করুন</span></button>
+          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=members'" class="btn-outline">বাতিল</button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>সংরক্ষণ ও নিবন্ধন করুন</span></button>
         </div>
       </form>
     </div>`,
@@ -696,35 +854,135 @@ const UIComponents = {
     <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-ink-100 pb-4">
         <h2 class="h-section text-xl">নতুন নোটিশ প্রকাশ করুন</h2>
-        <button onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline text-xs">
+        <button onclick="window.location.hash = '#/admin/dashboard?tab=notices'" class="btn-outline text-xs">
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-notice-form" class="space-y-6">
+      <form id="add-notice-form" class="space-y-6" enctype="multipart/form-data">
         <div>
           <label class="label" for="n-title">নোটিশের শিরোনাম</label>
           <input id="n-title" name="title" required class="input" placeholder="বিজ্ঞপ্তি শিরোনাম...">
         </div>
-        <div>
-          <label class="label" for="n-category">ক্যাটাগরি</label>
-          <select id="n-category" name="category" class="select">
-            <option value="General">সাধারণ বিজ্ঞপ্তি</option>
-            <option value="Urgent">জরুরি</option>
-            <option value="Meeting">সভা সংক্রান্ত</option>
-            <option value="Seminar">সেমিনার</option>
-          </select>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="label" for="n-category">ক্যাটাগরি</label>
+            <select id="n-category" name="category" class="select">
+              <option value="General">সাধারণ বিজ্ঞপ্তি</option>
+              <option value="Urgent">জরুরি</option>
+              <option value="Meeting">সভা সংক্রান্ত</option>
+              <option value="Seminar">সেমিনার</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">নোটিশের ছবি / ডকুমেন্টস (আপলোড)</label>
+            <input type="file" name="noticeImage" accept="image/*" class="input py-2">
+          </div>
         </div>
         <div>
           <label class="label" for="n-content">বিস্তারিত তথ্য</label>
           <textarea id="n-content" name="content" required class="textarea h-32" placeholder="নোটিশের বিস্তারিত বিবরণ..."></textarea>
         </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
+          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=notices'" class="btn-outline">বাতিল</button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>প্রকাশ করুন</span></button>
+        </div>
+      </form>
+    </div>`,
+
+  AdminEventForm: () => `
+    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
+      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
+        <h2 class="h-section text-xl">নতুন ইভেন্ট তৈরি করুন</h2>
+        <button onclick="window.location.hash = '#/admin/dashboard?tab=events'" class="btn-outline text-xs">
+          ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
+        </button>
+      </div>
+      <form id="add-event-form" class="space-y-6">
         <div>
-          <label class="label" for="n-pdfUrl">পিডিএফ (PDF) ইউআরএল (ঐচ্ছিক)</label>
-          <input id="n-pdfUrl" name="pdfUrl" class="input" placeholder="https://res.cloudinary.com/...">
+          <label class="label" for="e-title">ইভেন্টের শিরোনাম</label>
+          <input id="e-title" name="title" required class="input" placeholder="উদাঃ বিডিডিপিএ বার্ষিক সম্মেলন ২০২৬">
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="label" for="e-eventDate">ইভেন্ট তারিখ</label>
+            <input id="e-eventDate" name="eventDate" type="date" required class="input">
+          </div>
+          <div>
+            <label class="label" for="e-location">লোকেশন / স্থান</label>
+            <input id="e-location" name="location" required class="input" placeholder="উদাঃ জেলা পরিষদ মিলনায়তন, ভোলা">
+          </div>
+          <div>
+            <label class="label" id="e-startTime">শুরুর সময়</label>
+            <input id="e-startTime" name="startTime" class="input" placeholder="উদাঃ সকাল ১০:০০ টা">
+          </div>
+          <div>
+            <label class="label" id="e-endTime">শেষের সময়</label>
+            <input id="e-endTime" name="endTime" class="input" placeholder="উদাঃ বিকাল ০৪:০০ টা">
+          </div>
+          <div>
+            <label class="label" id="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
+            <input id="e-mapLink" name="mapLink" class="input" placeholder="https://maps.google.com/...">
+          </div>
+          <div>
+            <label class="label" id="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
+            <input id="e-registrationLink" name="registrationLink" class="input" placeholder="https://forms.gle/...">
+          </div>
+        </div>
+        <div>
+          <label class="label" for="e-description">ইভেন্টের সংক্ষিপ্ত বিবরণ</label>
+          <textarea id="e-description" name="description" required class="textarea h-32" placeholder="ইভেন্ট সম্পর্কিত বিবরণ বা নির্দেশনাসমূহ..."></textarea>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=home'" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>প্রকাশ করুন</span></button>
+          <button type="button" onclick="window.location.hash = '#/admin/dashboard?tab=events'" class="btn-outline">বাতিল</button>
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>ইভেন্ট তৈরি করুন</span></button>
+        </div>
+      </form>
+    </div>`,
+
+  AdminLeadershipForm: (data) => `
+    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
+      <div class="border-b border-ink-100 pb-4">
+        <h2 class="h-section text-xl">সম্মানিত নেতৃত্বের তথ্য ও বার্তা পরিবর্তন</h2>
+        <p class="text-xs text-ink-500">হোমপেজের সভাপতি ও সাধারণ সম্পাদকের বার্তা এখান থেকে সরাসরি এডিট করা যাবে।</p>
+      </div>
+      <form id="edit-leadership-form" class="space-y-6">
+        <div class="grid sm:grid-cols-2 gap-8">
+          <!-- President Section -->
+          <div class="space-y-4">
+            <h3 class="font-bold text-navy-900 border-b pb-2">সভাপতির বার্তা মডিউল</h3>
+            <div>
+              <label class="label">সভাপতির নাম</label>
+              <input name="presidentName" value="${_esc(data.presidentName || '')}" class="input" placeholder="ডাঃ মোঃ সভাপতি">
+            </div>
+            <div>
+              <label class="label">পদবী / পোস্ট</label>
+              <input name="presidentPost" value="${_esc(data.presidentPost || '')}" class="input" placeholder="সভাপতি, বিডিডিপিএ ভোলা">
+            </div>
+            <div>
+              <label class="label">বার্তাসমূহ</label>
+              <textarea name="presidentMsg" class="textarea h-28" placeholder="সভাপতির বার্তা...">${_esc(data.presidentMsg || '')}</textarea>
+            </div>
+          </div>
+          
+          <!-- Secretary Section -->
+          <div class="space-y-4">
+            <h3 class="font-bold text-navy-900 border-b pb-2">সাধারণ সম্পাদকের বার্তা মডিউল</h3>
+            <div>
+              <label class="label">সাধারণ সম্পাদকের নাম</label>
+              <input name="secretaryName" value="${_esc(data.secretaryName || '')}" class="input" placeholder="ডাঃ মোঃ সাধারণ সম্পাদক">
+            </div>
+            <div>
+              <label class="label">পদবী / পোস্ট</label>
+              <input name="secretaryPost" value="${_esc(data.secretaryPost || '')}" class="input" placeholder="সাধারণ সম্পাদক, বিডিডিপিএ ভোলা">
+            </div>
+            <div>
+              <label class="label">বার্তাসমূহ</label>
+              <textarea name="secretaryMsg" class="textarea h-28" placeholder="সাধারণ সম্পাদকের বার্তা...">${_esc(data.secretaryMsg || '')}</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
+          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>সম্মানিত নেতৃত্ব আপডেট করুন</span></button>
         </div>
       </form>
     </div>`,
