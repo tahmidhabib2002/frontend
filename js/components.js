@@ -683,7 +683,7 @@ const UIComponents = {
           <thead>
             <tr>
               <th>শিরোনাম</th>
-              <th>क্যাটাগরি</th>
+              <th>ক্যাটাগরি</th>
               <th>তারিখ</th>
               <th class="text-right">অ্যাকশন</th>
             </tr>
@@ -747,7 +747,7 @@ const UIComponents = {
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-member-form" data-id="${isEdit ? m._id : ''}" class="space-y-6">
+      <form id="add-member-form" data-id="${isEdit ? m._id : ''}" class="space-y-6" enctype="multipart/form-data">
         <div class="grid sm:grid-cols-2 gap-5">
           <div>
             <label class="label" for="m-nameBn">নাম (বাংলা) <span class="text-red-500">*</span></label>
@@ -829,25 +829,23 @@ const UIComponents = {
 
         <div class="divider-grad"></div>
 
-        <!-- Image Link Inputs Section -->
+        <!-- File Upload Section -->
         <div class="grid sm:grid-cols-3 gap-5">
           <div>
-            <label class="label" for="m-profilePhoto">ওই ব্যক্তির প্রোফাইল ছবির লিংক (URL)</label>
-            <input id="m-profilePhoto" name="profilePhoto" class="input" value="${_esc(isEdit ? m.profilePhoto : '')}" placeholder="https://res.cloudinary.com/...">
+            <label class="label">ওই ব্যক্তির ছবি</label>
+            <input type="file" name="profilePhoto" accept="image/*" class="input py-2">
+            ${isEdit && m.profilePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
           </div>
           <div>
-            <label class="label" for="m-degreePhoto">ডিগ্রির সার্টিফিকেট ছবির লিংক (URL)</label>
-            <input id="m-degreePhoto" name="degreePhoto" class="input" value="${_esc(isEdit ? m.degreePhoto : '')}" placeholder="https://res.cloudinary.com/...">
+            <label class="label">ডিগ্রির সার্টিফিকেট ছবি</label>
+            <input type="file" name="degreePhoto" accept="image/*" class="input py-2">
+            ${isEdit && m.degreePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
           </div>
           <div>
-            <label class="label" for="m-nidPhoto">ন্যাশনাল আইডি কার্ড ছবির লিংক (URL)</label>
-            <input id="m-nidPhoto" name="nidPhoto" class="input" value="${_esc(isEdit ? m.nidPhoto : '')}" placeholder="https://res.cloudinary.com/...">
+            <label class="label">ন্যাশনাল আইডি কার্ড ছবি</label>
+            <input type="file" name="nidPhoto" accept="image/*" class="input py-2">
+            ${isEdit && m.nidPhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
           </div>
-        </div>
-
-        <div>
-          <label class="label" for="m-biography">সংক্ষিপ্ত পরিচিতি (বায়োগ্রাফি)</label>
-          <textarea id="m-biography" name="biography" class="textarea h-24" placeholder="সদস্যের সংক্ষিপ্ত বিবরণ...">${_esc(isEdit ? m.biography : '')}</textarea>
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
@@ -868,7 +866,7 @@ const UIComponents = {
           ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
         </button>
       </div>
-      <form id="add-notice-form" data-id="${isEdit ? n._id : ''}" class="space-y-6">
+      <form id="add-notice-form" data-id="${isEdit ? n._id : ''}" class="space-y-6" enctype="multipart/form-data">
         <div>
           <label class="label" for="n-title">নোটিশের শিরোনাম</label>
           <input id="n-title" name="title" required class="input" value="${_esc(isEdit ? n.title : '')}" placeholder="বিজ্ঞপ্তি শিরোনাম...">
@@ -885,8 +883,9 @@ const UIComponents = {
             </select>
           </div>
           <div>
-            <label class="label" for="n-pdfUrl">নোটিশের ছবির লিংক / URL</label>
-            <input id="n-pdfUrl" name="pdfUrl" class="input" value="${_esc(isEdit ? n.pdfUrl : '')}" placeholder="https://res.cloudinary.com/...">
+            <label class="label" for="n-pdfUrl">নোটিশের ছবি (আপলোড)</label>
+            <input type="file" name="pdfUrl" accept="image/*" class="input py-2">
+            ${isEdit && n.pdfUrl ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের নোটিশ ছবি আপলোড করা আছে</p>` : ''}
           </div>
         </div>
         <div>
