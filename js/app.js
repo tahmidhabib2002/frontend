@@ -1078,7 +1078,7 @@ function highlightActiveNav(path) {
   });
 }
 
-// বড় ছবির ইন্টারেক্টিভ অন-পেজ লাইটবক্স প্রিভিউ (নতুন ফিচার)
+// বড় ছবির ইন্টারেক্টিভ অন-পেজ লাইটবক্স প্রিভিউ (মোবাইল ক্র্যাশ বাগ সমাধান)
 window.viewLargeImage = (src) => {
   const modal = document.createElement('div');
   modal.className = 'fixed inset-0 z-[100] bg-navy-950/85 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-fade-in no-print';
@@ -1265,7 +1265,7 @@ document.addEventListener('submit', async (e) => {
       if (resData.success) {
         window.showToast(memberId ? 'সদস্য তথ্য সফলভাবে আপডেট হয়েছে।' : 'সদস্য সফলভাবে নিবন্ধিত হয়েছে।', 'success');
         
-        // অটোমেটেড মোবাইল এসএমএস ও ইমেইল নোটিফিকেশন (শুধুমাত্র নতুন এন্ট্রির ক্ষেত্রে)
+        // অটোমেটেড মোবাইল এসএমেস ও ইমেইল নোটিফিকেশন (শুধুমাত্র নতুন এন্ট্রির ক্ষেত্রে)
         if (!memberId && resData.data && resData.data.phone) {
           NotificationService.sendSMS(resData.data.phone, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
           NotificationService.sendEmail(resData.data.email, resData.data.nameBn || resData.data.nameEn, resData.data.memberId);
