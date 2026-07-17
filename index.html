@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="icon" type="image/png" href="assets/placeholder-avatar.png">
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png">
 
   <!-- Tailwind (CDN, per project stack) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,45 +38,42 @@
             serif: ['"Instrument Serif"', '"Playfair Display"', 'Georgia', 'serif']
           },
           colors: {
-            /* navy-* -> grayscale ramp (near-black to off-white) */
             navy: {
-              50:  '#fafafa',
-              100: '#f4f4f5',
-              200: '#e4e4e7',
-              300: '#a1a1aa',
-              400: '#71717a',
-              500: '#52525b',
-              600: '#3f3f46',
-              700: '#27272a',
-              800: '#18181b',
-              900: '#0a0a0a',
-              950: '#000000'
+              50:  '#eef4ff',
+              100: '#dbe6fe',
+              200: '#bfd0fb',
+              300: '#8faaf3',
+              400: '#5c7ee3',
+              500: '#365ccc',
+              600: '#1e40af',
+              700: '#1b3a92',
+              800: '#152c6f',
+              900: '#0b2545',
+              950: '#061530'
             },
-            /* teal-* -> Vercel blue accent ramp */
             teal: {
-              50:  '#eff6ff',
-              100: '#dbeafe',
-              200: '#bfdbfe',
-              300: '#93c5fd',
-              400: '#60a5fa',
-              500: '#0070f3',
-              600: '#0061d5',
-              700: '#0052b3',
-              800: '#003d85',
-              900: '#00285c'
+              50:  '#effcfa',
+              100: '#cbf5ee',
+              200: '#99ecdd',
+              300: '#5fdcc7',
+              400: '#2dc4ac',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a'
             },
-            /* emerald-* -> folded into the same blue accent for a true monochrome+one-accent system */
             emerald: {
-              50:  '#eff6ff',
-              400: '#60a5fa',
-              500: '#0070f3',
-              600: '#0061d5',
-              700: '#0052b3'
+              50:  '#ecfdf5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857'
             },
             gold: {
-              400: '#d4d4d8',
-              500: '#a1a1aa',
-              600: '#71717a'
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706'
             },
             ink: {
               900: '#0a0a0a',
@@ -98,11 +95,12 @@
             'ring-navy': '0 0 0 4px rgba(0,0,0,0.06)'
           },
           backgroundImage: {
-            'gradient-navy':     'linear-gradient(135deg, #000000 0%, #0a0a0a 60%, #171717 100%)',
-            'gradient-medical':  'linear-gradient(135deg, #000000 0%, #0a0a0a 60%, #171717 100%)',
-            'gradient-hero':     'radial-gradient(ellipse 55% 45% at 15% 8%, rgba(0,112,243,0.22), transparent 60%), radial-gradient(ellipse 50% 40% at 88% 92%, rgba(0,112,243,0.10), transparent 65%), linear-gradient(180deg, #000000 0%, #0a0a0a 55%, #171717 100%)',
-            'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)',
-            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)'
+            'gradient-navy':     'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0e7490 100%)',
+            'gradient-medical':  'linear-gradient(135deg, #0e7490 0%, #0891b2 45%, #14b8a6 100%)',
+            'gradient-brand':    'linear-gradient(135deg, #0e7490 0%, #0891b2 50%, #14b8a6 100%)',
+            'gradient-hero':     'radial-gradient(ellipse 55% 45% at 15% 8%, rgba(20,184,166,0.28), transparent 60%), radial-gradient(ellipse 50% 40% at 88% 92%, rgba(59,130,246,0.18), transparent 65%), linear-gradient(180deg, #0f172a 0%, #0e1a3a 55%, #0e7490 100%)',
+            'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%)',
+            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)'
           },
           keyframes: {
             'fade-in-up': { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
@@ -129,7 +127,7 @@
   <!-- Lucide icons for consistent iconography -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="font-bn bg-white text-ink-900 antialiased selection:bg-teal-500/20 selection:text-navy-900 flex flex-col min-h-dvh">
 
@@ -145,13 +143,13 @@
           <!-- Brand -->
           <a href="#/" class="flex items-center gap-3 min-w-0 group">
             <div class="relative shrink-0">
-              <div class="absolute inset-0 rounded-xl bg-gradient-medical blur-md opacity-30 group-hover:opacity-50 transition"></div>
-              <div class="relative w-11 h-11 rounded-xl bg-gradient-medical grid place-items-center text-white shadow-card">
-                <i data-lucide="stethoscope" class="w-5 h-5"></i>
-              </div>
+              <div class="absolute inset-0 rounded-xl bg-gradient-brand blur-md opacity-30 group-hover:opacity-60 transition"></div>
+              <img src="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
+                   alt="BDDPA লোগো"
+                   class="relative w-12 h-12 rounded-xl object-contain bg-white ring-1 ring-ink-100 shadow-card p-1"/>
             </div>
             <div class="min-w-0 leading-tight">
-              <div class="text-[13px] sm:text-[15px] font-bold text-navy-900 truncate">
+              <div class="text-[13px] sm:text-[15px] font-bold text-navy-900 truncate font-display">
                 ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন
               </div>
               <div class="text-[10px] sm:text-[11px] font-latin tracking-[0.18em] text-teal-600 font-semibold uppercase">
@@ -195,9 +193,8 @@
     <aside class="absolute top-0 right-0 h-full w-[86%] max-w-sm bg-white shadow-elevated animate-slide-in-right flex flex-col">
       <div class="flex items-center justify-between px-5 h-16 border-b border-ink-100">
         <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-lg bg-gradient-medical grid place-items-center text-white">
-            <i data-lucide="stethoscope" class="w-4 h-4"></i>
-          </div>
+          <img src="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
+               alt="BDDPA" class="w-9 h-9 rounded-lg object-contain bg-white ring-1 ring-ink-100 p-0.5"/>
           <span class="font-bold text-navy-900">BDDPA</span>
         </div>
         <button data-drawer-close aria-label="মেনু বন্ধ করুন" class="w-9 h-9 grid place-items-center rounded-lg hover:bg-ink-50 text-ink-700">
@@ -228,47 +225,52 @@
   <footer class="bg-navy-950 text-ink-200 mt-24 no-print relative overflow-hidden">
     <div class="absolute inset-0 bg-grid-pattern opacity-40" style="background-size:44px 44px"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
-        <div class="col-span-2">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="md:col-span-2">
           <div class="flex items-center gap-3 mb-4">
-            <div class="w-11 h-11 rounded-xl bg-gradient-medical grid place-items-center text-white shadow-card">
-              <i data-lucide="stethoscope" class="w-5 h-5"></i>
-            </div>
+            <img src="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
+                 alt="BDDPA" class="w-12 h-12 rounded-xl object-contain bg-white/95 p-1 shadow-card"/>
             <div>
-              <div class="font-bold text-white text-sm">BDDPA ভোলা</div>
-              <div class="text-[11px] tracking-widest text-teal-400 font-latin uppercase">Estd 2026</div>
+              <div class="font-bold text-white text-sm font-display">ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন</div>
+              <div class="text-[11px] tracking-widest text-teal-400 font-latin uppercase mt-0.5">BDDPA · Estd 2026</div>
             </div>
           </div>
           <p class="text-sm text-ink-300 leading-relaxed max-w-md">
-            ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন — জেলার ডিপ্লোমা দন্ত চিকিৎসকদের একমাত্র অফিসিয়াল পেশাদার প্ল্যাটফর্ম।
+            ভোলা জেলার ডিপ্লোমা দন্ত চিকিৎসকদের একমাত্র অফিসিয়াল পেশাদার প্ল্যাটফর্ম। যাচাইকৃত সদস্যপদ, ডিজিটাল আইডি ও পেশাদার নেটওয়ার্ক।
           </p>
           <div class="flex gap-2 mt-5">
-            <a href="#" aria-label="Facebook" class="social-btn"><i data-lucide="facebook" class="w-4 h-4"></i></a>
-            <a href="#" aria-label="Twitter"  class="social-btn"><i data-lucide="twitter"  class="w-4 h-4"></i></a>
-            <a href="#" aria-label="Youtube"  class="social-btn"><i data-lucide="youtube"  class="w-4 h-4"></i></a>
-            <a href="#" aria-label="Linkedin" class="social-btn"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook" class="social-btn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.1H13.5V8.9c0-.9.3-1.6 1.6-1.6h1.7V4.5c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.2H7.4V14h2.7v8h3.4z"/></svg>
+            </a>
+            <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="Youtube" class="social-btn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M23 7.5s-.2-1.5-.9-2.2c-.8-.9-1.7-.9-2.2-1C16.6 4 12 4 12 4s-4.6 0-7.9.3c-.4.1-1.3.1-2.2 1C1.2 6 1 7.5 1 7.5S.8 9.3.8 11.1v1.7c0 1.8.2 3.6.2 3.6s.2 1.5.9 2.2c.9.9 2 .9 2.5 1 1.8.2 7.6.3 7.6.3s4.6 0 7.9-.3c.5-.1 1.4-.1 2.2-1 .7-.7.9-2.2.9-2.2s.2-1.8.2-3.6v-1.7c0-1.8-.2-3.6-.2-3.6zM9.8 14.6V8.4l5.9 3.1-5.9 3.1z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="Linkedin" class="social-btn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5v-9h3v9zM6.5 8.3a1.75 1.75 0 1 1 0-3.5 1.75 1.75 0 0 1 0 3.5zM19 19h-3v-4.7c0-1.1 0-2.5-1.6-2.5s-1.8 1.2-1.8 2.4V19h-3v-9h2.9v1.2h.1c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.7 2 3.7 4.7V19z"/></svg>
+            </a>
           </div>
         </div>
 
         <div>
-          <h4 class="text-white font-semibold text-sm mb-4">দ্রুত লিংক</h4>
-          <ul class="space-y-2.5 text-sm">
-            <li><a href="#/about" class="footer-link">আমাদের সম্পর্কে</a></li>
-            <li><a href="#/members" class="footer-link">সদস্য তালিকা</a></li>
-            <li><a href="#/executive" class="footer-link">কার্যনির্বাহী কমিটি</a></li>
-            <li><a href="#/events" class="footer-link">ইভেন্টস</a></li>
-            <li><a href="#/notice" class="footer-link">নোটিশ বোর্ড</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-white font-semibold text-sm mb-4">যোগাযোগ</h4>
-          <ul class="space-y-3 text-sm text-ink-300">
-            <li class="flex items-start gap-2.5"><i data-lucide="map-pin" class="w-4 h-4 mt-0.5 text-teal-400 shrink-0"></i><span>সদর রোড, ভোলা সদর, বাংলাদেশ</span></li>
-            <li class="flex items-start gap-2.5"><i data-lucide="phone" class="w-4 h-4 mt-0.5 text-teal-400 shrink-0"></i><span dir="ltr">+880 1900 000000</span></li>
-            <li class="flex items-start gap-2.5"><i data-lucide="mail" class="w-4 h-4 mt-0.5 text-teal-400 shrink-0"></i><a href="mailto:info@bddpa-bhola.org" class="footer-link">info@bddpa-bhola.org</a></li>
-            <li class="flex items-start gap-2.5"><i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 text-emerald-500 shrink-0"></i><span>জরুরি: <span dir="ltr">999</span></span></li>
-          </ul>
+          <h4 class="text-white font-semibold text-sm mb-4 font-display">যোগাযোগ</h4>
+          <div class="flex flex-col gap-2.5">
+            <a href="https://www.google.com/maps/search/?api=1&query=Bhola+Sadar+Bangladesh" target="_blank" rel="noopener" class="footer-btn">
+              <i data-lucide="map-pin" class="w-4 h-4 text-teal-400"></i>
+              <span>সদর রোড, ভোলা সদর, বাংলাদেশ</span>
+            </a>
+            <a href="tel:+8801900000000" class="footer-btn">
+              <i data-lucide="phone" class="w-4 h-4 text-teal-400"></i>
+              <span dir="ltr">+880 1900 000000</span>
+            </a>
+            <a href="mailto:info@bddpa-bhola.org" class="footer-btn">
+              <i data-lucide="mail" class="w-4 h-4 text-teal-400"></i>
+              <span>info@bddpa-bhola.org</span>
+            </a>
+            <a href="tel:999" class="footer-btn">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-red-400"></i>
+              <span>জরুরি: <span dir="ltr">999</span></span>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -283,7 +285,7 @@
   </footer>
 
   <!-- App scripts -->
-  <script src="js/components.js"></script>
-  <script src="js/app.js"></script>
+  <script src="components.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
