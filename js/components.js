@@ -300,38 +300,35 @@ const UIComponents = {
 
   /* ================= MEMBER CARD ================= */
   MemberCard: (m = {}) => `
-    <a href="#/members/${_esc(m.slug || '')}" class="member-card-link group">
-      <article class="card overflow-hidden group-hover:-translate-y-1 group-hover:shadow-elevated transition-all duration-300">
-        <div class="relative h-28 bg-gradient-brand">
-          <div class="absolute inset-0 bg-grid-pattern opacity-25" style="background-size:24px 24px"></div>
-          <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
-          ${m.roleType === 'Executive Committee' ? `<span class="absolute top-3 right-3 chip chip-gold shadow-card">${_icon('star','w-3 h-3')}Executive</span>` : ''}
+    <article class="card overflow-hidden group">
+      <div class="relative h-24 bg-gradient-medical">
+        <div class="absolute inset-0 bg-grid-pattern opacity-30" style="background-size:24px 24px"></div>
+        ${m.roleType === 'Executive Committee' ? `<span class="absolute top-3 right-3 chip chip-gold">${_icon('star','w-3 h-3')}Executive</span>` : ''}
+      </div>
+      <div class="px-6 pb-6 -mt-10">
+        <div class="w-20 h-20 rounded-2xl bg-white p-1 shadow-card ring-1 ring-ink-100 mx-auto sm:mx-0">
+          ${m.profilePhoto
+            ? `<img class="w-full h-full object-cover rounded-xl" src="${_esc(m.profilePhoto)}" alt="${_esc(m.nameEn || '')}" loading="lazy"/>`
+            : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-lg">${_initials(m.nameEn || m.nameBn)}</div>`}
         </div>
-        <div class="px-6 pb-6 -mt-16">
-          <div class="w-28 h-28 rounded-2xl bg-white p-1.5 shadow-elevated ring-2 ring-white mx-auto overflow-hidden">
-            ${m.profilePhoto
-              ? `<img class="w-full h-full object-cover rounded-xl" src="${_esc(m.profilePhoto)}" alt="${_esc(m.nameEn || '')}" loading="lazy"/>`
-              : `<div class="w-full h-full rounded-xl bg-gradient-brand grid place-items-center text-white font-bold text-2xl">${_initials(m.nameEn || m.nameBn)}</div>`}
-          </div>
-          <div class="mt-4 text-center space-y-1.5">
-            <h3 class="font-bold text-navy-900 text-lg leading-tight group-hover:text-teal-700 transition font-display">${_esc(m.nameBn || m.nameEn)}</h3>
-            <p class="text-xs text-ink-500 font-latin">${_esc(m.nameEn || '')}</p>
-            <div class="flex flex-wrap items-center justify-center gap-1.5 pt-1.5">
-              ${m.memberId ? `<span class="chip chip-teal font-latin">${_esc(m.memberId)}</span>` : ''}
-              ${m.qualification ? `<span class="chip">${_esc(m.qualification)}</span>` : ''}
-              ${m.status === 'Active' ? `<span class="chip chip-emerald">${_icon('check','w-3 h-3')}Active</span>` : ''}
-            </div>
-          </div>
-          <dl class="mt-5 pt-5 border-t border-ink-100 space-y-2 text-xs">
-            <div class="flex items-center gap-2 text-ink-500"><span class="text-teal-600">${_icon('briefcase','w-3.5 h-3.5')}</span><span class="truncate">${_esc(m.chamberName || 'চেম্বার তথ্য শীঘ্রই')}</span></div>
-            <div class="flex items-center gap-2 text-ink-500"><span class="text-teal-600">${_icon('map-pin','w-3.5 h-3.5')}</span><span class="truncate">${_esc(m.upazila || m.district || 'Bhola')}</span></div>
-          </dl>
-          <div class="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 group-hover:gap-2.5 transition-all w-full justify-center">
-            <span>প্রোফাইল দেখুন</span>${_icon('arrow-right','w-4 h-4')}
+        <div class="mt-4 space-y-1.5">
+          <h3 class="font-bold text-navy-900 text-lg leading-tight group-hover:text-teal-700 transition">${_esc(m.nameBn || m.nameEn)}</h3>
+          <p class="text-xs text-ink-500 font-latin">${_esc(m.nameEn || '')}</p>
+          <div class="flex flex-wrap items-center gap-1.5 pt-1.5">
+            ${m.memberId ? `<span class="chip chip-teal font-latin">${_esc(m.memberId)}</span>` : ''}
+            ${m.qualification ? `<span class="chip">${_esc(m.qualification)}</span>` : ''}
+            ${m.status === 'Active' ? `<span class="chip chip-emerald">${_icon('check','w-3 h-3')}Active</span>` : ''}
           </div>
         </div>
-      </article>
-    </a>`,
+        <dl class="mt-5 pt-5 border-t border-ink-100 space-y-2 text-xs">
+          <div class="flex items-center gap-2 text-ink-500"><span class="text-teal-600">${_icon('briefcase','w-3.5 h-3.5')}</span><span class="truncate">${_esc(m.chamberName || 'চেম্বার তথ্য শীঘ্রই')}</span></div>
+          <div class="flex items-center gap-2 text-ink-500"><span class="text-teal-600">${_icon('map-pin','w-3.5 h-3.5')}</span><span class="truncate">${_esc(m.upazila || m.district || 'Bhola')}</span></div>
+        </dl>
+        <a href="#/members/${_esc(m.slug || '')}" class="mt-5 btn-outline w-full justify-center">
+          ${_icon('user-round','w-4 h-4')}<span>প্রোফাইল দেখুন</span>${_icon('arrow-right','w-4 h-4')}
+        </a>
+      </div>
+    </article>`,
 
   /* ================= DIRECTORY VIEW ================= */
   DirectoryListView: () => `
@@ -367,16 +364,15 @@ const UIComponents = {
 
       <div class="grid lg:grid-cols-12 gap-6">
         <div class="lg:col-span-4">
-          <div class="card overflow-hidden animate-fade-in-up">
-            <div class="h-32 bg-gradient-brand relative">
-              <div class="absolute inset-0 bg-grid-pattern opacity-25" style="background-size:24px 24px"></div>
-              <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white"></div>
+          <div class="card overflow-hidden">
+            <div class="h-24 bg-gradient-medical relative">
+              <div class="absolute inset-0 bg-grid-pattern opacity-30" style="background-size:24px 24px"></div>
             </div>
-            <div class="px-6 pb-6 -mt-20">
-              <div class="w-36 h-36 rounded-3xl bg-white p-2 shadow-elevated ring-2 ring-white mx-auto overflow-hidden">
+            <div class="px-6 pb-6 -mt-14">
+              <div class="w-28 h-28 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto">
                 ${m.profilePhoto
                   ? `<img class="w-full h-full object-cover rounded-2xl" src="${_esc(m.profilePhoto)}" alt="${_esc(m.nameEn)}"/>`
-                  : `<div class="w-full h-full rounded-2xl bg-gradient-brand grid place-items-center text-white font-bold text-3xl">${_initials(m.nameEn || m.nameBn)}</div>`}
+                  : `<div class="w-full h-full rounded-2xl bg-gradient-medical grid place-items-center text-white font-bold text-2xl">${_initials(m.nameEn || m.nameBn)}</div>`}
               </div>
               <div class="text-center mt-5 space-y-1.5">
                 <h1 class="text-xl font-bold text-navy-900">${_esc(m.nameBn || m.nameEn)}</h1>
@@ -413,7 +409,7 @@ const UIComponents = {
             <dl class="grid sm:grid-cols-2 gap-5">
               ${[
                 ['graduation-cap', 'ডিগ্রি',       m.qualification],
-                ['building-2',     'ইনস্টিটিউট',    m.institution],
+                ['building-2',     'ইনституটিউট',    m.institution],
                 ['badge',          'BMDC Reg',      m.bmdcReg],
                 ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
                 ['briefcase',      'চেম্বারের নাম',    m.chamberName],

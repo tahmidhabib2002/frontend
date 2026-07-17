@@ -125,9 +125,6 @@ class PublicClientRouter {
     this.outlet = document.getElementById(outletId);
     window.addEventListener('hashchange', () => this.handleRouting());
     window.addEventListener('load', () => this.handleRouting());
-    
-    // 👉 ফিক্সড: পেজ লোড হওয়া মাত্রই রাউটিং নিশ্চিত করার জন্য রান করা হলো
-    this.handleRouting();
   }
 
   handleRouting() {
@@ -987,13 +984,6 @@ document.addEventListener('submit', async (e) => {
     
     if (!memberId) { data.joiningDate = new Date().toISOString(); data.status = 'Active'; }
 
-    // 👉 ফিক্সড: খালি ফাইল অবজেক্ট যেন JSON এ পে-লোড নষ্ট না করে সেজন্য ক্লিনিং
-    for (const key in data) {
-      if (data[key] instanceof File) {
-        data[key] = "";
-      }
-    }
-
     try {
       const res = await fetch(memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`, {
         method: memberId ? 'PUT' : 'POST',
@@ -1017,12 +1007,6 @@ document.addEventListener('submit', async (e) => {
     const formFields = new FormData(form);
     const data = Object.fromEntries(formFields.entries());
     data.pdfUrl = await fileToBase64(pdfUrlFile) || data.pdfUrl || "";
-
-    for (const key in data) {
-      if (data[key] instanceof File) {
-        data[key] = "";
-      }
-    }
 
     try {
       let res = await fetch(noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`, {
@@ -1096,7 +1080,7 @@ document.addEventListener('submit', async (e) => {
       data.degreePhoto = await fileToBase64(degreePhotoFile);
       data.nidPhoto = await fileToBase64(nidPhotoFile);
 
-      // পাবলিক এন্ডপয়েন্ট সংশোধিত: /members/apply ব্যবহার করা হলো
+      // 👇 পাবলিক এন্ডপয়েন্ট সংশোধিত: /members/apply ব্যবহার করা হলো
       const res = await fetch(`${window.API_BASE}/members/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1159,8 +1143,8 @@ function patchNavbar() {
   }
 }
 
-// 👉 ফিক্সড: ক্যাশে বা কুইক রিলোডে DOMContentLoaded ইভেন্ট মিস হওয়া প্রতিরোধের সমাধান
-function initApp() {
+// ============ DOM রেডি ============
+document.addEventListener('DOMContentLoaded', () => {
   if (typeof UIComponents === 'undefined') {
     console.error('UIComponents not loaded! Check components.js');
     document.getElementById('main-app-viewport').innerHTML = `
@@ -1180,10 +1164,4 @@ function initApp() {
   
   const router = new PublicClientRouter(getRouterConfig(), 'main-app-viewport');
   window.__router = router;
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
+});
