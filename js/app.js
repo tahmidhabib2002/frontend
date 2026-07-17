@@ -985,7 +985,7 @@ document.addEventListener('submit', async (e) => {
         window.showToast(memberId ? 'সদস্য আপডেট হয়েছে।' : 'সদস্য নিবন্ধিত হয়েছে।', 'success');
         window.location.hash = '#/admin/dashboard?tab=members';
       } else window.showToast(resData.message || 'অপারেশন ব্যর্থ হয়েছে।', 'error');
-    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); }
+    } catch (err) { window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error'); }
   }
 
   if (e.target.id === 'add-notice-form') {
@@ -1010,7 +1010,7 @@ document.addEventListener('submit', async (e) => {
       }
       if (resData.success) { window.showToast(noticeId ? 'নোটিশ আপডেট হয়েছে।' : 'নোটিশ প্রকাশিত হয়েছে।', 'success'); window.location.hash = '#/admin/dashboard?tab=notices'; }
       else window.showToast(resData.message || 'সংরক্ষণ ব্যর্থ।', 'error');
-    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); }
+    } catch (err) { window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error'); }
   }
 
   if (e.target.id === 'add-event-form') {
@@ -1070,7 +1070,7 @@ document.addEventListener('submit', async (e) => {
       const resData = await res.json();
       if (resData.success) { window.showToast('আবেদন জমা হয়েছে।', 'success'); window.location.hash = '#/'; }
       else { window.showToast(resData.message || 'আবেদন জমা দেওয়া যায়নি।', 'error'); submitBtn.disabled = false; submitBtn.innerHTML = orig; }
-    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); submitBtn.disabled = false; submitBtn.innerHTML = orig; }
+    } catch (err) { window.showToast('সার্ভার সংযোগ করা যায়নি।', 'error'); submitBtn.disabled = false; submitBtn.innerHTML = orig; }
   }
 });
 
@@ -1080,3 +1080,5 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshLucide();
   new PublicClientRouter(routerConfig, 'main-app-viewport');
 });
+
+--- END OF FILE Paste July 17, 2026 - 11:57AM ---
