@@ -846,8 +846,7 @@ const UIComponents = {
       </div>
     </div>`,
 
-  /* ================= NEW FUNCTIONS (Added for completeness) ================= */
-  
+  /* ================= PUBLIC REGISTRATION FORM ================= */
   PublicRegistrationForm: function() {
     return `
       <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -857,6 +856,7 @@ const UIComponents = {
           <p class="text-sm text-ink-500">ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনের সদস্যপদের জন্য আবেদন করুন।</p>
         </div>
         <form id="public-register-form" class="card p-6 sm:p-10 space-y-6" enctype="multipart/form-data">
+          <!-- ব্যক্তিগত তথ্য -->
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="label" for="reg-nameBn">নাম (বাংলা) *</label>
@@ -876,6 +876,7 @@ const UIComponents = {
             </div>
           </div>
 
+          <!-- পেশাগত তথ্য -->
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="label" for="reg-qualification">যোগ্যতা/ডিগ্রি *</label>
@@ -895,6 +896,7 @@ const UIComponents = {
             </div>
           </div>
 
+          <!-- চেম্বারের তথ্য -->
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="label" for="reg-chamberName">চেম্বারের নাম</label>
@@ -906,6 +908,7 @@ const UIComponents = {
             </div>
           </div>
 
+          <!-- ঠিকানা ও অন্যান্য -->
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
               <label class="label" for="reg-upazila">উপজেলা *</label>
@@ -925,6 +928,7 @@ const UIComponents = {
             </div>
           </div>
 
+          <!-- ছবি আপলোড -->
           <div class="grid sm:grid-cols-3 gap-5 pt-4 border-t border-ink-100">
             <div>
               <label class="label" for="reg-profilePhoto">প্রোফাইল ছবি *</label>
@@ -952,6 +956,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= ADMIN MEMBER PREVIEW ================= */
   AdminMemberPreview: function(m) {
     if (!m) return UIComponents.EmptyState('সদস্য তথ্য পাওয়া যায়নি।');
     return `
@@ -985,6 +990,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= ADMIN NOTICE LIST ================= */
   AdminNoticeList: function(list) {
     if (!list || list.length === 0) return UIComponents.EmptyState('কোনো নোটিশ পাওয়া যায়নি।', 'megaphone');
     return `
@@ -1014,6 +1020,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= ADMIN EVENT LIST ================= */
   AdminEventList: function(list) {
     if (!list || list.length === 0) return UIComponents.EmptyState('কোনো ইভেন্ট পাওয়া যায়নি।', 'calendar');
     return `
@@ -1044,6 +1051,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= ADMIN NOTICE FORM ================= */
   AdminNoticeForm: function(data) {
     const d = data || {};
     return `
@@ -1082,6 +1090,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= ADMIN EVENT FORM ================= */
   AdminEventForm: function(data) {
     const d = data || {};
     return `
@@ -1133,6 +1142,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= ADMIN LEADERSHIP FORM ================= */
   AdminLeadershipForm: function(data) {
     const d = data || {};
     return `
@@ -1183,6 +1193,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= ADMIN MEMBER FORM ================= */
   AdminMemberForm: function(data) {
     const d = data || {};
     const isEdit = !!(d._id || d.id);
@@ -1290,6 +1301,7 @@ const UIComponents = {
     `;
   },
 
+  /* ================= MAINTENANCE PAGE ================= */
   MaintenancePage: () => `
     <section class="min-h-[70vh] grid place-items-center px-4">
       <div class="max-w-md text-center space-y-4">
