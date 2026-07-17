@@ -25,7 +25,7 @@ const _checkExpiry = (joiningDate) => {
   const today = new Date();
   
   if (today > expDate) {
-    return { expired: true, diffText: 'মেয়াদোত্তীর্ণ (Expired)' };
+    return { expired: true, diffText: 'মেয়ادোত্তীর্ণ (Expired)' };
   }
   
   const diffTime = Math.abs(expDate - today);
@@ -359,100 +359,161 @@ const UIComponents = {
     </section>`,
 
   /* ================= PUBLIC MEMBER PROFILE ================= */
-  PublicProfileView: (m = {}) => `
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-      <a href="#/members" class="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-500 hover:text-navy-900 mb-6">
-        ${_icon('arrow-left','w-3.5 h-3.5')}<span>সদস্য তালিকায় ফিরে যান</span>
-      </a>
-
-      <div class="grid lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-4">
-          <div class="card overflow-hidden animate-fade-in-up">
-            <div class="h-32 bg-gradient-brand relative">
-              <div class="absolute inset-0 bg-grid-pattern opacity-25" style="background-size:24px 24px"></div>
-              <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white"></div>
+  PublicProfileView: (m = {}) => {
+    const expiry = _checkExpiry(m.joiningDate);
+    const trimmedLogo = "https://res.cloudinary.com/zotssmss/image/upload/e_trim/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png";
+    const profileImgSrc = m.profilePhoto || 'assets/placeholder-avatar.png';
+    const isVerifiedText = expiry.expired ? 'Expired' : 'Verified';
+    
+    return `
+      <!-- ================= PREMIUM PRINTABLE ID CARD (CR-80 Standard Size) ================= -->
+      <div class="print-card-wrapper no-screen">
+        <!-- CARD FRONT SIDE -->
+        <div class="id-card-front">
+          <div class="id-card-pattern"></div>
+          <div class="id-card-header">
+            <img src="${trimmedLogo}" class="id-card-logo" alt="BDDPA Logo"/>
+            <div class="id-card-title">
+              ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন<br/>
+              <span style="font-size:4.8px; font-weight:500; font-family:sans-serif; opacity:0.85;">BDDPA · ESTD 2026 · DIGITAL MEMBERSHIP CARD</span>
             </div>
-            <div class="px-6 pb-6 -mt-20">
-              <div class="w-36 h-36 rounded-3xl bg-white p-2 shadow-elevated ring-2 ring-white mx-auto overflow-hidden">
-                ${m.profilePhoto
-                  ? `<img class="w-full h-full object-cover rounded-2xl" src="${_esc(m.profilePhoto)}" alt="${_esc(m.nameEn)}"/>`
-                  : `<div class="w-full h-full rounded-2xl bg-gradient-brand grid place-items-center text-white font-bold text-3xl">${_initials(m.nameEn || m.nameBn)}</div>`}
-              </div>
-              <div class="text-center mt-5 space-y-1.5">
-                <h1 class="text-xl font-bold text-navy-900">${_esc(m.nameBn || m.nameEn)}</h1>
-                <p class="text-xs text-ink-500 font-latin">${_esc(m.nameEn || '')}</p>
-                <div class="flex items-center justify-center gap-2 pt-2">
-                  ${m.memberId ? `<span class="chip chip-teal font-latin">${_esc(m.memberId)}</span>` : ''}
-                  ${m.status === 'Active' ? `<span class="verified-badge">${_icon('badge-check','w-3.5 h-3.5')}<span>Verified</span></span>` : ''}
-                </div>
-              </div>
-
-              ${m.qrCode ? `
-                <div class="mt-6 p-4 rounded-2xl bg-ink-50 border border-ink-100 text-center">
-                  <img src="${_esc(m.qrCode)}" alt="QR" class="mx-auto w-32 h-32 rounded-xl bg-white p-2"/>
-                  <p class="mt-3 text-[11px] text-ink-500 font-latin tracking-widest">SCAN TO VERIFY</p>
-                </div>` : ''}
-
-              <div class="mt-6 grid grid-cols-2 gap-2">
-                <button onclick="window.print()" class="btn-outline text-xs">${_icon('printer','w-3.5 h-3.5')}Print</button>
-                <button onclick="navigator.share ? navigator.share({title:document.title, url:location.href}) : navigator.clipboard.writeText(location.href).then(() => window.showToast('লিংক কপি হয়েছে'))" class="btn-outline text-xs">${_icon('share-2','w-3.5 h-3.5')}Share</button>
-              </div>
+          </div>
+          <div class="id-card-body">
+            <img src="${_esc(profileImgSrc)}" class="id-card-photo" alt="Member Photo"/>
+            <div class="id-card-details">
+              <div>নাম: <strong>${_esc(m.nameBn || m.nameEn)}</strong></div>
+              <div>আইডি নম্বর: <strong>${_esc(m.memberId || 'BDPA-XXXX')}</strong></div>
+              <div>ডিগ্রি/যোগ্যতা: <strong>${_esc(m.qualification || '—')}</strong></div>
+              <div>ব্লাড গ্রুপ: <strong>${_esc(m.bloodGroup || '—')}</strong></div>
+              <div>উপজেলা: <strong>${_esc(m.upazila || '—')}</strong></div>
+            </div>
+          </div>
+          <div class="id-card-footer">
+            <div>যোগদান: ${_fmtDateBn(m.joiningDate)}</div>
+            <div class="id-card-sign">
+              <span style="font-weight:bold; color:#14b8a6; font-size:6px;">VERIFIED MEMBER</span>
+              <div style="font-size:4.5px; opacity:0.8; margin-top:0.5px;">Authorized Seal</div>
             </div>
           </div>
         </div>
 
-        <div class="lg:col-span-8 space-y-6">
-          <div class="card p-7 sm:p-8">
-            <div class="flex items-center justify-between gap-4 mb-6">
-              <div>
-                <span class="eyebrow">Professional Profile</span>
-                <h2 class="h-section text-xl mt-2">পেশাগত তথ্য</h2>
-              </div>
-              ${m.roleType === 'Executive Committee' ? `<span class="chip chip-gold">${_icon('star','w-3 h-3')}${_esc(m.executivePost || 'Executive')}</span>` : ''}
-            </div>
-            <dl class="grid sm:grid-cols-2 gap-5">
-              ${[
-                ['graduation-cap', 'ডিগ্রি',       m.qualification],
-                ['building-2',     'ইনস্টিটিউট',    m.institution],
-                ['badge',          'BMDC Reg',      m.bmdcReg],
-                ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
-                ['briefcase',      'চেম্বারের নাম',    m.chamberName],
-                ['map-pin',        'ঠিকানা',       m.chamberAddress || m.address],
-                ['heart',          'ব্লাড গ্রুপ',    m.bloodGroup],
-                ['credit-card',    'এনআইডি নম্বর',  m.nidNumber],
-              ].filter(([,,v]) => v).map(([ic,l,v]) => `
-                <div class="flex items-start gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-teal-50 grid place-items-center text-teal-600 shrink-0">${_icon(ic, 'w-4 h-4')}</div>
-                  <div class="min-w-0">
-                    <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-400 font-latin">${l}</dt>
-                    <dd class="mt-0.5 text-sm font-semibold text-navy-900 break-words">${_esc(v)}</dd>
-                  </div>
-                </div>`).join('')}
-            </dl>
+        <!-- CARD BACK SIDE -->
+        <div class="id-card-back" style="padding: 12px 10px !important;">
+          <div class="id-card-pattern"></div>
+          <div style="text-align:center; border-bottom:0.8px solid rgba(255,255,255,0.15); padding-bottom:3px; margin-bottom:4px;">
+            <span style="font-size:7px; font-weight:bold; color:#14b8a6; letter-spacing:0.5px;">সদস্য পদের সাধারণ নির্দেশনাবলী</span>
           </div>
-
-          <div class="card p-7 sm:p-8">
-            <span class="eyebrow">Contact</span>
-            <h2 class="h-section text-xl mt-2 mb-6">যোগাযোগ</h2>
-            <dl class="grid sm:grid-cols-2 gap-5">
-              ${[
-                ['phone', 'মোবাইল', m.phone],
-                ['phone-call', 'বিকল্প', m.alternatePhone],
-                ['mail',  'ইমেইল', m.email],
-                ['home',  'ব্যক্তিগত ঠিকানা', m.personalAddress]
-              ].filter(([,,v]) => v).map(([ic,l,v]) => `
-                <div class="flex items-start gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-ink-50 grid place-items-center text-navy-900 shrink-0">${_icon(ic, 'w-4 h-4')}</div>
-                  <div class="min-w-0">
-                    <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-400 font-latin">${l}</dt>
-                    <dd class="mt-0.5 text-sm font-semibold text-navy-900 break-words font-latin">${_esc(v)}</dd>
-                  </div>
-                </div>`).join('')}
-            </dl>
+          <div style="font-size:5.5px; color:#cbd5e1; line-height:1.35; display:flex; flex-direction:column; gap:2px; font-family:sans-serif;">
+            <div>১. এই ডিজিটাল কার্ডটি বিডিডিপিএ ভোলার অফিশিয়াল ও আইনানুগ সম্পত্তি।</div>
+            <div>২. কার্ডটি সম্পূর্ণ অহস্তান্তরযোগ্য এবং পেশাগত সময়ে প্রদর্শন আবশ্যক।</div>
+            <div>৩. কার্ডের সত্যতা যাচাইয়ে ফ্রন্টএন্ড ভেরিফিকেশন স্ক্যান ব্যবহার করুন।</div>
+            <div>৪. কার্ডটি হারিয়ে গেলে অবিলম্বে অ্যাসোসিয়েশন অফিসে অবহিত করুন।</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:0.8px solid rgba(255,255,255,0.15); padding-top:4px; margin-top:auto;">
+            <div style="font-size:5px; color:#cbd5e1; line-height:1.2;">
+              <strong>BDDPA ভোলা রোড অফিস, ভোলা সদর।</strong><br/>
+              মোবাইল: +880 1900 000000<br/>
+              ইমেল: info@bddpa-bhola.org
+            </div>
+            ${m.qrCode ? `<img src="${_esc(m.qrCode)}" style="width:26px; height:26px; background:#fff; padding:1.5px; border-radius:3px;" alt="QR"/>` : ''}
           </div>
         </div>
       </div>
-    </section>`,
+
+      <!-- ================= STANDARD SCREEN VIEW ================= -->
+      <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        <a href="#/members" class="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-500 hover:text-navy-900 mb-6">
+          ${_icon('arrow-left','w-3.5 h-3.5')}<span>সদস্য তালিকায় ফিরে যান</span>
+        </a>
+
+        <div class="grid lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-4">
+            <div class="card overflow-hidden animate-fade-in-up">
+              <div class="h-32 bg-gradient-brand relative">
+                <div class="absolute inset-0 bg-grid-pattern opacity-25" style="background-size:24px 24px"></div>
+                <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white"></div>
+              </div>
+              <div class="px-6 pb-6 -mt-20">
+                <div class="w-36 h-36 rounded-3xl bg-white p-2 shadow-elevated ring-2 ring-white mx-auto overflow-hidden">
+                  ${m.profilePhoto
+                    ? `<img class="w-full h-full object-cover rounded-2xl" src="${_esc(m.profilePhoto)}" alt="${_esc(m.nameEn)}"/>`
+                    : `<div class="w-full h-full rounded-2xl bg-gradient-brand grid place-items-center text-white font-bold text-3xl">${_initials(m.nameEn || m.nameBn)}</div>`}
+                </div>
+                <div class="text-center mt-5 space-y-1.5">
+                  <h1 class="text-xl font-bold text-navy-900 font-display">${_esc(m.nameBn || m.nameEn)}</h1>
+                  <p class="text-xs text-ink-500 font-latin">${_esc(m.nameEn || '')}</p>
+                  <div class="flex items-center justify-center gap-2 pt-2">
+                    ${m.memberId ? `<span class="chip chip-teal font-latin">${_esc(m.memberId)}</span>` : ''}
+                    ${m.status === 'Active' ? `<span class="verified-badge">${_icon('badge-check','w-3.5 h-3.5')}<span>Verified</span></span>` : ''}
+                  </div>
+                </div>
+
+                ${m.qrCode ? `
+                  <div class="mt-6 p-4 rounded-2xl bg-ink-50 border border-ink-100 text-center">
+                    <img src="${_esc(m.qrCode)}" alt="QR" class="mx-auto w-32 h-32 rounded-xl bg-white p-2"/>
+                    <p class="mt-3 text-[11px] text-ink-500 font-latin tracking-widest">SCAN TO VERIFY</p>
+                  </div>` : ''}
+
+                <div class="mt-6 grid grid-cols-2 gap-2">
+                  <button onclick="window.print()" class="btn-outline text-xs cursor-pointer">${_icon('printer','w-3.5 h-3.5')}Print Card</button>
+                  <button onclick="navigator.share ? navigator.share({title:document.title, url:location.href}) : navigator.clipboard.writeText(location.href).then(() => window.showToast('লিংক কপি হয়েছে'))" class="btn-outline text-xs cursor-pointer">${_icon('share-2','w-3.5 h-3.5')}Share</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-8 space-y-6">
+            <div class="card p-7 sm:p-8">
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <span class="eyebrow">Professional Profile</span>
+                  <h2 class="h-section text-xl mt-2">পেশাগত তথ্য</h2>
+                </div>
+                ${m.roleType === 'Executive Committee' ? `<span class="chip chip-gold">${_icon('star','w-3 h-3')}${_esc(m.executivePost || 'Executive')}</span>` : ''}
+              </div>
+              <dl class="grid sm:grid-cols-2 gap-5">
+                ${[
+                  ['graduation-cap', 'ডিগ্রি',       m.qualification],
+                  ['building-2',     'ইনституটিউট',    m.institution],
+                  ['badge',          'BMDC Reg',      m.bmdcReg],
+                  ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
+                  ['briefcase',      'চেম্বারের নাম',    m.chamberName],
+                  ['map-pin',        'ঠিকানা',       m.chamberAddress || m.address],
+                  ['heart',          'ব্লাড গ্রুপ',    m.bloodGroup],
+                  ['credit-card',    'এনআইডি নম্বর',  m.nidNumber],
+                ].filter(([,,v]) => v).map(([ic,l,v]) => `
+                  <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-teal-50 grid place-items-center text-teal-600 shrink-0">${_icon(ic, 'w-4 h-4')}</div>
+                    <div class="min-w-0">
+                      <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-400 font-latin">${l}</dt>
+                      <dd class="mt-0.5 text-sm font-semibold text-navy-900 break-words">${_esc(v)}</dd>
+                    </div>
+                  </div>`).join('')}
+              </dl>
+            </div>
+
+            <div class="card p-7 sm:p-8">
+              <span class="eyebrow">Contact</span>
+              <h2 class="h-section text-xl mt-2 mb-6">যোগাযোগ</h2>
+              <dl class="grid sm:grid-cols-2 gap-5">
+                ${[
+                  ['phone', 'মোবাইল', m.phone],
+                  ['phone-call', 'বিকল্প', m.alternatePhone],
+                  ['mail',  'ইমেইল', m.email],
+                  ['home',  'ব্যক্তিগত ঠিকানা', m.personalAddress]
+                ].filter(([,,v]) => v).map(([ic,l,v]) => `
+                  <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-ink-50 grid place-items-center text-navy-900 shrink-0">${_icon(ic, 'w-4 h-4')}</div>
+                    <div class="min-w-0">
+                      <dt class="text-[11px] font-semibold uppercase tracking-widest text-ink-400 font-latin">${l}</dt>
+                      <dd class="mt-0.5 text-sm font-semibold text-navy-900 break-words font-latin">${_esc(v)}</dd>
+                    </div>
+                  </div>`).join('')}
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>`,
 
   /* ================= VERIFICATION PORTAL ================= */
   VerificationPortalView: () => `
@@ -466,7 +527,7 @@ const UIComponents = {
         <form onsubmit="event.preventDefault(); window.appVerify.check();" class="grid sm:grid-cols-[1fr_auto] gap-3">
           <div class="field">
             <span class="field-icon">${_icon('badge-check','w-4 h-4')}</span>
-            <input id="verify-input" class="input with-icon" placeholder="মেম্বারশিপ আইডি বা মোবাইল নম্বর" aria-label="যাচাই ইনপুট">
+            <input id="verify-input" class="input with-icon" placeholder="মেম্বারশিপ আইডি বা মোবাইল নম্বর" aria-label="যчай ইনপুট">
           </div>
           <button class="btn-primary btn-lg" type="submit">${_icon('search','w-4 h-4')}<span>যাচাই করুন</span></button>
         </form>
@@ -960,110 +1021,40 @@ const UIComponents = {
     `;
   },
 
- /* ================= ADMIN MEMBER PREVIEW ================= */
+  /* ================= ADMIN MEMBER PREVIEW ================= */
   AdminMemberPreview: function(m) {
     if (!m) return UIComponents.EmptyState('সদস্য তথ্য পাওয়া যায়নি।');
-    
-    const profileImg = m.profilePhoto 
-      ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover rounded-xl"/>` 
-      : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-xl">${_initials(m.nameEn || m.nameBn)}</div>`;
-      
-    const degreeImg = m.degreePhoto || m.degreeCertificate 
-      ? `<img src="${_esc(m.degreePhoto || m.degreeCertificate)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft" loading="lazy"/>` 
-      : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">সার্টিফিকেটের ছবি আপলোড করা হয়নি</div>`;
-      
-    const nidImg = m.nidPhoto || m.nidFront 
-      ? `<img src="${_esc(m.nidPhoto || m.nidFront)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft" loading="lazy"/>` 
-      : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">এনআইডি কার্ডের ছবি আপলোড করা হয়নি</div>`;
-
     return `
-      <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
+      <div class="card p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between border-b border-ink-100 pb-4">
           <div>
             <span class="eyebrow">Member Preview</span>
             <h2 class="h-section text-xl mt-1">${_esc(m.nameBn || m.nameEn)}</h2>
           </div>
-          <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs inline-flex items-center gap-1 cursor-pointer">
-            ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>সদস্য তালিকায় ফিরে যান</span>
-          </button>
+          <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs">${_icon('arrow-left','w-3.5 h-3.5')} ফিরে যান</button>
         </div>
-
-        <div class="grid lg:grid-cols-12 gap-8">
-          <div class="lg:col-span-4 space-y-6">
-            <div class="card p-5 text-center bg-ink-50/50">
-              <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
-                ${profileImg}
-              </div>
-              <h3 class="text-lg font-bold text-navy-900 mt-4">${_esc(m.nameBn || m.nameEn)}</h3>
-              <p class="text-xs text-ink-500 font-latin mt-1">${_esc(m.nameEn || '')}</p>
-              <div class="pt-3">
-                <span class="chip ${m.status === 'Active' ? 'chip-emerald' : 'chip-red'}">${m.status || 'Pending'}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:col-span-8 space-y-6">
-            <div class="card p-6 space-y-5">
-              <h3 class="font-bold text-navy-900 border-b pb-2 text-base">সদস্যের সাধারণ তথ্য</h3>
-              <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                ${[
-                  ['graduation-cap', 'যোগ্যতা/ডিগ্রি', m.qualification],
-                  ['building-2',     'শিক্ষা প্রতিষ্ঠান', m.institution],
-                  ['badge',          'BMDC Reg No',     m.bmdcReg],
-                  ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} বছর` : '০ বছর'],
-                  ['briefcase',      'চেম্বারের নাম',    m.chamberName],
-                  ['map-pin',        'চেম্বারের ঠিকানা',  m.chamberAddress || m.address],
-                  ['phone',          'মোবাইল নম্বর',    m.phone],
-                  ['mail',           'ইমেল এড্রেস',     m.email],
-                  ['heart',          'ব্লাড গ্রুপ',      m.bloodGroup],
-                  ['credit-card',    'এনআইডি নম্বর',     m.nidNumber],
-                  ['home',           'স্থায়ী ঠিকানা',    m.personalAddress],
-                  ['map',            'উপজেলা',          m.upazila],
-                ].map(([ic, label, val]) => `
-                  <div class="flex items-start gap-2.5">
-                    <span class="text-teal-600 mt-0.5">${_icon(ic, 'w-4 h-4')}</span>
-                    <div>
-                      <dt class="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">${label}</dt>
-                      <dd class="font-semibold text-navy-900 mt-0.5">${_esc(val || '—')}</dd>
-                    </div>
-                  </div>
-                `).join('')}
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t border-ink-100 pt-6 space-y-6">
-          <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
-            ${_icon('image', 'w-5 h-5 text-teal-600')}
-            <span>আপলোডকৃত নথি ও সার্টিফিকেট</span>
-          </h3>
-          
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="card p-5 space-y-4 bg-ink-50/30">
-              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-                ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
-                <span>ডিগ্রি সার্টিফিকেট ছবি</span>
-              </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
-                ${degreeImg}
-              </div>
-            </div>
-
-            <div class="card p-5 space-y-4 bg-ink-50/30">
-              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-                ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
-                <span>ন্যাশনাল আইডি (NID) কার্ডের ছবি</span>
-              </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
-                ${nidImg}
-              </div>
-            </div>
-          </div>
+        <div class="grid sm:grid-cols-2 gap-4 text-sm">
+          ${[
+            ['মেম্বার আইডি', m.memberId],
+            ['নাম (বাংলা)', m.nameBn],
+            ['নাম (ইংরেজি)', m.nameEn],
+            ['যোগ্যতা', m.qualification],
+            ['মোবাইল', m.phone],
+            ['ইমেইল', m.email],
+            ['উপজেলা', m.upazila],
+            ['অভিজ্ঞতা', m.experience ? m.experience + ' বছর' : '—'],
+            ['ব্লাড গ্রুপ', m.bloodGroup],
+            ['এনআইডি', m.nidNumber],
+            ['স্ট্যাটাস', `<span class="chip ${m.status === 'Active' ? 'chip-emerald' : 'chip-red'}">${m.status || 'Pending'}</span>`],
+            ['মেয়াদ', _checkExpiry(m.joiningDate).diffText]
+          ].filter(([_, v]) => v).map(([label, val]) => `
+            <div><dt class="text-[11px] font-semibold text-ink-400 uppercase">${label}</dt><dd class="font-medium text-navy-900 mt-0.5">${_esc(val)}</dd></div>
+          `).join('')}
         </div>
       </div>
     `;
   },
+
   /* ================= ADMIN NOTICE LIST ================= */
   AdminNoticeList: function(list) {
     if (!list || list.length === 0) return UIComponents.EmptyState('কোনো নোটিশ পাওয়া যায়নি।', 'megaphone');
@@ -1388,3 +1379,5 @@ const UIComponents = {
 
 // Make UIComponents globally available
 window.UIComponents = UIComponents;
+--- END OF FILE Paste July 17, 2026 - 8:46PM ---
+তুমি এই পুরা কোড টা ঠিক করে দাও
