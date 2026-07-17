@@ -475,7 +475,7 @@ const UIComponents = {
               <dl class="grid sm:grid-cols-2 gap-5">
                 ${[
                   ['graduation-cap', 'ডিগ্রি',       m.qualification],
-                  ['building-2',     'ইনস্টিটিউট',    m.institution],
+                  ['building-2',     'ইনституটিউট',    m.institution],
                   ['badge',          'BMDC Reg',      m.bmdcReg],
                   ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
                   ['briefcase',      'চেম্বারের নাম',    m.chamberName],
@@ -1022,106 +1022,35 @@ const UIComponents = {
     `;
   },
 
-  /* ================= ADMIN MEMBER PREVIEW (আপডেটেড ছবিসহ প্রিভিউ) ================= */
+  /* ================= ADMIN MEMBER PREVIEW ================= */
   AdminMemberPreview: function(m) {
     if (!m) return UIComponents.EmptyState('সদস্য তথ্য পাওয়া যায়নি।');
-    
-    const profileImg = m.profilePhoto 
-      ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover rounded-xl"/>` 
-      : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-xl">${_initials(m.nameEn || m.nameBn)}</div>`;
-      
-    const degreeImg = m.degreePhoto || m.degreeCertificate 
-      ? `<img src="${_esc(m.degreePhoto || m.degreeCertificate)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft" loading="lazy"/>` 
-      : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">সার্টিফিকেটের ছবি আপলোড করা হয়নি</div>`;
-      
-    const nidImg = m.nidPhoto || m.nidFront 
-      ? `<img src="${_esc(m.nidPhoto || m.nidFront)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft" loading="lazy"/>` 
-      : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">এনআইডি কার্ডের ছবি আপলোড করা হয়নি</div>`;
-
     return `
-      <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
+      <div class="card p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between border-b border-ink-100 pb-4">
           <div>
             <span class="eyebrow">Member Preview</span>
             <h2 class="h-section text-xl mt-1">${_esc(m.nameBn || m.nameEn)}</h2>
           </div>
-          <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs inline-flex items-center gap-1 cursor-pointer">
-            ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>সদস্য তালিকায় ফিরে যান</span>
-          </button>
+          <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs">${_icon('arrow-left','w-3.5 h-3.5')} ফিরে যান</button>
         </div>
-
-        <div class="grid lg:grid-cols-12 gap-8">
-          <div class="lg:col-span-4 space-y-6">
-            <div class="card p-5 text-center bg-ink-50/50">
-              <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
-                ${profileImg}
-              </div>
-              <h3 class="text-lg font-bold text-navy-900 mt-4">${_esc(m.nameBn || m.nameEn)}</h3>
-              <p class="text-xs text-ink-500 font-latin mt-1">${_esc(m.nameEn || '')}</p>
-              <div class="pt-3">
-                <span class="chip ${m.status === 'Active' ? 'chip-emerald' : 'chip-red'}">${m.status || 'Pending'}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:col-span-8 space-y-6">
-            <div class="card p-6 space-y-5">
-              <h3 class="font-bold text-navy-900 border-b pb-2 text-base">সদস্যের সাধারণ তথ্য</h3>
-              <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                ${[
-                  ['graduation-cap', 'যোগ্যতা/ডিগ্রি', m.qualification],
-                  ['building-2',     'শিক্ষা প্রতিষ্ঠান', m.institution],
-                  ['badge',          'BMDC Reg No',     m.bmdcReg],
-                  ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} বছর` : '০ বছর'],
-                  ['briefcase',      'চেম্বারের নাম',    m.chamberName],
-                  ['map-pin',        'চেম্বারের ঠিকানা',  m.chamberAddress || m.address],
-                  ['phone',          'মোবাইল নম্বর',    m.phone],
-                  ['mail',           'ইমেল এড্রেস',     m.email],
-                  ['heart',          'ব্লাড গ্রুপ',      m.bloodGroup],
-                  ['credit-card',    'এনআইডি নম্বর',     m.nidNumber],
-                  ['home',           'স্থায়ী ঠিকানা',    m.personalAddress],
-                  ['map',            'উপজেলা',          m.upazila],
-                ].map(([ic, label, val]) => `
-                  <div class="flex items-start gap-2.5">
-                    <span class="text-teal-600 mt-0.5">${_icon(ic, 'w-4 h-4')}</span>
-                    <div>
-                      <dt class="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">${label}</dt>
-                      <dd class="font-semibold text-navy-900 mt-0.5">${_esc(val || '—')}</dd>
-                    </div>
-                  </div>
-                `).join('')}
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t border-ink-100 pt-6 space-y-6">
-          <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
-            ${_icon('image', 'w-5 h-5 text-teal-600')}
-            <span>আপলোডকৃত নথি ও সার্টিফিকেট</span>
-          </h3>
-          
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="card p-5 space-y-4 bg-ink-50/30">
-              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-                ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
-                <span>ডিগ্রি সার্টিফিকেট ছবি</span>
-              </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
-                ${degreeImg}
-              </div>
-            </div>
-
-            <div class="card p-5 space-y-4 bg-ink-50/30">
-              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-                ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
-                <span>ন্যাশনাল আইডি (NID) কার্ডের ছবি</span>
-              </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
-                ${nidImg}
-              </div>
-            </div>
-          </div>
+        <div class="grid sm:grid-cols-2 gap-4 text-sm">
+          ${[
+            ['মেম্বার আইডি', m.memberId],
+            ['নাম (বাংলা)', m.nameBn],
+            ['নাম (ইংরেজি)', m.nameEn],
+            ['যোগ্যতা', m.qualification],
+            ['মোবাইল', m.phone],
+            ['ইমেইল', m.email],
+            ['উপজেলা', m.upazila],
+            ['অভিজ্ঞতা', m.experience ? m.experience + ' বছর' : '—'],
+            ['ব্লাড গ্রুপ', m.bloodGroup],
+            ['এনআইডি', m.nidNumber],
+            ['স্ট্যাটাস', `<span class="chip ${m.status === 'Active' ? 'chip-emerald' : 'chip-red'}">${m.status || 'Pending'}</span>`],
+            ['মেয়াদ', _checkExpiry(m.joiningDate).diffText]
+          ].filter(([_, v]) => v).map(([label, val]) => `
+            <div><dt class="text-[11px] font-semibold text-ink-400 uppercase">${label}</dt><dd class="font-medium text-navy-900 mt-0.5">${_esc(val)}</dd></div>
+          `).join('')}
         </div>
       </div>
     `;
