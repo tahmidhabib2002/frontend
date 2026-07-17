@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#061530">
 
   <title>ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন | BDDPA</title>
   <meta name="description" content="ভোলা জেলার রেজিস্টার্ড ডেন্টাল চিকিৎসকদের অফিশিয়াল ডিজিটাল ডাটাবেজ ও প্রফেশনাল অ্যাসোসিয়েশন পোর্টাল।">
@@ -24,10 +24,6 @@
   <!-- Tailwind (CDN, per project stack) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Vercel-monochrome remap: token NAMES are preserved so every existing
-    // Tailwind class in HTML/JS keeps working. Only the resolved values
-    // change. navy-* -> grayscale (black -> white), teal-*/emerald-* ->
-    // #0070f3 blue accent ramp, gold-* -> warm neutrals, ink-* -> neutral gray.
     tailwind.config = {
       theme: {
         extend: {
@@ -95,12 +91,12 @@
             'ring-navy': '0 0 0 4px rgba(0,0,0,0.06)'
           },
           backgroundImage: {
-            'gradient-navy':     'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0e7490 100%)',
-            'gradient-medical':  'linear-gradient(135deg, #0e7490 0%, #0891b2 45%, #14b8a6 100%)',
-            'gradient-brand':    'linear-gradient(135deg, #0e7490 0%, #0891b2 50%, #14b8a6 100%)',
-            'gradient-hero':     'radial-gradient(ellipse 55% 45% at 15% 8%, rgba(20,184,166,0.28), transparent 60%), radial-gradient(ellipse 50% 40% at 88% 92%, rgba(59,130,246,0.18), transparent 65%), linear-gradient(180deg, #0f172a 0%, #0e1a3a 55%, #0e7490 100%)',
+            'gradient-navy':     'linear-gradient(135deg, #061530 0%, #0b2545 60%, #13315c 100%)',
+            'gradient-medical':  'linear-gradient(135deg, #0b2545 0%, #13315c 60%, #0f766e 100%)',
+            'gradient-brand':    'linear-gradient(135deg, #0b2545 0%, #13315c 60%, #14b8a6 100%)',
+            'gradient-hero':     'radial-gradient(ellipse 55% 45% at 15% 8%, rgba(20,184,166,0.28), transparent 60%), radial-gradient(ellipse 50% 40% at 88% 92%, rgba(59,130,246,0.18), transparent 65%), linear-gradient(180deg, #061530 0%, #0b2545 55%, #13315c 100%)',
             'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%)',
-            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)'
+            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)'
           },
           keyframes: {
             'fade-in-up': { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
@@ -123,11 +119,11 @@
     }
   </script>
 
-
   <!-- Lucide icons for consistent iconography -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 
-  <link rel="stylesheet" href="style.css">
+  <!-- CSS Path (সাদা স্ক্রিন এড়াতে সঠিক পাথটি এখানে সেট করুন) -->
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="font-bn bg-white text-ink-900 antialiased selection:bg-teal-500/20 selection:text-navy-900 flex flex-col min-h-dvh">
 
@@ -221,9 +217,9 @@
   <!-- Main viewport (rendered by JS router) -->
   <main id="main-app-viewport" class="flex-grow pt-24 sm:pt-28"></main>
 
-  <!-- ================= FOOTER ================= -->
-  <footer class="bg-navy-950 text-ink-200 mt-24 no-print relative overflow-hidden">
-    <div class="absolute inset-0 bg-grid-pattern opacity-40" style="background-size:44px 44px"></div>
+  <!-- ================= FOOTER (সংশোধিত প্রিমিয়াম ডিজাইন) ================= -->
+  <footer class="bg-navy-950 text-ink-200 mt-24 no-print relative overflow-hidden border-t border-white/10">
+    <div class="absolute inset-0 bg-grid-pattern opacity-10" style="background-size:44px 44px"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div class="md:col-span-2">
@@ -238,15 +234,20 @@
           <p class="text-sm text-ink-300 leading-relaxed max-w-md">
             ভোলা জেলার ডিপ্লোমা দন্ত চিকিৎসকদের একমাত্র অফিসিয়াল পেশাদার প্ল্যাটফর্ম। যাচাইকৃত সদস্যপদ, ডিজিটাল আইডি ও পেশাদার নেটওয়ার্ক।
           </p>
-          <div class="flex gap-2 mt-5">
+          
+          <!-- সংশোধিত চমৎকার সোশ্যাল মিডিয়া আইকনসমূহ (Lucide Icons) -->
+          <div class="flex gap-2.5 mt-5">
             <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook" class="social-btn">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.1H13.5V8.9c0-.9.3-1.6 1.6-1.6h1.7V4.5c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.2H7.4V14h2.7v8h3.4z"/></svg>
+              <i data-lucide="facebook" class="w-4 h-4"></i>
             </a>
             <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="Youtube" class="social-btn">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M23 7.5s-.2-1.5-.9-2.2c-.8-.9-1.7-.9-2.2-1C16.6 4 12 4 12 4s-4.6 0-7.9.3c-.4.1-1.3.1-2.2 1C1.2 6 1 7.5 1 7.5S.8 9.3.8 11.1v1.7c0 1.8.2 3.6.2 3.6s.2 1.5.9 2.2c.9.9 2 .9 2.5 1 1.8.2 7.6.3 7.6.3s4.6 0 7.9-.3c.5-.1 1.4-.1 2.2-1 .7-.7.9-2.2.9-2.2s.2-1.8.2-3.6v-1.7c0-1.8-.2-3.6-.2-3.6zM9.8 14.6V8.4l5.9 3.1-5.9 3.1z"/></svg>
+              <i data-lucide="youtube" class="w-4 h-4"></i>
             </a>
             <a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="Linkedin" class="social-btn">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5v-9h3v9zM6.5 8.3a1.75 1.75 0 1 1 0-3.5 1.75 1.75 0 0 1 0 3.5zM19 19h-3v-4.7c0-1.1 0-2.5-1.6-2.5s-1.8 1.2-1.8 2.4V19h-3v-9h2.9v1.2h.1c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.7 2 3.7 4.7V19z"/></svg>
+              <i data-lucide="linkedin" class="w-4 h-4"></i>
+            </a>
+            <a href="https://twitter.com/" target="_blank" rel="noopener" aria-label="Twitter" class="social-btn">
+              <i data-lucide="twitter" class="w-4 h-4"></i>
             </a>
           </div>
         </div>
@@ -284,8 +285,8 @@
     </div>
   </footer>
 
-  <!-- App scripts -->
-  <script src="components.js"></script>
-  <script src="app.js"></script>
+  <!-- App scripts (সাদা স্ক্রিন এড়াতে সঠিক পাথটি এখানে সেট করুন) -->
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
