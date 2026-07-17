@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#061530">
+  <meta name="theme-color" content="#000000">
 
   <title>ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন | BDDPA</title>
   <meta name="description" content="ভোলা জেলার রেজিস্টার্ড ডেন্টাল চিকিৎসকদের অফিশিয়াল ডিজিটাল ডাটাবেজ ও প্রফেশনাল অ্যাসোসিয়েশন পোর্টাল।">
@@ -19,13 +19,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <!-- cropped and trimmed logo favicon -->
-  <link rel="icon" type="image/png" href="https://res.cloudinary.com/zotssmss/image/upload/e_trim/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png">
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png">
 
   <!-- Tailwind (CDN, per project stack) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Vercel-monochrome remap
+    // Vercel-monochrome remap: token NAMES are preserved so every existing
+    // Tailwind class in HTML/JS keeps working. Only the resolved values
+    // change. navy-* -> grayscale (black -> white), teal-*/emerald-* ->
+    // #0070f3 blue accent ramp, gold-* -> warm neutrals, ink-* -> neutral gray.
     tailwind.config = {
       theme: {
         extend: {
@@ -121,11 +123,11 @@
     }
   </script>
 
+
   <!-- Lucide icons for consistent iconography -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 
-  <!-- স্টাইলশিটের সঠিক ফোল্ডার পাথ -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="font-bn bg-white text-ink-900 antialiased selection:bg-teal-500/20 selection:text-navy-900 flex flex-col min-h-dvh">
 
@@ -142,7 +144,7 @@
           <a href="#/" class="flex items-center gap-3 min-w-0 group">
             <div class="relative shrink-0">
               <div class="absolute inset-0 rounded-xl bg-gradient-brand blur-md opacity-30 group-hover:opacity-60 transition"></div>
-              <img src="https://res.cloudinary.com/zotssmss/image/upload/e_trim/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
+              <img src="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
                    alt="BDDPA লোগো"
                    class="relative w-12 h-12 rounded-xl object-contain bg-white ring-1 ring-ink-100 shadow-card p-1"/>
             </div>
@@ -191,7 +193,7 @@
     <aside class="absolute top-0 right-0 h-full w-[86%] max-w-sm bg-white shadow-elevated animate-slide-in-right flex flex-col">
       <div class="flex items-center justify-between px-5 h-16 border-b border-ink-100">
         <div class="flex items-center gap-2">
-          <img src="https://res.cloudinary.com/zotssmss/image/upload/e_trim/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
+          <img src="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
                alt="BDDPA" class="w-9 h-9 rounded-lg object-contain bg-white ring-1 ring-ink-100 p-0.5"/>
           <span class="font-bold text-navy-900">BDDPA</span>
         </div>
@@ -220,13 +222,13 @@
   <main id="main-app-viewport" class="flex-grow pt-24 sm:pt-28"></main>
 
   <!-- ================= FOOTER ================= -->
-  <footer class="bg-navy-950 text-ink-200 mt-24 no-print relative overflow-hidden border-t border-white/10">
-    <div class="absolute inset-0 bg-grid-pattern opacity-10" style="background-size:44px 44px"></div>
+  <footer class="bg-navy-950 text-ink-200 mt-24 no-print relative overflow-hidden">
+    <div class="absolute inset-0 bg-grid-pattern opacity-40" style="background-size:44px 44px"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div class="md:col-span-2">
           <div class="flex items-center gap-3 mb-4">
-            <img src="https://res.cloudinary.com/zotssmss/image/upload/e_trim/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
+            <img src="https://res.cloudinary.com/zotssmss/image/upload/v1784296918/%E0%A6%AD%E0%A6%93_20260715_130303_0000_d8m1ia.png"
                  alt="BDDPA" class="w-12 h-12 rounded-xl object-contain bg-white/95 p-1 shadow-card"/>
             <div>
               <div class="font-bold text-white text-sm font-display">ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন</div>
@@ -236,18 +238,15 @@
           <p class="text-sm text-ink-300 leading-relaxed max-w-md">
             ভোলা জেলার ডিপ্লোমা দন্ত চিকিৎসকদের একমাত্র অফিসিয়াল পেশাদার প্ল্যাটফর্ম। যাচাইকৃত সদস্যপদ, ডিজিটাল আইডি ও পেশাদার নেটওয়ার্ক।
           </p>
-          <div class="flex gap-2.5 mt-5">
+          <div class="flex gap-2 mt-5">
             <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook" class="social-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.1H13.5V8.9c0-.9.3-1.6 1.6-1.6h1.7V4.5c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.2H7.4V14h2.7v8h3.4z"/></svg>
             </a>
             <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="Youtube" class="social-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25a29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M23 7.5s-.2-1.5-.9-2.2c-.8-.9-1.7-.9-2.2-1C16.6 4 12 4 12 4s-4.6 0-7.9.3c-.4.1-1.3.1-2.2 1C1.2 6 1 7.5 1 7.5S.8 9.3.8 11.1v1.7c0 1.8.2 3.6.2 3.6s.2 1.5.9 2.2c.9.9 2 .9 2.5 1 1.8.2 7.6.3 7.6.3s4.6 0 7.9-.3c.5-.1 1.4-.1 2.2-1 .7-.7.9-2.2.9-2.2s.2-1.8.2-3.6v-1.7c0-1.8-.2-3.6-.2-3.6zM9.8 14.6V8.4l5.9 3.1-5.9 3.1z"/></svg>
             </a>
             <a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="Linkedin" class="social-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-            </a>
-            <a href="https://twitter.com/" target="_blank" rel="noopener" aria-label="Twitter" class="social-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5v-9h3v9zM6.5 8.3a1.75 1.75 0 1 1 0-3.5 1.75 1.75 0 0 1 0 3.5zM19 19h-3v-4.7c0-1.1 0-2.5-1.6-2.5s-1.8 1.2-1.8 2.4V19h-3v-9h2.9v1.2h.1c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.7 2 3.7 4.7V19z"/></svg>
             </a>
           </div>
         </div>
@@ -285,8 +284,8 @@
     </div>
   </footer>
 
-  <!-- জাভাস্ক্রিপ্টের সঠিক ফোল্ডার পাথ -->
-  <script src="js/components.js"></script>
-<script src="js/app.js"></script>
+  <!-- App scripts -->
+  <script src="components.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
