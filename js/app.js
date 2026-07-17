@@ -176,7 +176,6 @@ class PublicClientRouter {
 }
 
 // ==================== ROUTE CONFIGURATION ====================
-// রাউটার কনফিগারেশন - UIComponents লোড হওয়ার পর রেন্ডার হবে
 function getRouterConfig() {
   return {
     '/': {
@@ -958,6 +957,7 @@ document.addEventListener('submit', async (e) => {
     reader.onerror = () => resolve("");
   });
 
+  // ============ অ্যাডমিন লগইন ============
   if (e.target.id === 'admin-local-login') {
     e.preventDefault();
     const email = document.getElementById('login-email')?.value;
@@ -967,6 +967,7 @@ document.addEventListener('submit', async (e) => {
     }
   }
 
+  // ============ সদস্য তৈরি/আপডেট (অ্যাডমিন) ============
   if (e.target.id === 'add-member-form') {
     e.preventDefault();
     const form = e.target;
@@ -997,6 +998,7 @@ document.addEventListener('submit', async (e) => {
     } catch (err) { window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error'); }
   }
 
+  // ============ নোটিশ তৈরি/আপডেট ============
   if (e.target.id === 'add-notice-form') {
     e.preventDefault();
     const form = e.target;
@@ -1022,6 +1024,7 @@ document.addEventListener('submit', async (e) => {
     } catch (err) { window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error'); }
   }
 
+  // ============ ইভেন্ট তৈরি/আপডেট ============
   if (e.target.id === 'add-event-form') {
     e.preventDefault();
     const form = e.target;
@@ -1037,6 +1040,7 @@ document.addEventListener('submit', async (e) => {
     } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 
+  // ============ লিডারশিপ ফর্ম ============
   if (e.target.id === 'edit-leadership-form') {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
@@ -1048,14 +1052,17 @@ document.addEventListener('submit', async (e) => {
     } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
   }
 
+  // ============ পাবলিক রেজিস্ট্রেশন ফর্ম (ফিক্সড) ============
   if (e.target.id === 'public-register-form') {
     e.preventDefault();
     const form = e.target;
+
+    // ফাইল চেক
     const profilePhotoFile = form.querySelector('input[name="profilePhoto"]')?.files[0];
     const degreePhotoFile = form.querySelector('input[name="degreePhoto"]')?.files[0];
     const nidPhotoFile = form.querySelector('input[name="nidPhoto"]')?.files[0];
 
-    if (!profilePhotoFile?.size || !degreePhotoFile?.size || !nidPhotoFile?.size) {
+    if (!profilePhotoFile || !degreePhotoFile || !nidPhotoFile) {
       window.showToast('সবগুলো ছবি সিলেক্ট করুন।', 'error');
       return;
     }
@@ -1065,21 +1072,37 @@ document.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span>প্রসেস হচ্ছে...</span>';
 
-    const data = Object.fromEntries(new FormData(form));
-    data.profilePhoto = await fileToBase64(profilePhotoFile);
-    data.degreePhoto = await fileToBase64(degreePhotoFile);
-    data.nidPhoto = await fileToBase64(nidPhotoFile);
-    data.status = 'Pending';
-    data.joiningDate = new Date().toISOString();
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
     try {
-      const res = await fetch(`${window.API_BASE}/members`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+      data.profilePhoto = await fileToBase64(profilePhotoFile);
+      data.degreePhoto = await fileToBase64(degreePhotoFile);
+      data.nidPhoto = await fileToBase64(nidPhotoFile);
+      // status, joiningDate ব্যাকএন্ডে সেট হবে
+
+      // 👇 গুরুত্বপূর্ণ: পাবলিক এন্ডপয়েন্ট /apply ব্যবহার করুন
+      const res = await fetch(`${window.API_BASE}/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
+
       const resData = await res.json();
-      if (resData.success) { window.showToast('আবেদন জমা হয়েছে।', 'success'); window.location.hash = '#/'; }
-      else { window.showToast(resData.message || 'আবেদন জমা দেওয়া যায়নি।', 'error'); submitBtn.disabled = false; submitBtn.innerHTML = orig; }
-    } catch (err) { window.showToast('সার্ভার সংযোগ করা যায়নি।', 'error'); submitBtn.disabled = false; submitBtn.innerHTML = orig; }
+      if (resData.success) {
+        window.showToast('আবেদন জমা হয়েছে।', 'success');
+        window.location.hash = '#/';
+      } else {
+        window.showToast(resData.message || 'আবেদন জমা দেওয়া যায়নি।', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = orig;
+      }
+    } catch (err) {
+      console.error('Registration error:', err);
+      window.showToast('সার্ভার সংযোগ করা যায়নি।', 'error');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = orig;
+    }
   }
 });
 
@@ -1121,9 +1144,9 @@ function patchNavbar() {
   }
 }
 
-// DOM ready - সবকিছু লোড হওয়ার পর রাউটার চালু করুন
+// ============ DOM রেডি ============
 document.addEventListener('DOMContentLoaded', () => {
-  // UIComponents চেক করুন - components.js লোড হওয়ার পর
+  // UIComponents চেক করুন
   if (typeof UIComponents === 'undefined') {
     console.error('UIComponents not loaded! Check components.js');
     document.getElementById('main-app-viewport').innerHTML = `
