@@ -822,7 +822,7 @@ const UIComponents = {
                   ['graduation-cap', 'যোগ্যতা/ডিগ্রি', m.qualification],
                   ['building-2',     'শিক্ষা প্রতিষ্ঠান', m.institution],
                   ['badge',          'BMDC Reg No',     m.bmdcReg],
-                  ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} বছর` : '০ বছর'],
+                  ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} year` : '০ বছর'],
                   ['briefcase',      'চেম্বারের নাম',    m.chamberName],
                   ['map-pin',        'চেম্বারের ঠিকানা',  m.chamberAddress || m.address],
                   ['phone',          'মোবাইল নম্বর',    m.phone],
