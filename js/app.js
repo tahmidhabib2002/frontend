@@ -1,6 +1,7 @@
 /*
  * BDDPA Public Client Router & App State
  * Vanilla JS SPA using hash-based routing.
+ * Version: 2.0.0
  */
 
 // ==================== GLOBALS ====================
@@ -9,58 +10,80 @@ window.appState = {
   user: JSON.parse(localStorage.getItem('currentUser') || 'null')
 };
 
-window.API_BASE = (function () {
+// API_BASE - উন্নত ডিটেকশন
+window.API_BASE = (() => {
   const meta = document.querySelector('meta[name="api-base"]');
-  if (meta && meta.getAttribute('content')) return meta.getAttribute('content');
+  if (meta?.getAttribute('content')) return meta.getAttribute('content');
+  // লোকাল ডেভেলপমেন্ট ডিটেকশন
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:5000/api/v1';
+  }
   return '/api/v1';
 })();
 
 // ==================== AUTH HEADERS ====================
 const authHeaders = (isMultipart = false) => {
-  const h = {};
-  if (!isMultipart) {
-    h['Content-Type'] = 'application/json';
-  }
+  const headers = {};
+  if (!isMultipart) headers['Content-Type'] = 'application/json';
   if (window.appState.token) {
-    h['Authorization'] = `Bearer ${window.appState.token}`;
+    headers['Authorization'] = `Bearer ${window.appState.token}`;
   }
-  return h;
+  return headers;
 };
 
-// ==================== TOAST ====================
+// ==================== TOAST SYSTEM ====================
 window.showToast = (message, type = 'success') => {
-  const el = document.createElement('div');
-  el.innerHTML = `
-    <div class="toast toast-${type} animate-fade-in-up" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;max-width:90%;">
-      <i data-lucide="${type === 'success' ? 'check-circle-2' : type === 'error' ? 'alert-octagon' : 'alert-triangle'}" class="w-4 h-4"></i>
+  const toast = document.createElement('div');
+  const iconMap = {
+    success: 'check-circle-2',
+    error: 'alert-octagon',
+    warning: 'alert-triangle',
+    info: 'info'
+  };
+  toast.innerHTML = `
+    <div class="toast toast-${type} animate-fade-in-up" 
+         style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;max-width:90%;min-width:280px;">
+      <i data-lucide="${iconMap[type] || 'bell'}" class="w-4 h-4"></i>
       <span>${message}</span>
     </div>
   `;
-  const node = el.firstElementChild;
+  const node = toast.firstElementChild;
   document.body.appendChild(node);
-  if (window.lucide) window.lucide.createIcons({ attrs: { class: 'w-4 h-4' } });
-  setTimeout(() => {
-    if (node && node.parentNode) node.remove();
-  }, 3500);
+  window.lucide?.createIcons({ attrs: { class: 'w-4 h-4' } });
+  setTimeout(() => node?.remove(), 3500);
 };
 
 // ==================== SEO ENGINE ====================
 const seoEngine = {
   setMeta: (title, description, canonicalPath, schemaObj = null) => {
     document.title = title || 'BDDPA ভোলা';
-    const ensureMeta = (attr, val, key = 'name') => {
+    
+    const setMetaTag = (attr, value, key = 'name') => {
       let el = document.querySelector(`meta[${key}="${attr}"]`);
-      if (!el) { el = document.createElement('meta'); el.setAttribute(key, attr); document.head.appendChild(el); }
-      el.setAttribute('content', val);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(key, attr);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', value);
     };
-    ensureMeta('description', description || 'ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন');
-    ensureMeta('og:title', title || 'BDDPA', 'property');
-    ensureMeta('og:description', description || '', 'property');
 
+    setMetaTag('description', description || 'ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন');
+    setMetaTag('og:title', title || 'BDDPA', 'property');
+    setMetaTag('og:description', description || '', 'property');
+    setMetaTag('og:type', 'website', 'property');
+    setMetaTag('twitter:card', 'summary_large_image', 'name');
+
+    // Canonical URL
     let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) { canonical = document.createElement('link'); canonical.setAttribute('rel', 'canonical'); document.head.appendChild(canonical); }
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
     canonical.setAttribute('href', canonicalPath || window.location.href);
 
+    // JSON-LD Schema
     const oldScript = document.getElementById('seo-ld-json');
     if (oldScript) oldScript.remove();
     if (schemaObj) {
@@ -75,21 +98,34 @@ const seoEngine = {
 window.seoEngine = seoEngine;
 
 // ==================== HELPERS ====================
-function refreshLucide() {
-  if (window.lucide && typeof window.lucide.createIcons === 'function') {
-    window.lucide.createIcons();
-  }
-}
+const refreshLucide = () => {
+  if (window.lucide?.createIcons) window.lucide.createIcons();
+};
 window.refreshLucide = refreshLucide;
 
-function highlightActiveNav(path) {
-  document.querySelectorAll('[data-nav], [data-drawer-link]').forEach(a => {
-    const target = (a.getAttribute('href') || '').replace(/^#/, '') || '/';
-    const current = path || window.location.hash.replace(/^#/, '').split('?')[0] || '/';
-    a.classList.toggle('is-active', target === current || (target === '/' && current === '/'));
+const highlightActiveNav = (path) => {
+  const current = path || window.location.hash.replace(/^#/, '').split('?')[0] || '/';
+  document.querySelectorAll('[data-nav], [data-drawer-link]').forEach(el => {
+    const target = (el.getAttribute('href') || '').replace(/^#/, '') || '/';
+    el.classList.toggle('is-active', target === current);
   });
-}
+};
 window.highlightActiveNav = highlightActiveNav;
+
+// ইউটিলিটি: ফাইলকে Base64 তে কনভার্ট
+const fileToBase64 = (file) => {
+  return new Promise((resolve) => {
+    if (!file || !(file instanceof File) || file.size === 0) {
+      resolve("");
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => resolve("");
+  });
+};
+window.fileToBase64 = fileToBase64;
 
 // ==================== LIGHTBOX ====================
 window.viewLargeImage = (src) => {
@@ -105,11 +141,14 @@ window.viewLargeImage = (src) => {
       </button>
     </div>
     <div class="relative max-w-full max-h-[85vh] overflow-auto flex items-center justify-center rounded-2xl border border-white/10 bg-black/40 shadow-elevated p-2">
-      <img src="${src}" class="max-w-full max-h-[80vh] object-contain rounded-xl" alt="Notice Attachment" />
+      <img src="${src}" class="max-w-full max-h-[80vh] object-contain rounded-xl" alt="Preview" />
     </div>
   `;
   
-  const close = () => { modal.remove(); document.body.style.overflow = ''; };
+  const close = () => {
+    modal.remove();
+    document.body.style.overflow = '';
+  };
   modal.querySelector('#close-lightbox-btn').addEventListener('click', close);
   modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
   
@@ -144,17 +183,26 @@ class PublicClientRouter {
         let isMatch = true;
         const params = {};
         for (let i = 0; i < pathSegments.length; i++) {
-          if (pathSegments[i].startsWith(':')) params[pathSegments[i].slice(1)] = decodeURIComponent(hashSegments[i] || '');
-          else if (pathSegments[i] !== hashSegments[i]) { isMatch = false; break; }
+          if (pathSegments[i].startsWith(':')) {
+            params[pathSegments[i].slice(1)] = decodeURIComponent(hashSegments[i] || '');
+          } else if (pathSegments[i] !== hashSegments[i]) {
+            isMatch = false;
+            break;
+          }
         }
-        if (isMatch) { matchedRoute = this.routes[routeKey]; routeParams = params; break; }
+        if (isMatch) {
+          matchedRoute = this.routes[routeKey];
+          routeParams = params;
+          break;
+        }
       }
     }
 
     if (matchedRoute) {
-      const loadingHTML = UIComponents ? UIComponents.Loading() : '<div class="flex justify-center py-20"><div class="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div></div>';
+      const loadingHTML = UIComponents?.Loading?.() || `<div class="flex justify-center py-20"><div class="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div></div>`;
       this.outlet.innerHTML = loadingHTML;
       refreshLucide();
+      
       setTimeout(() => {
         try {
           this.outlet.innerHTML = matchedRoute.render(routeParams);
@@ -164,12 +212,12 @@ class PublicClientRouter {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (e) {
           console.error('Route render error:', e);
-          this.outlet.innerHTML = UIComponents ? UIComponents.ErrorPage404() : '<div class="text-center py-20"><h1 class="text-2xl font-bold">404</h1><p>পৃষ্ঠাটি খুঁজে পাওয়া যায়নি</p></div>';
+          this.outlet.innerHTML = UIComponents?.ErrorPage404?.() || `<div class="text-center py-20"><h1 class="text-2xl font-bold">404</h1><p>পৃষ্ঠাটি খুঁজে পাওয়া যায়নি</p></div>`;
           refreshLucide();
         }
       }, 80);
     } else {
-      this.outlet.innerHTML = UIComponents ? UIComponents.ErrorPage404() : '<div class="text-center py-20"><h1 class="text-2xl font-bold">404</h1><p>পৃষ্ঠাটি খুঁজে পাওয়া যায়নি</p></div>';
+      this.outlet.innerHTML = UIComponents?.ErrorPage404?.() || `<div class="text-center py-20"><h1 class="text-2xl font-bold">404</h1><p>পৃষ্ঠাটি খুঁজে পাওয়া যায়নি</p></div>`;
       refreshLucide();
     }
   }
@@ -183,10 +231,8 @@ function getRouterConfig() {
       description: 'ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশনের অফিসিয়াল হোমপেজ।',
       render: () => {
         setTimeout(() => {
-          if (window.appPublic) {
-            window.appPublic.initHomeSections();
-            window.appPublic.loadDynamicMembershipCard();
-          }
+          window.appPublic?.initHomeSections();
+          window.appPublic?.loadDynamicMembershipCard();
         }, 30);
         return `
           ${UIComponents.HomeHero()}
@@ -210,7 +256,12 @@ function getRouterConfig() {
       title: 'আমাদের সম্পর্কে | BDDPA',
       description: 'সংগঠনের ভিশন, মিশন ও পেশাগত অঙ্গীকার।',
       render: () => {
-        const schema = { '@context': 'https://schema.org', '@type': 'AboutPage', name: 'About BDDPA', description: 'Vision, and mission of BDDPA Bhola.' };
+        const schema = {
+          '@context': 'https://schema.org',
+          '@type': 'AboutPage',
+          name: 'About BDDPA',
+          description: 'Vision and mission of BDDPA Bhola.'
+        };
         setTimeout(() => seoEngine.setMeta('আমাদের সম্পর্কে | BDDPA', 'About the Association', '#/about', schema), 30);
         return UIComponents.AboutOrganization() + UIComponents.HomeCTA();
       }
@@ -220,9 +271,7 @@ function getRouterConfig() {
       title: 'সদস্য তালিকা | BDDPA',
       description: 'ভোলা জেলার অনুমোদিত ডেন্টাল প্র্যাকটিশনারদের ভেরিফাইড ডিরেক্টরি।',
       render: () => {
-        setTimeout(() => {
-          if (window.appMembers) window.appMembers.executeDirectorySearch();
-        }, 30);
+        setTimeout(() => window.appMembers?.executeDirectorySearch(), 30);
         return UIComponents.DirectoryListView();
       }
     },
@@ -284,7 +333,7 @@ function getRouterConfig() {
                 const remains = new Date(e.eventDate) - new Date();
                 const days = Math.ceil(remains / 86400000);
                 const dateStr = new Date(e.eventDate).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
-                const _esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
+                const esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
                 return `
                   <article class="timeline-item pb-10">
                     <div class="card p-6 sm:p-7">
@@ -293,17 +342,17 @@ function getRouterConfig() {
                         ${days > 0
                           ? `<span class="chip chip-emerald"><i data-lucide="timer" class="w-3 h-3"></i>${days} দিন বাকি</span>`
                           : `<span class="chip"><i data-lucide="check" class="w-3 h-3"></i>সম্পন্ন</span>`}
-                        ${e.startTime ? `<span class="chip"><i data-lucide="clock" class="w-3 h-3"></i>${_esc(e.startTime)}${e.endTime ? ' – ' + _esc(e.endTime) : ''}</span>` : ''}
+                        ${e.startTime ? `<span class="chip"><i data-lucide="clock" class="w-3 h-3"></i>${esc(e.startTime)}${e.endTime ? ' – ' + esc(e.endTime) : ''}</span>` : ''}
                       </div>
-                      <h3 class="text-xl font-bold text-navy-900">${_esc(e.title)}</h3>
-                      <p class="mt-2 text-sm text-ink-500 leading-relaxed">${_esc(e.description)}</p>
+                      <h3 class="text-xl font-bold text-navy-900">${esc(e.title)}</h3>
+                      <p class="mt-2 text-sm text-ink-500 leading-relaxed">${esc(e.description)}</p>
                       <div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-ink-500">
-                        <span class="inline-flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-600"></i>${_esc(e.location)}</span>
-                        ${e.mapLink ? `<a href="${_esc(e.mapLink)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-teal-600 font-semibold hover:underline"><i data-lucide="external-link" class="w-3.5 h-3.5"></i>ম্যাপে দেখুন</a>` : ''}
+                        <span class="inline-flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-600"></i>${esc(e.location)}</span>
+                        ${e.mapLink ? `<a href="${esc(e.mapLink)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-teal-600 font-semibold hover:underline"><i data-lucide="external-link" class="w-3.5 h-3.5"></i>ম্যাপে দেখুন</a>` : ''}
                       </div>
                       ${e.registrationLink ? `
                         <div class="mt-5">
-                          <a href="${_esc(e.registrationLink)}" target="_blank" rel="noopener" class="btn-primary">
+                          <a href="${esc(e.registrationLink)}" target="_blank" rel="noopener" class="btn-primary">
                             <i data-lucide="ticket" class="w-4 h-4"></i><span>রেজিস্ট্রেশন</span>
                           </a>
                         </div>` : ''}
@@ -341,22 +390,22 @@ function getRouterConfig() {
               const area = document.getElementById('notice-list-view');
               if (!area) return;
               if (res.success && res.data.length) {
-                const _esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
+                const esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
                 const catChip = c => ({ Urgent: 'chip-red', Meeting: 'chip-teal', Seminar: 'chip-gold' })[c] || 'chip';
                 area.innerHTML = res.data.map(n => `
                   <article class="timeline-item pb-10">
                     <div class="card p-6 sm:p-7 space-y-4">
                       <div class="flex flex-wrap items-center gap-2">
-                        <span class="chip ${catChip(n.category)}"><i data-lucide="tag" class="w-3 h-3"></i>${_esc(n.category)}</span>
+                        <span class="chip ${catChip(n.category)}"><i data-lucide="tag" class="w-3 h-3"></i>${esc(n.category)}</span>
                         <span class="text-[11px] text-ink-400 font-latin">${new Date(n.createdAt).toLocaleDateString('bn-BD', { year:'numeric', month:'short', day:'numeric' })}</span>
                       </div>
-                      <h3 class="text-lg sm:text-xl font-bold text-navy-900">${_esc(n.title)}</h3>
-                      <p class="text-sm text-ink-500 leading-relaxed">${_esc(n.content)}</p>
+                      <h3 class="text-lg sm:text-xl font-bold text-navy-900">${esc(n.title)}</h3>
+                      <p class="text-sm text-ink-500 leading-relaxed">${esc(n.content)}</p>
                       ${n.pdfUrl ? `
                         <div class="mt-4 max-w-lg rounded-xl overflow-hidden border border-ink-100 bg-ink-50 relative group">
-                          <img src="${_esc(n.pdfUrl)}" alt="${_esc(n.title)}" class="w-full h-auto max-h-[400px] object-contain" loading="lazy" />
+                          <img src="${esc(n.pdfUrl)}" alt="${esc(n.title)}" class="w-full h-auto max-h-[400px] object-contain" loading="lazy" />
                           <div class="p-3 bg-white border-t flex justify-end">
-                            <button onclick="window.viewLargeImage('${_esc(n.pdfUrl)}')" class="btn-outline text-xs inline-flex items-center gap-1.5 cursor-pointer">
+                            <button onclick="window.viewLargeImage('${esc(n.pdfUrl)}')" class="btn-outline text-xs inline-flex items-center gap-1.5 cursor-pointer">
                               <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
                               <span>বড় করে দেখুন</span>
                             </button>
@@ -403,7 +452,14 @@ function getRouterConfig() {
                   `${res.data.nameBn || res.data.nameEn} | BDDPA`,
                   `BDDPA সদস্য প্রোফাইল · ${res.data.memberId || ''}`,
                   `#/members/${res.data.slug}`,
-                  { '@context': 'https://schema.org', '@type': 'Person', name: res.data.nameEn, alternateName: res.data.nameBn, identifier: res.data.memberId, jobTitle: res.data.qualification }
+                  {
+                    '@context': 'https://schema.org',
+                    '@type': 'Person',
+                    name: res.data.nameEn,
+                    alternateName: res.data.nameBn,
+                    identifier: res.data.memberId,
+                    jobTitle: res.data.qualification
+                  }
                 );
               } else {
                 el.innerHTML = UIComponents.ErrorPage404();
@@ -436,7 +492,10 @@ function getRouterConfig() {
       title: 'ড্যাশবোর্ড | BDDPA',
       description: 'অ্যাডমিন ড্যাশবোর্ড।',
       render: () => {
-        if (!window.appState.token) { window.location.hash = '#/admin/login'; return ''; }
+        if (!window.appState.token) {
+          window.location.hash = '#/admin/login';
+          return '';
+        }
         
         const hash = window.location.hash || '';
         const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
@@ -444,21 +503,21 @@ function getRouterConfig() {
 
         setTimeout(() => {
           if (window.appAdmin) {
-            if (tab === 'home') {
-              window.appAdmin.loadOverview();
-            } else if (tab === 'members') {
-              window.appAdmin.loadMemberList();
-            } else if (tab === 'requests') {
-              window.appAdmin.loadRequestList();
-            } else if (tab === 'notices') {
-              window.appAdmin.loadNoticeList();
-            } else if (tab === 'events') {
-              window.appAdmin.loadEventList();
-            } else if (tab === 'leadership') {
-              window.appAdmin.loadLeadershipForm();
+            const tabHandlers = {
+              'home': () => window.appAdmin.loadOverview(),
+              'members': () => window.appAdmin.loadMemberList(),
+              'requests': () => window.appAdmin.loadRequestList(),
+              'notices': () => window.appAdmin.loadNoticeList(),
+              'events': () => window.appAdmin.loadEventList(),
+              'leadership': () => window.appAdmin.loadLeadershipForm()
+            };
+            if (tabHandlers[tab]) {
+              tabHandlers[tab]();
             } else {
               const target = document.getElementById('dashboard-content-area');
-              if (target) target.innerHTML = UIComponents.EmptyState(`দুঃখিত, '${tab}' ট্যাবটির কনটেন্ট বা ড্যাশবোর্ড তালিকা নির্মাণাধীন রয়েছে।`, 'wrench');
+              if (target) {
+                target.innerHTML = UIComponents.EmptyState(`দুঃখিত, '${tab}' ট্যাবটির কনটেন্ট নির্মাণাধীন রয়েছে।`, 'wrench');
+              }
               refreshLucide();
             }
           }
@@ -495,8 +554,14 @@ window.appAuth = {
       window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error');
     }
   },
+
   logout: async () => {
-    try { await fetch(`${window.API_BASE}/auth/logout`, { method: 'POST', headers: authHeaders() }); } catch (_) {}
+    try {
+      await fetch(`${window.API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: authHeaders()
+      });
+    } catch (_) {}
     localStorage.removeItem('accessToken');
     localStorage.removeItem('currentUser');
     window.appState.token = null;
@@ -509,9 +574,14 @@ window.appAuth = {
 // ==================== MEMBERS MODULE ====================
 window.appMembers = {
   executeDirectorySearch: () => {
-    const s = document.getElementById('dir-search-input')?.value || '';
+    const searchInput = document.getElementById('dir-search-input');
+    const s = searchInput?.value || '';
     const grid = document.getElementById('directory-render-grid');
-    if (grid) grid.innerHTML = Array.from({ length: 6 }).map(() => UIComponents.SkeletonCard()).join('');
+    
+    if (grid) {
+      grid.innerHTML = Array.from({ length: 6 }).map(() => UIComponents.SkeletonCard()).join('');
+    }
+    
     fetch(`${window.API_BASE}/members?search=${encodeURIComponent(s)}`)
       .then(res => res.json())
       .then(res => {
@@ -524,7 +594,9 @@ window.appMembers = {
         refreshLucide();
       })
       .catch(() => {
-        if (grid) grid.innerHTML = `<div class="sm:col-span-2 lg:col-span-3">${UIComponents.EmptyState('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'wifi-off')}</div>`;
+        if (grid) {
+          grid.innerHTML = `<div class="sm:col-span-2 lg:col-span-3">${UIComponents.EmptyState('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'wifi-off')}</div>`;
+        }
         refreshLucide();
       });
   }
@@ -535,7 +607,13 @@ window.appVerify = {
   check: () => {
     const q = document.getElementById('verify-input')?.value?.trim();
     const out = document.getElementById('verify-result');
-    if (!q) { out.innerHTML = UIComponents.EmptyState('অনুগ্রহ করে মেম্বারশিপ আইডি বা মোবাইল লিখুন।', 'search'); refreshLucide(); return; }
+    
+    if (!q) {
+      out.innerHTML = UIComponents.EmptyState('অনুগ্রহ করে মেম্বারশিপ আইডি বা মোবাইল লিখুন।', 'search');
+      refreshLucide();
+      return;
+    }
+    
     out.innerHTML = UIComponents.Loading();
     fetch(`${window.API_BASE}/members/verify?query=${encodeURIComponent(q)}`)
       .then(res => res.json().then(data => ({ ok: res.ok, data })))
@@ -545,49 +623,62 @@ window.appVerify = {
           : UIComponents.VerificationResult(null, false);
         refreshLucide();
       })
-      .catch(() => { out.innerHTML = UIComponents.EmptyState('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'wifi-off'); refreshLucide(); });
+      .catch(() => {
+        out.innerHTML = UIComponents.EmptyState('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'wifi-off');
+        refreshLucide();
+      });
   }
 };
 
 // ==================== PUBLIC MODULE ====================
 window.appPublic = {
   initHomeSections: () => {
+    // Welcome Section
     const welcome = document.getElementById('home-welcome-section');
     if (welcome) welcome.innerHTML = UIComponents.AboutOrganization();
 
+    // Notice Section
     const noticeMount = document.getElementById('home-notice-section');
-    if (noticeMount) noticeMount.innerHTML = `
-      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex items-end justify-between gap-4 mb-8">
-          <div><span class="eyebrow">Latest Notices</span><h2 class="h-section text-2xl sm:text-3xl mt-1.5">সাম্প্রতিক নোটিশ</h2></div>
-          <a href="#/notice" class="btn-outline text-xs"><i data-lucide="arrow-right" class="w-4 h-4"></i>সবগুলো দেখুন</a>
-        </div>
-        <div id="home-notice-list" class="grid md:grid-cols-2 gap-5">
-          ${Array.from({ length: 2 }).map(() => UIComponents.SkeletonCard()).join('')}
-        </div>
-      </section>`;
+    if (noticeMount) {
+      noticeMount.innerHTML = `
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div class="flex items-end justify-between gap-4 mb-8">
+            <div>
+              <span class="eyebrow">Latest Notices</span>
+              <h2 class="h-section text-2xl sm:text-3xl mt-1.5">সাম্প্রতিক নোটিশ</h2>
+            </div>
+            <a href="#/notice" class="btn-outline text-xs">
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>সবগুলো দেখুন
+            </a>
+          </div>
+          <div id="home-notice-list" class="grid md:grid-cols-2 gap-5">
+            ${Array.from({ length: 2 }).map(() => UIComponents.SkeletonCard()).join('')}
+          </div>
+        </section>`;
+    }
 
+    // Load Notices
     fetch(`${window.API_BASE}/notices`)
       .then(r => r.json())
       .then(res => {
         const box = document.getElementById('home-notice-list');
         if (!box) return;
         if (res.success && res.data.length) {
-          const _esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
+          const esc = s => (s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
           box.innerHTML = res.data.slice(0, 4).map(n => `
             <article class="card p-6 flex flex-col justify-between">
               <div>
                 <div class="flex items-center gap-2 mb-3">
-                  <span class="chip chip-teal"><i data-lucide="tag" class="w-3 h-3"></i>${_esc(n.category)}</span>
+                  <span class="chip chip-teal"><i data-lucide="tag" class="w-3 h-3"></i>${esc(n.category)}</span>
                   <span class="text-[11px] text-ink-400 font-latin">${new Date(n.createdAt).toLocaleDateString('bn-BD',{year:'numeric',month:'short',day:'numeric'})}</span>
                 </div>
-                <h3 class="font-bold text-navy-900 text-base">${_esc(n.title)}</h3>
-                <p class="text-sm text-ink-500 mt-2 line-clamp-3">${_esc(n.content)}</p>
+                <h3 class="font-bold text-navy-900 text-base">${esc(n.title)}</h3>
+                <p class="text-sm text-ink-500 mt-2 line-clamp-3">${esc(n.content)}</p>
               </div>
               ${n.pdfUrl ? `
                 <div class="mt-4 rounded-xl overflow-hidden border border-ink-100 aspect-[16/9] bg-ink-50 relative group">
-                  <img src="${_esc(n.pdfUrl)}" alt="${_esc(n.title)}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
-                  <button onclick="window.viewLargeImage('${_esc(n.pdfUrl)}')" class="absolute inset-0 w-full h-full bg-navy-900/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-sm border-none cursor-pointer">
+                  <img src="${esc(n.pdfUrl)}" alt="${esc(n.title)}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
+                  <button onclick="window.viewLargeImage('${esc(n.pdfUrl)}')" class="absolute inset-0 w-full h-full bg-navy-900/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-sm border-none cursor-pointer">
                     <i data-lucide="maximize-2" class="w-4 h-4"></i>
                     <span>বড় করে দেখুন</span>
                   </button>
@@ -600,27 +691,33 @@ window.appPublic = {
       })
       .catch(() => {});
 
+    // Leadership Section
     fetch(`${window.API_BASE}/cms/home`)
       .then(r => r.json())
       .then(res => {
         const el = document.getElementById('home-leadership-section');
-        if (el && res.success) el.innerHTML = UIComponents.LeadershipStrip(res.data);
-        refreshLucide();
+        if (el && res.success) {
+          el.innerHTML = UIComponents.LeadershipStrip(res.data);
+          refreshLucide();
+        }
       })
       .catch(() => {});
 
+    // Stats Section
     fetch(`${window.API_BASE}/stats`)
       .then(res => res.json())
       .then(res => {
         if (!res.success) return;
         const el = document.getElementById('home-stats-section');
-        if (el) el.innerHTML = UIComponents.StatsCounterPanel({
-          totalMembers: res.data.members,
-          totalNotices: res.data.notices,
-          totalEvents:  res.data.events,
-          totalNews:    res.data.news
-        });
-        refreshLucide();
+        if (el) {
+          el.innerHTML = UIComponents.StatsCounterPanel({
+            totalMembers: res.data.members,
+            totalNotices: res.data.notices,
+            totalEvents: res.data.events,
+            totalNews: res.data.news
+          });
+          refreshLucide();
+        }
       })
       .catch(() => {});
   },
@@ -632,7 +729,7 @@ window.appPublic = {
     fetch(`${window.API_BASE}/members?limit=1&sort=-createdAt`)
       .then(r => r.json())
       .then(res => {
-        if (res.success && res.data && res.data.length > 0) {
+        if (res.success && res.data?.length > 0) {
           cardSection.innerHTML = UIComponents.DynamicMembershipCardSection(res.data[0]);
         } else {
           cardSection.innerHTML = UIComponents.DynamicMembershipCardSection(null);
@@ -649,11 +746,13 @@ window.appPublic = {
 // ==================== ADMIN MODULE ====================
 window.appAdmin = {
   loadOverview: () => {
+    const target = document.getElementById('dashboard-content-area');
+    if (!target) return;
+    target.innerHTML = UIComponents.Loading();
+    
     fetch(`${window.API_BASE}/admin/analytics`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
-        const target = document.getElementById('dashboard-content-area');
-        if (!target) return;
         if (res.success) {
           target.innerHTML = UIComponents.AdminOverview(res.data) + `<div class="mt-6">${UIComponents.SystemHealthMonitor()}</div>`;
         } else {
@@ -662,8 +761,7 @@ window.appAdmin = {
         refreshLucide();
       })
       .catch(() => {
-        const target = document.getElementById('dashboard-content-area');
-        if (target) target.innerHTML = UIComponents.EmptyState('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'wifi-off');
+        target.innerHTML = UIComponents.EmptyState('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'wifi-off');
         refreshLucide();
       });
   },
@@ -672,6 +770,7 @@ window.appAdmin = {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     fetch(`${window.API_BASE}/members`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
@@ -682,13 +781,17 @@ window.appAdmin = {
         }
         refreshLucide();
       })
-      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+      .catch(() => {
+        target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+        refreshLucide();
+      });
   },
 
   loadRequestList: () => {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     fetch(`${window.API_BASE}/members?status=Pending`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
@@ -699,13 +802,17 @@ window.appAdmin = {
         }
         refreshLucide();
       })
-      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+      .catch(() => {
+        target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+        refreshLucide();
+      });
   },
 
   loadRequestPreview: async (slug) => {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     try {
       const res = await fetch(`${window.API_BASE}/members/profile/${slug}`, { headers: authHeaders() });
       const data = await res.json();
@@ -761,6 +868,7 @@ window.appAdmin = {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     try {
       const res = await fetch(`${window.API_BASE}/members/profile/${slug}`, { headers: authHeaders() });
       const data = await res.json();
@@ -780,71 +888,106 @@ window.appAdmin = {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     fetch(`${window.API_BASE}/notices`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
-        if (res.success) target.innerHTML = UIComponents.AdminNoticeList(res.data);
-        else target.innerHTML = UIComponents.EmptyState('নোটিশ তালিকা লোড করা যায়নি।');
+        if (res.success) {
+          target.innerHTML = UIComponents.AdminNoticeList(res.data);
+        } else {
+          target.innerHTML = UIComponents.EmptyState('নোটিশ তালিকা লোড করা যায়নি।');
+        }
         refreshLucide();
       })
-      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+      .catch(() => {
+        target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+        refreshLucide();
+      });
   },
 
   loadEventList: () => {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     fetch(`${window.API_BASE}/cms/events`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
-        if (res.success) target.innerHTML = UIComponents.AdminEventList(res.data);
-        else target.innerHTML = UIComponents.EmptyState('ইভেন্ট তালিকা লোড করা যায়নি।');
+        if (res.success) {
+          target.innerHTML = UIComponents.AdminEventList(res.data);
+        } else {
+          target.innerHTML = UIComponents.EmptyState('ইভেন্ট তালিকা লোড করা যায়নি।');
+        }
         refreshLucide();
       })
-      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+      .catch(() => {
+        target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+        refreshLucide();
+      });
   },
 
   loadLeadershipForm: () => {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     fetch(`${window.API_BASE}/cms/home`, { headers: authHeaders() })
       .then(r => r.json())
       .then(res => {
-        if (res.success) target.innerHTML = UIComponents.AdminLeadershipForm(res.data || {});
-        else target.innerHTML = UIComponents.EmptyState('সম্মানিত নেতৃত্বের তথ্য লোড করা যায়নি।');
+        if (res.success) {
+          target.innerHTML = UIComponents.AdminLeadershipForm(res.data || {});
+        } else {
+          target.innerHTML = UIComponents.EmptyState('সম্মানিত নেতৃত্বের তথ্য লোড করা যায়নি।');
+        }
         refreshLucide();
       })
-      .catch(() => { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); });
+      .catch(() => {
+        target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+        refreshLucide();
+      });
   },
 
   loadAddMemberForm: () => {
     const target = document.getElementById('dashboard-content-area');
-    if (target) { target.innerHTML = UIComponents.AdminMemberForm(); refreshLucide(); }
+    if (target) {
+      target.innerHTML = UIComponents.AdminMemberForm();
+      refreshLucide();
+    }
   },
 
   loadEditMemberForm: async (slug) => {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     try {
       const res = await fetch(`${window.API_BASE}/members/profile/${slug}`, { headers: authHeaders() });
       const data = await res.json();
-      if (data.success) target.innerHTML = UIComponents.AdminMemberForm(data.data);
-      else target.innerHTML = UIComponents.EmptyState('সদস্য তথ্য লোড করা যায়নি।');
+      if (data.success) {
+        target.innerHTML = UIComponents.AdminMemberForm(data.data);
+      } else {
+        target.innerHTML = UIComponents.EmptyState('সদস্য তথ্য লোড করা যায়নি।');
+      }
       refreshLucide();
-    } catch (err) { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); }
+    } catch (err) {
+      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+      refreshLucide();
+    }
   },
 
   loadAddNoticeForm: () => {
     const target = document.getElementById('dashboard-content-area');
-    if (target) { target.innerHTML = UIComponents.AdminNoticeForm(); refreshLucide(); }
+    if (target) {
+      target.innerHTML = UIComponents.AdminNoticeForm();
+      refreshLucide();
+    }
   },
 
   loadEditNoticeForm: async (id) => {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     try {
       let res = await fetch(`${window.API_BASE}/notices/${id}`, { headers: authHeaders() });
       let data = await res.json();
@@ -852,41 +995,64 @@ window.appAdmin = {
         res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { headers: authHeaders() });
         data = await res.json();
       }
-      if (data.success) target.innerHTML = UIComponents.AdminNoticeForm(data.data);
-      else target.innerHTML = UIComponents.EmptyState(data.message || 'নোটিশ তথ্য লোড করা যায়নি।');
+      if (data.success) {
+        target.innerHTML = UIComponents.AdminNoticeForm(data.data);
+      } else {
+        target.innerHTML = UIComponents.EmptyState(data.message || 'নোটিশ তথ্য লোড করা যায়নি।');
+      }
       refreshLucide();
-    } catch (err) { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); }
+    } catch (err) {
+      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+      refreshLucide();
+    }
   },
 
   loadAddEventForm: () => {
     const target = document.getElementById('dashboard-content-area');
-    if (target) { target.innerHTML = UIComponents.AdminEventForm(); refreshLucide(); }
+    if (target) {
+      target.innerHTML = UIComponents.AdminEventForm();
+      refreshLucide();
+    }
   },
 
   loadEditEventForm: async (id) => {
     const target = document.getElementById('dashboard-content-area');
     if (!target) return;
     target.innerHTML = UIComponents.Loading();
+    
     try {
       const res = await fetch(`${window.API_BASE}/cms/events/${id}`, { headers: authHeaders() });
       const data = await res.json();
-      if (data.success) target.innerHTML = UIComponents.AdminEventForm(data.data);
-      else target.innerHTML = UIComponents.EmptyState('ইভেন্ট তথ্য লোড করা যায়নি।');
+      if (data.success) {
+        target.innerHTML = UIComponents.AdminEventForm(data.data);
+      } else {
+        target.innerHTML = UIComponents.EmptyState('ইভেন্ট তথ্য লোড করা যায়নি।');
+      }
       refreshLucide();
-    } catch (err) { target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি'); refreshLucide(); }
+    } catch (err) {
+      target.innerHTML = UIComponents.EmptyState('সার্ভার ত্রুটি');
+      refreshLucide();
+    }
   },
 
   renewMember: async (id) => {
     if (!confirm('আপনি কি এই সদস্যের মেম্বারশিপ মেয়াদ আরও ২ বছর নবায়ন করতে চান?')) return;
     try {
       const res = await fetch(`${window.API_BASE}/members/${id}`, {
-        method: 'PUT', headers: authHeaders(),
+        method: 'PUT',
+        headers: authHeaders(),
         body: JSON.stringify({ joiningDate: new Date().toISOString(), status: 'Active' })
       });
       const data = await res.json();
-      if (data.success) { window.showToast('মেম্বারশিপ মেয়াদ সফলভাবে নবায়ন হয়েছে।', 'success'); window.appAdmin.loadMemberList(); }
-      else window.showToast(data.message || 'নবায়ন ব্যর্থ হয়েছে।', 'error');
-    } catch (err) { window.showToast('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'error'); }
+      if (data.success) {
+        window.showToast('মেম্বারশিপ মেয়াদ সফলভাবে নবায়ন হয়েছে।', 'success');
+        window.appAdmin.loadMemberList();
+      } else {
+        window.showToast(data.message || 'নবায়ন ব্যর্থ হয়েছে।', 'error');
+      }
+    } catch (err) {
+      window.showToast('সার্ভার সংযোগ ব্যর্থ হয়েছে।', 'error');
+    }
   },
 
   deleteMember: async (id) => {
@@ -894,9 +1060,15 @@ window.appAdmin = {
     try {
       const res = await fetch(`${window.API_BASE}/members/${id}`, { method: 'DELETE', headers: authHeaders() });
       const data = await res.json();
-      if (data.success) { window.showToast('সদস্য সফলভাবে ডিলিট করা হয়েছে।', 'success'); window.appAdmin.loadMemberList(); }
-      else window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
-    } catch (err) { window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error'); }
+      if (data.success) {
+        window.showToast('সদস্য সফলভাবে ডিলিট করা হয়েছে।', 'success');
+        window.appAdmin.loadMemberList();
+      } else {
+        window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
+      }
+    } catch (err) {
+      window.showToast('সার্ভার সংযোগ ত্রুটি।', 'error');
+    }
   },
 
   deleteNotice: async (id) => {
@@ -908,9 +1080,15 @@ window.appAdmin = {
         res = await fetch(`${window.API_BASE}/cms/notices/${id}`, { method: 'DELETE', headers: authHeaders() });
         data = await res.json();
       }
-      if (data.success) { window.showToast('নোটিশ ডিলিট করা হয়েছে।', 'success'); window.appAdmin.loadNoticeList(); }
-      else window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
-    } catch (err) { window.showToast('সার্ভার ত্রুটি।', 'error'); }
+      if (data.success) {
+        window.showToast('নোটিশ ডিলিট করা হয়েছে।', 'success');
+        window.appAdmin.loadNoticeList();
+      } else {
+        window.showToast(data.message || 'ডিলিট করা যায়নি।', 'error');
+      }
+    } catch (err) {
+      window.showToast('সার্ভার ত্রুটি।', 'error');
+    }
   },
 
   deleteEvent: async (id) => {
@@ -918,9 +1096,15 @@ window.appAdmin = {
     try {
       const res = await fetch(`${window.API_BASE}/cms/events/${id}`, { method: 'DELETE', headers: authHeaders() });
       const data = await res.json();
-      if (data.success) { window.showToast('ইভেন্ট ডিলিট করা হয়েছে।', 'success'); window.appAdmin.loadEventList(); }
-      else window.showToast('ডিলিট করা যায়নি।', 'error');
-    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
+      if (data.success) {
+        window.showToast('ইভেন্ট ডিলিট করা হয়েছে।', 'success');
+        window.appAdmin.loadEventList();
+      } else {
+        window.showToast('ডিলিট করা যায়নি।', 'error');
+      }
+    } catch (_) {
+      window.showToast('সার্ভার ত্রুটি');
+    }
   }
 };
 
@@ -930,17 +1114,21 @@ document.addEventListener('click', (e) => {
   if (backBtn) {
     const onclickStr = backBtn.getAttribute('onclick') || '';
     const match = onclickStr.match(/tab=([^'"]+)/);
-    if (match && match[1]) {
+    if (match?.[1]) {
       e.preventDefault();
       e.stopPropagation();
       const tab = match[1];
-      if (window.appAdmin) {
-        if (tab === 'members') window.appAdmin.loadMemberList();
-        else if (tab === 'requests') window.appAdmin.loadRequestList();
-        else if (tab === 'notices') window.appAdmin.loadNoticeList();
-        else if (tab === 'events') window.appAdmin.loadEventList();
-        else if (tab === 'leadership') window.appAdmin.loadLeadershipForm();
-        else window.appAdmin.loadOverview();
+      const tabHandlers = {
+        'members': () => window.appAdmin.loadMemberList(),
+        'requests': () => window.appAdmin.loadRequestList(),
+        'notices': () => window.appAdmin.loadNoticeList(),
+        'events': () => window.appAdmin.loadEventList(),
+        'leadership': () => window.appAdmin.loadLeadershipForm()
+      };
+      if (tabHandlers[tab]) {
+        tabHandlers[tab]();
+      } else {
+        window.appAdmin.loadOverview();
       }
     }
   }
@@ -948,14 +1136,6 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('submit', async (e) => {
   if (!e.target) return;
-
-  const fileToBase64 = (file) => new Promise((resolve) => {
-    if (!file || !(file instanceof File) || file.size === 0) { resolve(""); return; }
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => resolve("");
-  });
 
   // ============ অ্যাডমিন লগইন ============
   if (e.target.id === 'admin-local-login') {
@@ -965,6 +1145,7 @@ document.addEventListener('submit', async (e) => {
     if (email && password && window.appAuth) {
       window.appAuth.login(email, password);
     }
+    return;
   }
 
   // ============ সদস্য তৈরি/আপডেট (অ্যাডমিন) ============
@@ -982,7 +1163,10 @@ document.addEventListener('submit', async (e) => {
     data.degreePhoto = await fileToBase64(degreePhotoFile) || data.degreePhoto || "";
     data.nidPhoto = await fileToBase64(nidPhotoFile) || data.nidPhoto || "";
     
-    if (!memberId) { data.joiningDate = new Date().toISOString(); data.status = 'Active'; }
+    if (!memberId) {
+      data.joiningDate = new Date().toISOString();
+      data.status = 'Active';
+    }
 
     try {
       const res = await fetch(memberId ? `${window.API_BASE}/members/${memberId}` : `${window.API_BASE}/members`, {
@@ -994,8 +1178,13 @@ document.addEventListener('submit', async (e) => {
       if (resData.success) {
         window.showToast(memberId ? 'সদস্য আপডেট হয়েছে।' : 'সদস্য নিবন্ধিত হয়েছে।', 'success');
         window.location.hash = '#/admin/dashboard?tab=members';
-      } else window.showToast(resData.message || 'অপারেশন ব্যর্থ হয়েছে।', 'error');
-    } catch (err) { window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error'); }
+      } else {
+        window.showToast(resData.message || 'অপারেশন ব্যর্থ হয়েছে।', 'error');
+      }
+    } catch (err) {
+      window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error');
+    }
+    return;
   }
 
   // ============ নোটিশ তৈরি/আপডেট ============
@@ -1010,18 +1199,29 @@ document.addEventListener('submit', async (e) => {
 
     try {
       let res = await fetch(noticeId ? `${window.API_BASE}/notices/${noticeId}` : `${window.API_BASE}/notices`, {
-        method: noticeId ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(data)
+        method: noticeId ? 'PUT' : 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
       });
       let resData = await res.json();
       if (!resData.success || res.status === 404) {
         res = await fetch(noticeId ? `${window.API_BASE}/cms/notices/${noticeId}` : `${window.API_BASE}/cms/notices`, {
-          method: noticeId ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(data)
+          method: noticeId ? 'PUT' : 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify(data)
         });
         resData = await res.json();
       }
-      if (resData.success) { window.showToast(noticeId ? 'নোটিশ আপডেট হয়েছে।' : 'নোটিশ প্রকাশিত হয়েছে।', 'success'); window.location.hash = '#/admin/dashboard?tab=notices'; }
-      else window.showToast(resData.message || 'সংরক্ষণ ব্যর্থ।', 'error');
-    } catch (err) { window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error'); }
+      if (resData.success) {
+        window.showToast(noticeId ? 'নোটিশ আপডেট হয়েছে।' : 'নোটিশ প্রকাশিত হয়েছে।', 'success');
+        window.location.hash = '#/admin/dashboard?tab=notices';
+      } else {
+        window.showToast(resData.message || 'সংরক্ষণ ব্যর্থ।', 'error');
+      }
+    } catch (err) {
+      window.showToast('সার্ভারে সংযোগ করা যায়নি।', 'error');
+    }
+    return;
   }
 
   // ============ ইভেন্ট তৈরি/আপডেট ============
@@ -1032,12 +1232,21 @@ document.addEventListener('submit', async (e) => {
     const data = Object.fromEntries(new FormData(form));
     try {
       const res = await fetch(eventId ? `${window.API_BASE}/cms/events/${eventId}` : `${window.API_BASE}/cms/events`, {
-        method: eventId ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(data)
+        method: eventId ? 'PUT' : 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
       });
       const resData = await res.json();
-      if (resData.success) { window.showToast(eventId ? 'ইভেন্ট আপডেট হয়েছে।' : 'ইভেন্ট তৈরি হয়েছে।', 'success'); window.location.hash = '#/admin/dashboard?tab=events'; }
-      else window.showToast('ইভেন্ট সংরক্ষণ ব্যর্থ।', 'error');
-    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
+      if (resData.success) {
+        window.showToast(eventId ? 'ইভেন্ট আপডেট হয়েছে।' : 'ইভেন্ট তৈরি হয়েছে।', 'success');
+        window.location.hash = '#/admin/dashboard?tab=events';
+      } else {
+        window.showToast('ইভেন্ট সংরক্ষণ ব্যর্থ।', 'error');
+      }
+    } catch (_) {
+      window.showToast('সার্ভার ত্রুটি');
+    }
+    return;
   }
 
   // ============ লিডারশিপ ফর্ম ============
@@ -1045,19 +1254,29 @@ document.addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
     try {
-      const res = await fetch(`${window.API_BASE}/cms/home`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+      const res = await fetch(`${window.API_BASE}/cms/home`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+      });
       const resData = await res.json();
-      if (resData.success) { window.showToast('নেতৃত্ব আপডেট হয়েছে।', 'success'); window.location.hash = '#/admin/dashboard?tab=home'; }
-      else window.showToast('আপডেট ব্যর্থ।', 'error');
-    } catch (_) { window.showToast('সার্ভার ত্রুটি'); }
+      if (resData.success) {
+        window.showToast('নেতৃত্ব আপডেট হয়েছে।', 'success');
+        window.location.hash = '#/admin/dashboard?tab=home';
+      } else {
+        window.showToast('আপডেট ব্যর্থ।', 'error');
+      }
+    } catch (_) {
+      window.showToast('সার্ভার ত্রুটি');
+    }
+    return;
   }
 
-  // ============ পাবলিক রেজিস্ট্রেশন ফর্ম (ফিক্সড) ============
+  // ============ পাবলিক রেজিস্ট্রেশন ফর্ম ============
   if (e.target.id === 'public-register-form') {
     e.preventDefault();
     const form = e.target;
 
-    // ফাইল চেক
     const profilePhotoFile = form.querySelector('input[name="profilePhoto"]')?.files[0];
     const degreePhotoFile = form.querySelector('input[name="degreePhoto"]')?.files[0];
     const nidPhotoFile = form.querySelector('input[name="nidPhoto"]')?.files[0];
@@ -1068,7 +1287,7 @@ document.addEventListener('submit', async (e) => {
     }
 
     const submitBtn = form.querySelector('button[type="submit"]');
-    const orig = submitBtn.innerHTML;
+    const origBtnHtml = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span>প্রসেস হচ্ছে...</span>';
 
@@ -1079,9 +1298,7 @@ document.addEventListener('submit', async (e) => {
       data.profilePhoto = await fileToBase64(profilePhotoFile);
       data.degreePhoto = await fileToBase64(degreePhotoFile);
       data.nidPhoto = await fileToBase64(nidPhotoFile);
-      // status, joiningDate ব্যাকএন্ডে সেট হবে
 
-      // 👇 গুরুত্বপূর্ণ: পাবলিক এন্ডপয়েন্ট /apply ব্যবহার করুন
       const res = await fetch(`${window.API_BASE}/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1095,13 +1312,13 @@ document.addEventListener('submit', async (e) => {
       } else {
         window.showToast(resData.message || 'আবেদন জমা দেওয়া যায়নি।', 'error');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = orig;
+        submitBtn.innerHTML = origBtnHtml;
       }
     } catch (err) {
       console.error('Registration error:', err);
       window.showToast('সার্ভার সংযোগ করা যায়নি।', 'error');
       submitBtn.disabled = false;
-      submitBtn.innerHTML = orig;
+      submitBtn.innerHTML = origBtnHtml;
     }
   }
 });
@@ -1110,8 +1327,16 @@ document.addEventListener('submit', async (e) => {
 function initChrome() {
   const drawer = document.getElementById('mobile-drawer');
   const btn = document.getElementById('mobile-menu-btn');
-  const open = () => { drawer.classList.remove('hidden'); document.body.style.overflow = 'hidden'; };
-  const close = () => { drawer.classList.add('hidden'); document.body.style.overflow = ''; };
+  
+  const open = () => {
+    drawer?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    drawer?.classList.add('hidden');
+    document.body.style.overflow = '';
+  };
+  
   btn?.addEventListener('click', open);
   drawer?.querySelectorAll('[data-drawer-close]').forEach(el => el.addEventListener('click', close));
   drawer?.querySelectorAll('[data-drawer-link]').forEach(el => el.addEventListener('click', close));
@@ -1144,9 +1369,8 @@ function patchNavbar() {
   }
 }
 
-// ============ DOM রেডি ============
+// ============ DOM READY ============
 document.addEventListener('DOMContentLoaded', () => {
-  // UIComponents চেক করুন
   if (typeof UIComponents === 'undefined') {
     console.error('UIComponents not loaded! Check components.js');
     document.getElementById('main-app-viewport').innerHTML = `
@@ -1164,7 +1388,6 @@ document.addEventListener('DOMContentLoaded', () => {
   patchNavbar();
   refreshLucide();
   
-  // রাউটার ইনিশিয়ালাইজ করুন
   const router = new PublicClientRouter(getRouterConfig(), 'main-app-viewport');
   window.__router = router;
 });
