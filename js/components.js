@@ -167,7 +167,7 @@ const UIComponents = {
     const items = [
       ['users',      'রেজিস্টার্ড সদস্য',  data.totalMembers  ?? 0],
       ['megaphone',  'প্রকাশিত নোটিশ',   data.totalNotices  ?? 0],
-      ['calendar',   'আয়োজিত ইভেন্টস',   data.totalEvents   ?? 0],
+      ['calendar',   'আরোহী ইভেন্টস',   data.totalEvents   ?? 0],
       ['newspaper',  'সংবাদ ও আপডেট',    data.totalNews     ?? 0]
     ];
     return `
@@ -211,7 +211,7 @@ const UIComponents = {
               </div>
             </div>
             <p class="relative text-sm text-ink-700 leading-relaxed">
-              <span class="text-4xl text-teal-500/40 leading-none font-serif absolute -left-1 -top-3">"</span>
+              <span class="text-4xl text-teal-500/40 leading-none font-serif absolute -left-1 -top-3">“</span>
               ${_esc(msg)}
             </p>
           </article>`).join('')}
@@ -351,7 +351,7 @@ const UIComponents = {
       <div class="field">
         <span class="field-icon">${_icon('search', 'w-4 h-4')}</span>
         <input id="dir-search-input" type="text" class="input with-icon"
-               placeholder="সদস্যের নাম, মোবাইল অথবা মেম্বার আইডি লিখুন..."
+               placeholder="সদস্যের নাম, মোবাইল অথবা মেম্বার আইডি লিখুন…"
                aria-label="সদস্য অনুসন্ধান">
       </div>
       <button type="submit" class="btn-primary btn-lg">${_icon('search','w-4 h-4')}<span>অনুসন্ধান</span></button>
@@ -384,6 +384,17 @@ const UIComponents = {
                   ${m.status === 'Active' ? `<span class="verified-badge">${_icon('badge-check','w-3.5 h-3.5')}<span>Verified</span></span>` : ''}
                 </div>
               </div>
+
+              ${m.qrCode ? `
+                <div class="mt-6 p-4 rounded-2xl bg-ink-50 border border-ink-100 text-center">
+                  <img src="${_esc(m.qrCode)}" alt="QR" class="mx-auto w-32 h-32 rounded-xl bg-white p-2"/>
+                  <p class="mt-3 text-[11px] text-ink-500 font-latin tracking-widest">SCAN TO VERIFY</p>
+                </div>` : ''}
+
+              <div class="mt-6 grid grid-cols-2 gap-2">
+                <button onclick="window.print()" class="btn-outline text-xs">${_icon('printer','w-3.5 h-3.5')}Print</button>
+                <button onclick="navigator.share ? navigator.share({title:document.title, url:location.href}) : navigator.clipboard.writeText(location.href).then(() => window.showToast('লিংক কপি হয়েছে'))" class="btn-outline text-xs">${_icon('share-2','w-3.5 h-3.5')}Share</button>
+              </div>
             </div>
           </div>
         </div>
@@ -400,10 +411,10 @@ const UIComponents = {
             <dl class="grid sm:grid-cols-2 gap-5">
               ${[
                 ['graduation-cap', 'ডিগ্রি',       m.qualification],
-                ['building-2',     'ইনস্টিটিউট',    m.institution],
+                ['building-2',     'ইনституটিউট',    m.institution],
                 ['badge',          'BMDC Reg',      m.bmdcReg],
                 ['history',        'অভিজ্ঞতা',     (m.experience ?? 0) + ' বছর'],
-                ['briefcase',      'চেম্বার',      m.chamberName],
+                ['briefcase',      'চেম্বারের নাম',    m.chamberName],
                 ['map-pin',        'ঠিকানা',       m.chamberAddress || m.address],
                 ['heart',          'ব্লাড গ্রুপ',    m.bloodGroup],
                 ['credit-card',    'এনআইডি নম্বর',  m.nidNumber],
@@ -514,7 +525,7 @@ const UIComponents = {
             <label class="label" for="login-password">পাসওয়ার্ড</label>
             <div class="field">
               <span class="field-icon">${_icon('key-round','w-4 h-4')}</span>
-              <input id="login-password" type="password" required autocomplete="current-password" class="input with-icon" placeholder="........">
+              <input id="login-password" type="password" required autocomplete="current-password" class="input with-icon" placeholder="••••••••">
             </div>
           </div>
           <button type="submit" class="btn-primary btn-lg w-full">${_icon('log-in','w-4 h-4')}<span>লগইন করুন</span></button>
@@ -527,7 +538,7 @@ const UIComponents = {
     const nav = [
       ['home',       'home',       'ওভারভিউ'],
       ['users',      'members',    'সদস্য তালিকা'],
-      ['user-plus',  'requests',   'সদস্য আবেদন'],
+      ['user-plus',  'requests',   'সদস্য আবেদন'], // নতুন আবেদন ট্যাব
       ['megaphone',  'notices',    'নোটিশ বোর্ড'],
       ['calendar',   'events',     'ইভেন্টস'],
       ['sliders',    'leadership', 'সম্মানিত নেতৃত্ব'],
@@ -715,6 +726,7 @@ const UIComponents = {
 
     return `
       <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
+        <!-- Header -->
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
           <div>
             <span class="eyebrow">Application Review</span>
@@ -725,7 +737,9 @@ const UIComponents = {
           </button>
         </div>
 
+        <!-- Main Layout -->
         <div class="grid lg:grid-cols-12 gap-8">
+          <!-- Profile Column -->
           <div class="lg:col-span-4 space-y-6">
             <div class="card p-5 text-center bg-ink-50/50">
               <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
@@ -739,6 +753,7 @@ const UIComponents = {
             </div>
           </div>
 
+          <!-- Info Fields Column -->
           <div class="lg:col-span-8 space-y-6">
             <div class="card p-6 space-y-5">
               <h3 class="font-bold text-navy-900 border-b pb-2 text-base">আবেদনকারীর বিবরণ</h3>
@@ -770,6 +785,7 @@ const UIComponents = {
           </div>
         </div>
 
+        <!-- Image Previews Section -->
         <div class="border-t border-ink-100 pt-6 space-y-6">
           <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
             ${_icon('image', 'w-5 h-5 text-teal-600')}
@@ -777,28 +793,31 @@ const UIComponents = {
           </h3>
           
           <div class="grid md:grid-cols-2 gap-6">
+            <!-- Degree Card -->
             <div class="card p-5 space-y-4 bg-ink-50/30">
               <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
                 ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
                 <span>ডিগ্রি সার্টিফিকেট ছবি</span>
               </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
+              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border animate-fade-in">
                 ${degreeImg}
               </div>
             </div>
 
+            <!-- NID Card -->
             <div class="card p-5 space-y-4 bg-ink-50/30">
               <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
                 ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
                 <span>ন্যাশনাল আইডি (NID) কার্ডের ছবি</span>
               </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border">
+              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border animate-fade-in">
                 ${nidImg}
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Approval & Rejection Actions -->
         <div class="flex items-center justify-end gap-3 pt-6 border-t border-ink-100">
           <button onclick="window.appAdmin.rejectRequest('${memberIdVal}')" class="btn-outline text-red-600 border-red-300 bg-red-50 hover:bg-red-100 py-3 px-6">
             ${_icon('x', 'w-4 h-4 inline mr-1')}<span>আবেদন বাতিল (Delete)</span>
@@ -811,580 +830,7 @@ const UIComponents = {
     `;
   },
 
-  AdminNoticeList: (list = []) => `
-    <div class="card p-6 space-y-6 animate-fade-in">
-      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">নোটিশ ব্যবস্থাপনা</h2>
-        <button onclick="window.appAdmin.loadAddNoticeForm()" class="btn-primary text-xs">${_icon('plus','w-3.5 h-3.5')}নতুন নোটিশ</button>
-      </div>
-      <div class="overflow-x-auto rounded-xl border border-ink-100">
-        <table>
-          <thead>
-            <tr>
-              <th>শিরোনাম</th>
-              <th>ক্যাটাগরি</th>
-              <th>তারিখ</th>
-              <th class="text-right">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${list.map(n => {
-              const noticeIdVal = n._id || n.id || '';
-              return `
-              <tr>
-                <td class="font-bold text-navy-900">${_esc(n.title)}</td>
-                <td><span class="chip">${_esc(n.category)}</span></td>
-                <td>${_fmtDateBn(n.createdAt)}</td>
-                <td class="text-right space-x-1">
-                  <button onclick="window.appAdmin.loadEditNoticeForm('${noticeIdVal}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteNotice('${noticeIdVal}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
-                </td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>`,
-
-  AdminEventList: (list = []) => `
-    <div class="card p-6 space-y-6 animate-fade-in">
-      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">ইভেন্ট ব্যবস্থাপনা</h2>
-        <button onclick="window.appAdmin.loadAddEventForm()" class="btn-primary text-xs">${_icon('plus','w-3.5 h-3.5')}নতুন ইভেন্ট</button>
-      </div>
-      <div class="overflow-x-auto rounded-xl border border-ink-100">
-        <table>
-          <thead>
-            <tr>
-              <th>ইভেন্ট শিরোনাম</th>
-              <th>তারিখ</th>
-              <th>লোকেশন</th>
-              <th class="text-right">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${list.map(e => {
-              const eventIdVal = e._id || e.id || '';
-              return `
-              <tr>
-                <td class="font-bold text-navy-900">${_esc(e.title)}</td>
-                <td>${_fmtDateBn(e.eventDate)}</td>
-                <td>${_esc(e.location)}</td>
-                <td class="text-right space-x-1">
-                  <button onclick="window.appAdmin.loadEditEventForm('${eventIdVal}')" class="btn-outline px-2 py-1 text-xs text-teal-600 border-teal-300">${_icon('edit','w-3 h-3')} এডিট</button>
-                  <button onclick="window.appAdmin.deleteEvent('${eventIdVal}')" class="btn-outline px-2 py-1 text-xs text-red-600 border-red-300">${_icon('trash','w-3 h-3')} ডিলিট</button>
-                </td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>`,
-
-  /* ================= CREATION FORMS ================= */
-  AdminMemberForm: (m = null) => {
-    const isEdit = m !== null;
-    const memberIdVal = isEdit ? (m._id || m.id || '') : '';
-    return `
-    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
-      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">${isEdit ? 'সদস্য তথ্য এডিট করুন' : 'নতুন সদস্য নিবন্ধন করুন'}</h2>
-        <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs">
-          ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
-        </button>
-      </div>
-      <form id="add-member-form" data-id="${memberIdVal}" class="space-y-6" enctype="multipart/form-data">
-        <div class="grid sm:grid-cols-2 gap-5">
-          <div>
-            <label class="label" for="m-nameBn">নাম (বাংলা) <span class="text-red-500">*</span></label>
-            <input id="m-nameBn" name="nameBn" required class="input" value="${_esc(isEdit ? m.nameBn : '')}" placeholder="ডাঃ মোঃ আবদুর রহমান">
-          </div>
-          <div>
-            <label class="label" for="m-nameEn">Name (English) <span class="text-red-500">*</span></label>
-            <input id="m-nameEn" name="nameEn" required class="input" value="${_esc(isEdit ? m.nameEn : '')}" placeholder="Dr. Md. Abdur Rahman">
-          </div>
-          <div>
-            <label class="label" for="m-phone">মোবাইল নম্বর <span class="text-red-500">*</span></label>
-            <input id="m-phone" name="phone" required class="input" value="${_esc(isEdit ? m.phone : '')}" placeholder="017XXXXXXXX">
-          </div>
-          <div>
-            <label class="label" for="m-qualification">যোগ্যতা/ডিগ্রি</label>
-            <input id="m-qualification" name="qualification" class="input" value="${_esc(isEdit ? m.qualification : '')}" placeholder="BDS, PGT (Dental)">
-          </div>
-          <div>
-            <label class="label" for="m-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর</label>
-            <input id="m-bmdcReg" name="bmdcReg" class="input" value="${_esc(isEdit ? m.bmdcReg : '')}" placeholder="D-1234">
-          </div>
-          <div>
-            <label class="label" for="m-institution">শিক্ষা প্রতিষ্ঠান (ইনস্টিটিউট)</label>
-            <input id="m-institution" name="institution" class="input" value="${_esc(isEdit ? m.institution : '')}" placeholder="উদাঃ ঢাকা ডেন্টাল কলেজ">
-          </div>
-          <div>
-            <label class="label" for="m-experience">অভিজ্ঞতা (বছর)</label>
-            <input id="m-experience" name="experience" type="number" class="input" value="${_esc(isEdit ? m.experience : '')}" placeholder="উদাঃ ৫">
-          </div>
-          <div>
-            <label class="label" for="m-nidNumber">ন্যাশনাল আইডি কার্ড নম্বর</label>
-            <input id="m-nidNumber" name="nidNumber" class="input" value="${_esc(isEdit ? m.nidNumber : '')}" placeholder="199XXXXXXXXXXXX">
-          </div>
-          <div>
-            <label class="label" for="m-bloodGroup">ব্লাড গ্রুপ</label>
-            <select id="m-bloodGroup" name="bloodGroup" class="select">
-              <option value="">সিলেক্ট করুন</option>
-              ${['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => `
-                <option value="${bg}" ${isEdit && m.bloodGroup === bg ? 'selected' : ''}>${bg}</option>
-              `).join('')}
-            </select>
-          </div>
-          <div>
-            <label class="label" for="m-email">ইমেল অ্যাড্রেস</label>
-            <input id="m-email" name="email" type="email" class="input" value="${_esc(isEdit ? m.email : '')}" placeholder="member@email.com">
-          </div>
-          <div>
-            <label class="label" for="m-chamberName">চেম্বারের নাম</label>
-            <input id="m-chamberName" name="chamberName" class="input" value="${_esc(isEdit ? m.chamberName : '')}" placeholder="রহমান ডেন্টাল কেয়ার">
-          </div>
-          <div>
-            <label class="label" for="m-chamberAddress">চেম্বারের ঠিকানা</label>
-            <input id="m-chamberAddress" name="chamberAddress" class="input" value="${_esc(isEdit ? m.chamberAddress : '')}" placeholder="সদর রোড, ভোলা সদর">
-          </div>
-          <div>
-            <label class="label" for="m-personalAddress">নিজের স্থায়ী ঠিকানা</label>
-            <input id="m-personalAddress" name="personalAddress" class="input" value="${_esc(isEdit ? m.personalAddress : '')}" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
-          </div>
-          <div>
-            <label class="label" for="m-upazila">উপজেলা (ভোলা জেলা)</label>
-            <select id="m-upazila" name="upazila" class="select">
-              ${['Bhola Sadar', 'Borhanuddin', 'Char Fasson', 'Daulatkhan', 'Lalmohan', 'Manpura', 'Tazumuddin'].map(up => `
-                <option value="${up}" ${isEdit && m.upazila === up ? 'selected' : ''}>${up}</option>
-              `).join('')}
-            </select>
-          </div>
-          <div>
-            <label class="label" for="m-roleType">সদস্যের ক্যাটাগরি</label>
-            <select id="m-roleType" name="roleType" class="select" onchange="document.getElementById('exec-post-wrapper').classList.toggle('hidden', this.value !== 'Executive Committee')">
-              <option value="General Member" ${isEdit && m.roleType === 'General Member' ? 'selected' : ''}>সাধারণ সদস্য</option>
-              <option value="Executive Committee" ${isEdit && m.roleType === 'Executive Committee' ? 'selected' : ''}>কার্যনির্বাহী কমিটি</option>
-            </select>
-          </div>
-          <div id="exec-post-wrapper" class="${isEdit && m.roleType === 'Executive Committee' ? '' : 'hidden'}">
-            <label class="label" for="m-executivePost">কমিটির পদবী</label>
-            <input id="m-executivePost" name="executivePost" class="input" value="${_esc(isEdit ? m.executivePost : '')}" placeholder="সহ-সভাপতি / সাধারণ সম্পাদক">
-          </div>
-        </div>
-
-        <div class="divider-grad"></div>
-
-        <div class="grid sm:grid-cols-3 gap-5">
-          <div>
-            <label class="label">ওই ব্যক্তির ছবি</label>
-            <input type="file" name="profilePhoto" accept="image/*" class="input py-2">
-            ${isEdit && m.profilePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
-          </div>
-          <div>
-            <label class="label">ডিগ্রির সার্টিফিকেট ছবি</label>
-            <input type="file" name="degreePhoto" accept="image/*" class="input py-2">
-            ${isEdit && m.degreePhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
-          </div>
-          <div>
-            <label class="label">ন্যাশনাল আইডি কার্ড ছবি</label>
-            <input type="file" name="nidPhoto" accept="image/*" class="input py-2">
-            ${isEdit && m.nidPhoto ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের ছবি আপলোড করা আছে</p>` : ''}
-          </div>
-        </div>
-
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.appAdmin.loadMemberList()" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'আপডেট করুন' : 'সংরক্ষণ ও নিবন্ধন করুন'}</span></button>
-        </div>
-      </form>
-    </div>`;
-  },
-
-  AdminNoticeForm: (n = null) => {
-    const isEdit = n !== null;
-    const noticeIdVal = isEdit ? (n._id || n.id || '') : '';
-    return `
-    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
-      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">${isEdit ? 'নোটিশ এডিট করুন' : 'নতুন নোটিশ প্রকাশ করুন'}</h2>
-        <button onclick="window.appAdmin.loadNoticeList()" class="btn-outline text-xs">
-          ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
-        </button>
-      </div>
-      <form id="add-notice-form" data-id="${noticeIdVal}" class="space-y-6" enctype="multipart/form-data">
-        <div>
-          <label class="label" for="n-title">নোটিশের শিরোনাম</label>
-          <input id="n-title" name="title" required class="input" value="${_esc(isEdit ? n.title : '')}" placeholder="বিজ্ঞপ্তি শিরোনাম...">
-        </div>
-        <div class="grid sm:grid-cols-2 gap-5">
-          <div>
-            <label class="label" for="n-category">ক্যাটাগরি</label>
-            <select id="n-category" name="category" class="select">
-              ${['General', 'Urgent', 'Meeting', 'Seminar'].map(cat => `
-                <option value="${cat}" ${isEdit && n.category === cat ? 'selected' : ''}>
-                  ${cat === 'General' ? 'সাধারণ বিজ্ঞপ্তি' : cat === 'Urgent' ? 'জরুরি' : cat === 'Meeting' ? 'সভা সংক্রান্ত' : 'সেমিনার'}
-                </option>
-              `).join('')}
-            </select>
-          </div>
-          <div>
-            <label class="label" for="n-pdfUrl">নোটিশের ছবি (আপলোড)</label>
-            <input type="file" name="pdfUrl" accept="image/*" class="input py-2">
-            ${isEdit && n.pdfUrl ? `<p class="text-[11px] text-teal-600 mt-1">✓ পূর্বের নোটিশ ছবি আপলোড করা আছে</p>` : ''}
-            ${isEdit && n.pdfUrl ? `
-              <div class="mt-3 overflow-hidden rounded-xl border border-ink-100">
-                <img src="${_esc(n.pdfUrl)}" alt="Notice Image" class="w-full h-40 object-cover" loading="lazy"/>
-              </div>` : ''}
-          </div>
-        </div>
-        <div>
-          <label class="label" for="n-content">বিস্তারিত তথ্য</label>
-          <textarea id="n-content" name="content" required class="textarea h-32" placeholder="নোটিশের বিস্তারিত বিবরণ...">${_esc(isEdit ? n.content : '')}</textarea>
-        </div>
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.appAdmin.loadNoticeList()" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'আপডেট করুন' : 'প্রকাশ করুন'}</span></button>
-        </div>
-      </form>
-    </div>`;
-  },
-
-  AdminEventForm: (e = null) => {
-    const isEdit = e !== null;
-    const eventIdVal = isEdit ? (e._id || e.id || '') : '';
-    return `
-    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
-      <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">${isEdit ? 'ইভেন্ট এডিট করুন' : 'নতুন ইভেন্ট তৈরি করুন'}</h2>
-        <button onclick="window.appAdmin.loadEventList()" class="btn-outline text-xs">
-          ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
-        </button>
-      </div>
-      <form id="add-event-form" data-id="${eventIdVal}" class="space-y-6">
-        <div>
-          <label class="label" for="e-title">ইভেন্টের শিরোনাম</label>
-          <input id="e-title" name="title" required class="input" value="${_esc(isEdit ? e.title : '')}" placeholder="উদাঃ বিডিডিপিএ বার্ষিক সম্মেলন ২০২৬">
-        </div>
-        <div class="grid sm:grid-cols-2 gap-5">
-          <div>
-            <label class="label" for="e-eventDate">ইভেন্ট তারিখ</label>
-            <input id="e-eventDate" name="eventDate" type="date" required class="input" value="${isEdit && e.eventDate ? new Date(e.eventDate).toISOString().split('T')[0] : ''}">
-          </div>
-          <div>
-            <label class="label" for="e-location">লোকেশন / স্থান</label>
-            <input id="e-location" name="location" required class="input" value="${_esc(isEdit ? e.location : '')}" placeholder="উদাঃ জেলা পরিষদ মিলনায়তন, ভোলা">
-          </div>
-          <div>
-            <label class="label" for="e-startTime">শুরুর সময়</label>
-            <input id="e-startTime" name="startTime" class="input" value="${_esc(isEdit ? e.startTime : '')}" placeholder="উদাঃ সকাল ১০:০০ টা">
-          </div>
-          <div>
-            <label class="label" for="e-endTime">শেষের সময়</label>
-            <input id="e-endTime" name="endTime" class="input" value="${_esc(isEdit ? e.endTime : '')}" placeholder="উদাঃ বিকাল ০৪:০০ টা">
-          </div>
-          <div>
-            <label class="label" for="e-mapLink">গুগল ম্যাপ লিংক (ঐচ্ছিক)</label>
-            <input id="e-mapLink" name="mapLink" class="input" value="${_esc(isEdit ? e.mapLink : '')}" placeholder="https://maps.google.com/...">
-          </div>
-          <div>
-            <label class="label" for="e-registrationLink">রেজিস্ট্রেশন ফর্ম লিংক (ঐচ্ছিক)</label>
-            <input id="e-registrationLink" name="registrationLink" class="input" value="${_esc(isEdit ? e.registrationLink : '')}" placeholder="https://forms.gle/...">
-          </div>
-        </div>
-        <div>
-          <label class="label" for="e-description">ইভেন্টের সংক্ষিপ্ত বিবরণ</label>
-          <textarea id="e-description" name="description" required class="textarea h-32" placeholder="ইভেন্ট সম্পর্কিত বিবরণ বা নির্দেশনাসমূহ...">${_esc(isEdit ? e.description : '')}</textarea>
-        </div>
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="button" onclick="window.appAdmin.loadEventList()" class="btn-outline">বাতিল</button>
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>${isEdit ? 'ইভেন্ট আপডেট করুন' : 'ইভেন্ট তৈরি করুন'}</span></button>
-        </div>
-      </form>
-    </div>`;
-  },
-
-  AdminLeadershipForm: (data) => `
-    <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
-      <div class="border-b border-ink-100 pb-4">
-        <h2 class="h-section text-xl">সম্মানিত নেতৃত্বের তথ্য ও বার্তা পরিবর্তন</h2>
-        <p class="text-xs text-ink-500">হোমপেজের সভাপতি ও সাধারণ সম্পাদকের বার্তা এখান থেকে সরাসরি এডিট করা যাবে।</p>
-      </div>
-      <form id="edit-leadership-form" class="space-y-6">
-        <div class="grid sm:grid-cols-2 gap-8">
-          <div class="space-y-4">
-            <h3 class="font-bold text-navy-900 border-b pb-2">সভাপতির বার্তা মডিউল</h3>
-            <div>
-              <label class="label">সভাপতির নাম</label>
-              <input name="presidentName" value="${_esc(data.presidentName || '')}" class="input" placeholder="ডাঃ মোঃ সভাপতি">
-            </div>
-            <div>
-              <label class="label">পদবী / পোস্ট</label>
-              <input name="presidentPost" value="${_esc(data.presidentPost || '')}" class="input" placeholder="সভাপতি, বিডিডিপিএ ভোলা">
-            </div>
-            <div>
-              <label class="label">বার্তাসমূহ</label>
-              <textarea name="presidentMsg" class="textarea h-28" placeholder="সভাপতির বার্তা...">${_esc(data.presidentMsg || '')}</textarea>
-            </div>
-          </div>
-          
-          <div class="space-y-4">
-            <h3 class="font-bold text-navy-900 border-b pb-2">সাধারণ সম্পাদকের বার্তা মডিউল</h3>
-            <div>
-              <label class="label">সাধারণ সম্পাদকের নাম</label>
-              <input name="secretaryName" value="${_esc(data.secretaryName || '')}" class="input" placeholder="ডাঃ মোঃ সাধারণ সম্পাদক">
-            </div>
-            <div>
-              <label class="label">পদবী / পোস্ট</label>
-              <input name="secretaryPost" value="${_esc(data.secretaryPost || '')}" class="input" placeholder="সাধারণ সম্পাদক, বিডিডিপিএ ভোলা">
-            </div>
-            <div>
-              <label class="label">বার্তাসমূহ</label>
-              <textarea name="secretaryMsg" class="textarea h-28" placeholder="সাধারণ সম্পাদকের বার্তা...">${_esc(data.secretaryMsg || '')}</textarea>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink-100">
-          <button type="submit" class="btn-primary">${_icon('save', 'w-4 h-4')}<span>সম্মানিত নেতৃত্ব আপডেট করুন</span></button>
-        </div>
-      </form>
-    </div>`,
-
-  /* ================= ADMIN MEMBER PREVIEW ================= */
-  AdminMemberPreview: (m = {}) => {
-    const expiry = _checkExpiry(m.joiningDate);
-    const profileImg = m.profilePhoto ? `<img src="${_esc(m.profilePhoto)}" class="w-full h-full object-cover rounded-xl"/>` : `<div class="w-full h-full rounded-xl bg-gradient-medical grid place-items-center text-white font-bold text-xl">${_initials(m.nameEn || m.nameBn)}</div>`;
-    const degreeImg = m.degreePhoto ? `<img src="${_esc(m.degreePhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">সার্টিফিকেটের ছবি আপলোড করা হয়নি</div>`;
-    const nidImg = m.nidPhoto ? `<img src="${_esc(m.nidPhoto)}" class="w-full h-auto max-h-[300px] object-contain rounded-xl border border-ink-200 shadow-soft"/>` : `<div class="p-8 text-center text-ink-400 bg-ink-50 rounded-xl border border-dashed border-ink-200 w-full">এনআইডি কার্ডের ছবি আপলোড করা হয়নি</div>`;
-
-    return `
-      <div class="card p-6 sm:p-8 space-y-8 animate-fade-in-up">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink-100 pb-4">
-          <div>
-            <span class="eyebrow">Admin Preview</span>
-            <h2 class="h-section text-xl mt-1">সদস্যের সম্পূর্ণ তথ্য ও নথি যাচাই</h2>
-          </div>
-          <button onclick="window.appAdmin.loadMemberList()" class="btn-outline text-xs inline-flex items-center gap-1">
-            ${_icon('arrow-left', 'w-3.5 h-3.5')}<span>ফিরে যান</span>
-          </button>
-        </div>
-
-        <div class="grid lg:grid-cols-12 gap-8">
-          <div class="lg:col-span-4 space-y-6">
-            <div class="card p-5 text-center bg-ink-50/50">
-              <div class="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-elevated ring-1 ring-ink-100 mx-auto overflow-hidden">
-                ${profileImg}
-              </div>
-              <h3 class="text-lg font-bold text-navy-900 mt-4">${_esc(m.nameBn || m.nameEn)}</h3>
-              <p class="text-xs text-ink-500 font-latin mt-1">${_esc(m.nameEn || '')}</p>
-              <div class="flex items-center justify-center gap-2 pt-3">
-                <span class="chip chip-teal font-latin">${_esc(m.memberId || 'BDPA-XXXX')}</span>
-                <span class="chip ${expiry.expired ? 'chip-red' : 'chip-emerald'}">${expiry.diffText}</span>
-              </div>
-            </div>
-            
-            <div class="card p-5 space-y-3">
-              <h4 class="font-bold text-xs uppercase tracking-wider text-ink-400">মেম্বারশিপ স্ট্যাটাস</h4>
-              <div class="text-sm space-y-2">
-                <div class="flex justify-between">
-                  <span class="text-ink-500">যোগদানের তারিখ:</span>
-                  <span class="font-semibold text-navy-900">${_fmtDateBn(m.joiningDate)}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-ink-500">স্ট্যাটাস:</span>
-                  <span class="font-semibold ${expiry.expired ? 'text-red-600' : 'text-emerald-600'}">${expiry.expired ? 'Expired' : 'Active'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:col-span-8 space-y-6">
-            <div class="card p-6 space-y-5">
-              <h3 class="font-bold text-navy-900 border-b pb-2 text-base">ব্যক্তিগত ও পেশাগত বিবরণ</h3>
-              <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                ${[
-                  ['graduation-cap', 'যোগ্যতা/ডিগ্রি', m.qualification],
-                  ['building-2',     'শিক্ষা প্রতিষ্ঠান', m.institution],
-                  ['badge',          'BMDC Reg No',     m.bmdcReg],
-                  ['history',        'অভিজ্ঞতা',         m.experience ? `${m.experience} বছর` : '০ বছর'],
-                  ['briefcase',      'চেম্বারের নাম',    m.chamberName],
-                  ['map-pin',        'চেম্বারের ঠিকানা',  m.chamberAddress || m.address],
-                  ['phone',          'মোবাইল নম্বর',    m.phone],
-                  ['mail',           'ইমেল এড্রেস',     m.email],
-                  ['heart',          'ব্লাড গ্রুপ',      m.bloodGroup],
-                  ['credit-card',    'এনআইডি নম্বর',     m.nidNumber],
-                  ['home',           'স্থায়ী ঠিকানা',    m.personalAddress],
-                  ['map',            'উপজেলা',          m.upazila],
-                ].map(([ic, label, val]) => `
-                  <div class="flex items-start gap-2.5">
-                    <span class="text-teal-600 mt-0.5">${_icon(ic, 'w-4 h-4')}</span>
-                    <div>
-                      <dt class="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">${label}</dt>
-                      <dd class="font-semibold text-navy-900 mt-0.5">${_esc(val || '—')}</dd>
-                    </div>
-                  </div>
-                `).join('')}
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t border-ink-100 pt-6 space-y-6">
-          <h3 class="font-bold text-navy-900 text-base flex items-center gap-2">
-            ${_icon('image', 'w-5 h-5 text-teal-600')}
-            <span>আপলোডকৃত নথি ও সার্টিফিকেট প্রিভিউ</span>
-          </h3>
-          
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="card p-5 space-y-4 bg-ink-50/30">
-              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-                ${_icon('graduation-cap', 'w-4 h-4 text-teal-600')}
-                <span>ডিগ্রি সার্টিফিকেট ছবি</span>
-              </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border animate-fade-in">
-                ${degreeImg}
-              </div>
-            </div>
-
-            <div class="card p-5 space-y-4 bg-ink-50/30">
-              <h4 class="font-bold text-sm text-navy-900 flex items-center gap-1.5">
-                ${_icon('credit-card', 'w-4 h-4 text-teal-600')}
-                <span>ন্যাশনাল আইডি (NID) কার্ডের ছবি</span>
-              </h4>
-              <div class="flex items-center justify-center min-h-[200px] bg-white rounded-xl p-2 border animate-fade-in">
-                ${nidImg}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  },
-
-  /* ================= PUBLIC REGISTRATION FORM ================= */
-  PublicRegistrationForm: () => `
-    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="text-center max-w-2xl mx-auto space-y-3 mb-10">
-        <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-medical grid place-items-center text-white shadow-elevated">
-          ${_icon('user-plus', 'w-6 h-6')}
-        </div>
-        <h1 class="h-section text-3xl">অনলাইন সদস্যপদ আবেদন ফরম</h1>
-        <p class="text-sm sm:text-base text-ink-500">BDDPA ভোলা জেলার সদস্যপদ নিবন্ধনের জন্য নিচের ফরমটি সঠিক তথ্য দিয়ে পূরণ করুন। আপনার আবেদনটি অ্যাডমিন কর্তৃক ভেরিফিকেশন ও অনুমোদনের পর সক্রিয় করা হবে।</p>
-      </div>
-
-      <div class="card p-6 sm:p-8 space-y-6 animate-fade-in-up">
-        <form id="public-register-form" class="space-y-6" enctype="multipart/form-data">
-          
-          <div class="border-b pb-2">
-            <h3 class="font-bold text-navy-900 text-base">১. ব্যক্তিগত তথ্য (Personal Info)</h3>
-          </div>
-
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="label" for="reg-nameBn">নাম (বাংলায়) <span class="text-red-500">*</span></label>
-              <input id="reg-nameBn" name="nameBn" required class="input" placeholder="ডাঃ মোঃ আবদুর রহমান">
-            </div>
-            <div>
-              <label class="label" for="reg-nameEn">Name (English) <span class="text-red-500">*</span></label>
-              <input id="reg-nameEn" name="nameEn" required class="input" placeholder="Dr. Md. Abdur Rahman">
-            </div>
-            <div>
-              <label class="label" for="reg-phone">মোবাইল নম্বর <span class="text-red-500">*</span></label>
-              <input id="reg-phone" name="phone" required class="input" placeholder="017XXXXXXXX">
-            </div>
-            <div>
-              <label class="label" for="reg-email">ইমেইল এড্রেস <span class="text-ink-400 font-normal text-xs">(ঐচ্ছিক)</span></label>
-              <input id="reg-email" name="email" type="email" class="input" placeholder="member@email.com">
-            </div>
-            <div>
-              <label class="label" for="reg-bloodGroup">ব্লাড গ্রুপ <span class="text-red-500">*</span></label>
-              <select id="reg-bloodGroup" name="bloodGroup" required class="select">
-                <option value="">সিলেক্ট করুন</option>
-                ${['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => `
-                  <option value="${bg}">${bg}</option>
-                `).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="label" for="reg-nidNumber">ন্যাশনাল আইডি (NID) নম্বর <span class="text-red-500">*</span></label>
-              <input id="reg-nidNumber" name="nidNumber" required class="input" placeholder="199XXXXXXXXXXXX">
-            </div>
-          </div>
-
-          <div class="border-b pb-2 pt-4">
-            <h3 class="font-bold text-navy-900 text-base">২. শিক্ষাগত ও পেশাগত তথ্য (Professional Info)</h3>
-          </div>
-
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="label" for="reg-qualification">যোগ্যতা/ডিগ্রি <span class="text-red-500">*</span></label>
-              <input id="reg-qualification" name="qualification" required class="input" placeholder="BDS, PGT (Dental)">
-            </div>
-            <div>
-              <label class="label" for="reg-bmdcReg">BMDC রেজিস্ট্রেশন নম্বর <span class="text-ink-400 font-normal text-xs">(ঐচ্ছিক)</span></label>
-              <input id="reg-bmdcReg" name="bmdcReg" class="input" placeholder="D-1234">
-            </div>
-            <div>
-              <label class="label" for="reg-institution">শিক্ষা প্রতিষ্ঠান (ইনস্টিটিউট) <span class="text-red-500">*</span></label>
-              <input id="reg-institution" name="institution" required class="input" placeholder="উদাঃ ঢাকা ডেন্টাল কলেজ">
-            </div>
-            <div>
-              <label class="label" for="reg-experience">পেশাগত অভিজ্ঞতা (বছর) <span class="text-red-500">*</span></label>
-              <input id="reg-experience" name="experience" type="number" required class="input" placeholder="উদাঃ ৫">
-            </div>
-            <div>
-              <label class="label" for="reg-chamberName">চেম্বারের নাম <span class="text-red-500">*</span></label>
-              <input id="reg-chamberName" name="chamberName" required class="input" placeholder="রহমান ডেন্টাল কেয়ার">
-            </div>
-            <div>
-              <label class="label" for="reg-chamberAddress">চেম্বারের ঠিকানা <span class="text-red-500">*</span></label>
-              <input id="reg-chamberAddress" name="chamberAddress" required class="input" placeholder="সদর রোড, ভোলা সদর">
-            </div>
-            <div>
-              <label class="label" for="reg-personalAddress">স্থায়ী ঠিকানা <span class="text-red-500">*</span></label>
-              <input id="reg-personalAddress" name="personalAddress" required class="input" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা">
-            </div>
-            <div>
-              <label class="label" for="reg-upazila">উপজেলা (ভোলা জেলা) <span class="text-red-500">*</span></label>
-              <select id="reg-upazila" name="upazila" required class="select">
-                <option value="">সিলেক্ট করুন</option>
-                ${['Bhola Sadar', 'Borhanuddin', 'Char Fasson', 'Daulatkhan', 'Lalmohan', 'Manpura', 'Tazumuddin'].map(up => `
-                  <option value="${up}">${up}</option>
-                `).join('')}
-              </select>
-            </div>
-          </div>
-
-          <div class="border-b pb-2 pt-4">
-            <h3 class="font-bold text-navy-900 text-base">৩. প্রয়োজনীয় নথি আপলোড (File Uploads)</h3>
-            <p class="text-[11px] text-ink-500 mt-1">দয়া করে স্পষ্ট এবং পড়ার উপযোগী ছবি আপলোড করুন।</p>
-          </div>
-
-          <div class="grid sm:grid-cols-3 gap-5">
-            <div>
-              <label class="label">আপনার ছবি (Profile Photo) <span class="text-red-500">*</span></label>
-              <input type="file" name="profilePhoto" accept="image/*" required class="input py-2">
-            </div>
-            <div>
-              <label class="label">ডিগ্রি সার্টিফিকেট ছবি <span class="text-red-500">*</span></label>
-              <input type="file" name="degreePhoto" accept="image/*" required class="input py-2">
-            </div>
-            <div>
-              <label class="label">এনআইডি (NID) কার্ডের ছবি <span class="text-red-500">*</span></label>
-              <input type="file" name="nidPhoto" accept="image/*" required class="input py-2">
-            </div>
-          </div>
-
-          <div class="flex items-center justify-end gap-3 pt-6 border-t border-ink-100">
-            <button type="button" onclick="window.location.hash = '#/'" class="btn-outline">বাতিল</button>
-            <button type="submit" class="btn-primary w-full sm:w-auto">${_icon('save', 'w-4 h-4')}<span>আবেদন জমা দিন (Submit Application)</span></button>
-          </div>
-        </form>
-      </div>
-    </section>
-  `,
-
-  /* ================= SYSTEM HEALTH ================= */
+  /* ================= SYSTEM HEALTH (kept from original API) ================= */
   SystemHealthMonitor: () => `
     <div class="card p-6 sm:p-8 space-y-6">
       <div class="flex items-center gap-3">
@@ -1421,3 +867,279 @@ const UIComponents = {
 };
 
 window.UIComponents = UIComponents;
+--- START OF FILE index.html ---
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+
+  <title>ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন | BDDPA</title>
+  <meta name="description" content="ভোলা জেলার রেজিস্টার্ড ডেন্টাল চিকিৎসকদের অফিশিয়াল ডিজিটাল ডাটাবেজ ও প্রফেশনাল অ্যাসোসিয়েশন পোর্টাল।">
+  <meta name="api-base" content="https://backend-fow0.onrender.com/api/v1">
+  <meta name="author" content="BDDPA">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BDDPA — Bhola District Dental Practitioners Association">
+  <meta property="og:description" content="ভোলা জেলার অনুমোদিত ডেন্টাল প্র্যাকটিশনারদের পেশাদার প্ল্যাটফর্ম।">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Preconnect for premium Bengali typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="assets/placeholder-avatar.png">
+
+  <!-- Tailwind (CDN, per project stack) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Vercel-monochrome remap
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            bn: ['"Hind Siliguri"', '"Noto Sans Bengali"', 'system-ui', 'sans-serif'],
+            display: ['"Noto Sans Bengali"', '"Hind Siliguri"', 'Inter', 'sans-serif'],
+            latin: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['"Instrument Serif"', '"Playfair Display"', 'Georgia', 'serif']
+          },
+          colors: {
+            navy: {
+              50:  '#fafafa',
+              100: '#f4f4f5',
+              200: '#e4e4e7',
+              300: '#a1a1aa',
+              400: '#71717a',
+              500: '#52525b',
+              600: '#3f3f46',
+              700: '#27272a',
+              800: '#18181b',
+              900: '#0a0a0a',
+              950: '#000000'
+            },
+            teal: {
+              50:  '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#0070f3',
+              600: '#0061d5',
+              700: '#0052b3',
+              800: '#003d85',
+              900: '#00285c'
+            },
+            emerald: {
+              50:  '#eff6ff',
+              400: '#60a5fa',
+              500: '#0070f3',
+              600: '#0061d5',
+              700: '#0052b3'
+            },
+            gold: {
+              400: '#d4d4d8',
+              500: '#a1a1aa',
+              600: '#71717a'
+            },
+            ink: {
+              900: '#0a0a0a',
+              800: '#171717',
+              700: '#262626',
+              600: '#404040',
+              500: '#525252',
+              400: '#737373',
+              300: '#a3a3a3',
+              200: '#e5e5e5',
+              100: '#ededed',
+              50:  '#fafafa'
+            }
+          },
+          boxShadow: {
+            'soft':      '0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06)',
+            'card':      '0 1px 2px rgba(0,0,0,0.05), 0 8px 24px -12px rgba(0,0,0,0.14)',
+            'elevated':  '0 2px 4px rgba(0,0,0,0.05), 0 24px 48px -20px rgba(0,0,0,0.20)',
+            'ring-navy': '0 0 0 4px rgba(0,0,0,0.06)'
+          },
+          backgroundImage: {
+            'gradient-navy':     'linear-gradient(135deg, #000000 0%, #0a0a0a 60%, #171717 100%)',
+            'gradient-medical':  'linear-gradient(135deg, #000000 0%, #0a0a0a 60%, #171717 100%)',
+            'gradient-hero':     'radial-gradient(ellipse 55% 45% at 15% 8%, rgba(0,112,243,0.22), transparent 60%), radial-gradient(ellipse 50% 40% at 88% 92%, rgba(0,112,243,0.10), transparent 65%), linear-gradient(180deg, #000000 0%, #0a0a0a 55%, #171717 100%)',
+            'gradient-card':     'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)',
+            'grid-pattern':      'linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)'
+          },
+          keyframes: {
+            'fade-in-up': { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            'fade-in':    { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            'scale-in':   { '0%': { opacity: '0', transform: 'scale(.96)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            'slide-in-right': { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(0)' } },
+            'shimmer':    { '0%': { backgroundPosition: '-800px 0' }, '100%': { backgroundPosition: '800px 0' } },
+            'blob':       { '0%,100%': { transform: 'translate(0,0) scale(1)' }, '50%': { transform: 'translate(20px,-30px) scale(1.05)' } }
+          },
+          animation: {
+            'fade-in-up':     'fade-in-up .6s cubic-bezier(.2,.7,.2,1) both',
+            'fade-in':        'fade-in .4s ease-out both',
+            'scale-in':       'scale-in .3s cubic-bezier(.2,.7,.2,1) both',
+            'slide-in-right': 'slide-in-right .3s ease-out',
+            'shimmer':        'shimmer 1.6s linear infinite',
+            'blob':           'blob 12s ease-in-out infinite'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide icons for consistent iconography -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="font-bn bg-white text-ink-900 antialiased selection:bg-teal-500/20 selection:text-navy-900 flex flex-col min-h-dvh">
+
+  <a href="#main-app-viewport" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-navy-900 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">मूल কনটেন্টে যান</a>
+
+  <header id="site-header" class="fixed top-0 inset-x-0 z-50 no-print transition-all duration-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mt-3 rounded-2xl bg-white/85 backdrop-blur-xl border border-white/60 shadow-soft">
+        <div class="flex items-center justify-between h-16 sm:h-[72px] px-4 sm:px-5">
+
+          <a href="#/" class="flex items-center gap-3 min-w-0 group">
+            <div class="relative shrink-0">
+              <div class="absolute inset-0 rounded-xl bg-gradient-medical blur-md opacity-30 group-hover:opacity-50 transition"></div>
+              <div class="relative w-11 h-11 rounded-xl bg-gradient-medical grid place-items-center text-white shadow-card">
+                <i data-lucide="stethoscope" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="min-w-0 leading-tight">
+              <div class="text-[13px] sm:text-[15px] font-bold text-navy-900 truncate">
+                ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন
+              </div>
+              <div class="text-[10px] sm:text-[11px] font-latin tracking-[0.18em] text-teal-600 font-semibold uppercase">
+                BDDPA · Estd 2026
+              </div>
+            </div>
+          </a>
+
+          <nav class="hidden lg:flex items-center gap-1 text-sm font-medium text-ink-700">
+            <a href="#/"            data-nav class="px-3.5 py-2 rounded-lg hover:text-navy-900 hover:bg-ink-50 transition">হোম</a>
+            <a href="#/about"       data-nav class="px-3.5 py-2 rounded-lg hover:text-navy-900 hover:bg-ink-50 transition">আমাদের সম্পর্কে</a>
+            <a href="#/members"     data-nav class="px-3.5 py-2 rounded-lg hover:text-navy-900 hover:bg-ink-50 transition">সদস্য তালিকা</a>
+            <a href="#/executive"   data-nav class="px-3.5 py-2 rounded-lg hover:text-navy-900 hover:bg-ink-50 transition">কার্যনির্বাহী</a>
+            <a href="#/events"      data-nav class="px-3.5 py-2 rounded-lg hover:text-navy-900 hover:bg-ink-50 transition">ইভেন্টস</a>
+            <a href="#/notice"      data-nav class="px-3.5 py-2 rounded-lg hover:text-navy-900 hover:bg-ink-50 transition">নোটিশ</a>
+            <a href="#/verification" data-nav class="px-3.5 py-2 rounded-lg hover:text-navy-900 hover:bg-ink-50 transition">ভেরিফিকেশন</a>
+          </nav>
+
+          <div class="flex items-center gap-2">
+            <a href="#/verification" class="hidden md:inline-flex items-center gap-2 text-xs font-semibold text-ink-700 hover:text-navy-900 px-3 py-2 rounded-lg hover:bg-ink-50">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              <span class="hidden lg:inline">যাচাই করুন</span>
+            </a>
+            <a href="#/admin/login" class="hidden sm:inline-flex btn-primary text-xs">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+              <span>অ্যাডমিন</span>
+            </a>
+            <button id="mobile-menu-btn" aria-label="মেনু খুলুন" class="lg:hidden inline-flex w-10 h-10 items-center justify-center rounded-lg hover:bg-ink-50 text-navy-900">
+              <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="mobile-drawer" class="fixed inset-0 z-[60] hidden">
+    <div class="absolute inset-0 bg-navy-900/50 backdrop-blur-sm" data-drawer-close></div>
+    <aside class="absolute top-0 right-0 h-full w-[86%] max-w-sm bg-white shadow-elevated animate-slide-in-right flex flex-col">
+      <div class="flex items-center justify-between px-5 h-16 border-b border-ink-100">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-lg bg-gradient-medical grid place-items-center text-white">
+            <i data-lucide="stethoscope" class="w-4 h-4"></i>
+          </div>
+          <span class="font-bold text-navy-900">BDDPA</span>
+        </div>
+        <button data-drawer-close aria-label="মেনু বন্ধ করুন" class="w-9 h-9 grid place-items-center rounded-lg hover:bg-ink-50 text-ink-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <nav class="flex-1 overflow-y-auto p-4 space-y-1 text-sm font-medium">
+        <a href="#/" data-drawer-link class="drawer-link"><i data-lucide="home" class="w-4 h-4"></i>হোম</a>
+        <a href="#/about" data-drawer-link class="drawer-link"><i data-lucide="info" class="w-4 h-4"></i>আমাদের সম্পর্কে</a>
+        <a href="#/members" data-drawer-link class="drawer-link"><i data-lucide="users" class="w-4 h-4"></i>সদস্য তালিকা</a>
+        <a href="#/executive" data-drawer-link class="drawer-link"><i data-lucide="award" class="w-4 h-4"></i>কার্যনির্বাহী কমিটি</a>
+        <a href="#/events" data-drawer-link class="drawer-link"><i data-lucide="calendar" class="w-4 h-4"></i>ইভেন্টস</a>
+        <a href="#/notice" data-drawer-link class="drawer-link"><i data-lucide="megaphone" class="w-4 h-4"></i>নোটিশ বোর্ড</a>
+        <a href="#/verification" data-drawer-link class="drawer-link"><i data-lucide="badge-check" class="w-4 h-4"></i>ভেরিফিকেশন</a>
+      </nav>
+      <div class="p-4 border-t border-ink-100">
+        <a href="#/admin/login" data-drawer-link class="btn-primary w-full justify-center">
+          <i data-lucide="lock" class="w-4 h-4"></i>অ্যাডমিন লগইন
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <main id="main-app-viewport" class="flex-grow pt-24 sm:pt-28"></main>
+
+  <footer class="bg-navy-950 text-ink-200 mt-24 no-print relative overflow-hidden">
+    <div class="absolute inset-0 bg-grid-pattern opacity-40" style="background-size:44px 44px"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
+        <div class="col-span-2">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-xl bg-gradient-medical grid place-items-center text-white shadow-card">
+              <i data-lucide="stethoscope" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-sm">BDDPA ভোলা</div>
+              <div class="text-[11px] tracking-widest text-teal-400 font-latin uppercase">Estd 2026</div>
+            </div>
+          </div>
+          <p class="text-sm text-ink-300 leading-relaxed max-w-md">
+            ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন — জেলার ডিপ্লোমা দন্ত চিকিৎসকদের একমাত্র অফিসিয়াল পেশাদার প্ল্যাটফর্ম।
+          </p>
+          <div class="flex gap-2 mt-5">
+            <a href="#" aria-label="Facebook" class="social-btn"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+            <a href="#" aria-label="Twitter"  class="social-btn"><i data-lucide="twitter"  class="w-4 h-4"></i></a>
+            <a href="#" aria-label="Youtube"  class="social-btn"><i data-lucide="youtube"  class="w-4 h-4"></i></a>
+            <a href="#" aria-label="Linkedin" class="social-btn"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">দ্রুত লিংক</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#/about" class="footer-link">আমাদের সম্পর্কে</a></li>
+            <li><a href="#/members" class="footer-link">সদস্য তালিকা</a></li>
+            <li><a href="#/executive" class="footer-link">কার্যনির্বাহী কমিটি</a></li>
+            <li><a href="#/events" class="footer-link">ইভেন্টস</a></li>
+            <li><a href="#/notice" class="footer-link">নোটিশ বোর্ড</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">যোগাযোগ</h4>
+          <ul class="space-y-3 text-sm text-ink-300">
+            <li class="flex items-start gap-2.5"><i data-lucide="map-pin" class="w-4 h-4 mt-0.5 text-teal-400 shrink-0"></i><span>সদর রোড, ভোলা সদর, বাংলাদেশ</span></li>
+            <li class="flex items-start gap-2.5"><i data-lucide="phone" class="w-4 h-4 mt-0.5 text-teal-400 shrink-0"></i><span dir="ltr">+880 1900 000000</span></li>
+            <li class="flex items-start gap-2.5"><i data-lucide="mail" class="w-4 h-4 mt-0.5 text-teal-400 shrink-0"></i><a href="mailto:info@bddpa-bhola.org" class="footer-link">info@bddpa-bhola.org</a></li>
+            <li class="flex items-start gap-2.5"><i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 text-emerald-500 shrink-0"></i><span>জরুরি: <span dir="ltr">999</span></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-xs text-ink-400">© ২০২৬ ভোলা জেলা ডেন্টাল প্র্যাকটিশনার অ্যাসোসিয়েশন। সর্বস্বত্ব সংরক্ষিত।</p>
+        <p class="text-xs text-ink-400 flex items-center gap-2">
+          <span class="inline-flex w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>Designed & Developed by Tahmid Habib</span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App scripts -->
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
